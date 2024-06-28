@@ -1,0 +1,18 @@
+.map-selecter {
+    flex-grow: 1;
+}
+
+.map-selecter__placeholder {
+    @extend %btn-default;
+    @extend %d-flex-ai-center;
+    width: 100%;
+    gap: 0 12px;
+    padding: 22px 24px;
+    justify-content: space-between;
+    border-radius: 16px;
+    background-color: #fff;
+}
+
+.map-selecter__dropdown {
+    display: none;
+}

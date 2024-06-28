@@ -1,0 +1,33 @@
+.map-search {
+    @extend %d-flex-ai-center;
+    @include zi(1);
+    gap: 0 12px;
+    padding: 0 0 0 24px;
+    border-radius: 16px;
+    border: 2px solid #dedede;
+    background-color: #fff;
+    transition: all .3s ease;
+
+    &.map-search_active {
+        border-color: #0d0d0d;
+    }
+}
+
+.map-search__field {
+    border: 0;
+    outline: none;
+    flex-grow: 1;
+    padding: 20px 24px 20px 0;
+    color: #0d0d0d;
+    background-color: rgba(0,0,0,0);
+}
+
+.map-search__btn {
+    @extend %btn-default;
+    @extend %d-flex-column;
+
+    &.map-search__btn_pe_none {
+        cursor: default;
+        pointer-events: none;
+    }
+}

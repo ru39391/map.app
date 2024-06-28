@@ -1,0 +1,45 @@
+.map-filter-holder {
+    @include zi(2);
+    display: flex;
+    gap: 0 12px;
+    margin: 0 0 12px;
+}
+
+.map-filter {
+    @include fw(68px);
+    @extend %d-flex-column;
+}
+
+.map-filter-btn {
+    @extend %btn-default;
+    @extend %d-flex-centered;
+    @extend %d-flex-column;
+    @include fs-lh(24px,20px);
+    font-weight: 500;
+    width: 100%;
+    padding: 20px;
+    color: #242424;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    border-radius: 100px;
+    background-color: #c1ff05;
+
+    &:disabled {
+        opacity: .75;
+        cursor: default;
+    }
+}
+
+.map-filter__toggler {
+    @extend %btn-default;
+    @extend %d-flex-centered;
+    @extend %d-flex-column;
+    flex-grow: 1;
+    border-radius: 16px;
+    background-color: #fff;
+}
+
+.map-filter__dropdown {
+    display: none;
+}
