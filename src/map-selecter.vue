@@ -1,6 +1,5 @@
 <template>
-  <div class="map-selecter">
-  <!--  ref={categoryDropdownRef} -->
+  <div class="map-selecter"> <!--  ref={categoryDropdownRef} -->
     <button class="map-selecter__placeholder" type="button" @click="setCategoryDropdownOpen(!isCategoryDropdownOpen)">
       <span class="map-selecter__caption">{{ selecterCaption }}</span>
       <svg width="18" height="10" viewBox="0 0 18 10" fill="none" xmlns="http://www.w3.org/2000/svg">
