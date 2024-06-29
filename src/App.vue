@@ -9,6 +9,11 @@
         <div class="map-filter-holder">
           <MapSelecter />
         </div>
+        <MapSearch
+          :arr="currentItemsList"
+          param="address"
+          placeholder="Город, район, улица..."
+        />
       </div>
     </div>
     <MapModal
@@ -19,6 +24,7 @@
         <MapSearch
           :arr="locationList"
           param="location"
+          placeholder="Город"
           noResultMess="В этом городе еще нет отделения"
         />
       </template>
@@ -41,7 +47,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { FILIAL_KEY } from './utils/constants';
+  import { FILIAL_KEY, LOCATION_KEY } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
@@ -63,16 +69,14 @@
         useCategoryStore,
         [
           'itemsList',
+          'currentItemsList',
           'categoryList'
         ]
       ),
 
       ...mapState(
         useLocationStore,
-        [
-          'locationList',
-          'currentLocation'
-        ]
+        ['locationList', 'currentLocation']
       ),
 
       currLocationCaption() {
@@ -89,36 +93,41 @@
         useCategoryStore,
         [
           'fetchCategoryData',
+          'setCurrentItemsList',
           'setCurrentCategory'
         ]
       ),
 
       ...mapActions(
         useLocationStore,
-        [
-          'setLocationList',
-          'setCurrentLocation'
-        ]
+        ['setLocationList', 'setCurrentLocation']
       ),
 
-      ...mapActions(
-        useModalStore,
-        [
-          'setModalOpen'
-        ]
-      ),
+      ...mapActions(useModalStore, ['setModalOpen']),
 
       handleCurrLocation(value) {
-        this.setCurrentLocation(value);
+        this.setModalOpen(false);
+
+        if(this.currentLocation && value !== this.currentLocation.location) this.setCurrentLocation(value);
       }
     },
 
     watch: {
+      currentLocation(data) {
+        this.setCurrentItemsList({
+          arr: this.itemsList,
+          [LOCATION_KEY]: data && data[LOCATION_KEY]
+        });
+      },
       itemsList(arr) {
         this.setLocationList(arr);
+        this.setCurrentItemsList({
+          arr,
+          [LOCATION_KEY]: this.currentLocation && this.currentLocation[LOCATION_KEY]
+        });
       },
-      currentLocation(data) {
-        console.log(data);
+      currentItemsList(arr) {
+        console.log(arr);
       }
     },
 

@@ -3,6 +3,7 @@ import {
   ATM_KEY,
   POINT_KEY,
   TERMINAL_KEY,
+  ADDRESS_KEY,
   LOCATION_KEY
 } from './constants';
 
@@ -72,7 +73,23 @@ const setLocation = async (value) => {
   return data;
 }
 
+const handleLocationList = (arr, key = '') => arr.reduce(
+  (acc, item) => {
+    const data = {};
+
+    if(item[ADDRESS_KEY].includes('г.') || item[ADDRESS_KEY].includes('ст.')) {
+      const str = item[ADDRESS_KEY].includes('г.') ? item[ADDRESS_KEY].split('г.')[1] : item[ADDRESS_KEY].split('ст.')[1];
+      data[LOCATION_KEY] = str.split(',')[0].trim();
+
+      return [...acc, key ? {...data, [ADDRESS_KEY]: item[ADDRESS_KEY], [key]: item[key]} : data[LOCATION_KEY] ];
+    } else {
+      return acc;
+    }
+  }, []
+);
+
 export {
   fetchersData,
-  setLocation
+  setLocation,
+  handleLocationList
 };

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { setLocation } from '../../utils';
+import { setLocation, handleLocationList } from '../../utils';
 import { LOCATION_KEY } from '../../utils/constants';
 
 const useLocationStore = defineStore({
@@ -11,26 +11,13 @@ const useLocationStore = defineStore({
   }),
   actions: {
     setLocationList(arr) {
-      const rawLocationList = arr.reduce(
-        (acc, { address }) => {
-          if(address.includes('г.') || address.includes('ст.')) {
-            const addressValue = address.includes('г.') ? address.split('г.')[1] :  address.split('ст.')[1];
-
-            return [...acc, addressValue.split(',')[0].trim()];
-          } else {
-            return acc;
-          }
-        }, []
-      );
-      const locationList = rawLocationList.reduce(
+      const locationArr = handleLocationList(arr).reduce(
         (acc, item) => acc.find(value => value === item) ? acc : [...acc, item], []
       );
-      const locationDataList = locationList.map(location => (
-        {
-          location,
-          value: rawLocationList.filter(item => item === location).length
-        }
-      ));
+      const locationDataList = locationArr.map(location => ({
+        location,
+        value: handleLocationList(arr).filter(item => item === location).length
+      }));
 
       this.locationList = locationDataList.sort((a, b) => {
         const paramA = a.value;

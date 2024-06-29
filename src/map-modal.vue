@@ -36,21 +36,11 @@
     },
 
     computed: {
-      ...mapState(
-        useModalStore,
-        [
-          'isModalOpen'
-        ]
-      ),
+      ...mapState(useModalStore, ['isModalOpen']),
     },
 
     methods: {
-      ...mapActions(
-        useModalStore,
-        [
-          'setModalOpen'
-        ]
-      ),
+      ...mapActions(useModalStore, ['setModalOpen']),
     }
   };
 </script>

@@ -7,16 +7,16 @@
     <input
       class="map-search__field"
       type="text"
-      placeholder="Город, район, улица..."
+      :placeholder="placeholder"
       v-model="location"
       @focus="setSearchInputFocused(true)"
       @blur="setSearchInputFocused(false)"
     />
-    <div class="map-dropdown" v-if="isSearchInputFocused && isResultListOpen">
+    <div class="map-dropdown" v-if="isResultListOpen">
       <div
         :class="[
           'map-dropdown__wrapper',
-          { 'map-dropdown__wrapper_height_min is-active': isSearchInputFocused && isResultListOpen }
+          { 'map-dropdown__wrapper_height_min is-active': isResultListOpen }
         ]"
       >
         <button
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import { mapActions } from 'pinia';
+  import { mapActions, mapState } from 'pinia';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
   import PinIcon from './assets/icons/pin-icon.vue';
@@ -67,12 +67,22 @@
         type: String,
         required: true
       },
+      placeholder: {
+        type: String
+      },
       noResultMess: {
         type: String
       },
     },
 
     computed: {
+      ...mapState(
+        useLocationStore,
+        ['locationList', 'currentLocation']
+      ),
+
+      ...mapState(useModalStore, ['isModalOpen']),
+
       isResultListOpen() {
         return this.location && this.resultList.length;
       }
@@ -99,10 +109,9 @@
       },
 
       handleResultItem(value) {
-        this.location = '';
-        this.resultList = [];
-        this.setModalOpen(false)
-        this.setCurrentLocation(value)
+        this.setModalOpen(false);
+
+        if(this.currentLocation && value !== this.currentLocation.location) this.setCurrentLocation(value);
       },
     },
 
@@ -110,6 +119,11 @@
       location(value) {
         this.handleChange(value);
       },
+
+      isModalOpen() {
+        this.location = '';
+        this.resultList = [];
+      }
     },
   };
 </script>

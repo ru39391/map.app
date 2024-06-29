@@ -3,10 +3,11 @@ import {
   FILIAL_KEY,
   ATM_KEY,
   POINT_KEY,
-  TERMINAL_KEY
+  TERMINAL_KEY,
+  LOCATION_KEY
 } from '../../utils/constants';
 
-import { fetchersData } from '../../utils';
+import { fetchersData, handleLocationList } from '../../utils';
 import { fetchFilterData } from '../../utils/fetchFilterData';
 
 const useCategoryStore = defineStore({
@@ -14,6 +15,7 @@ const useCategoryStore = defineStore({
   state: () => ({
     isCategoryListLoading: false,
     itemsList: [],
+    currentItemsList: [],
     filterList: [],
     categoryList: [
       {type: FILIAL_KEY, caption: 'Отделения', category: 'Филиал'},
@@ -61,6 +63,12 @@ const useCategoryStore = defineStore({
       } finally {
         this.isCategoryListLoading = false;
       }
+    },
+    setCurrentItemsList(data) {
+      const { arr } = data;
+      const currentItemsArr = handleLocationList(arr, 'id').filter(item => item[LOCATION_KEY] === data[LOCATION_KEY]);
+
+      this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
     },
     setCurrentCategory(data) {
       this.currentCategory = data;
