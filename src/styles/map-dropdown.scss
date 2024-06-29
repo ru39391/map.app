@@ -1,76 +1,76 @@
 .map-dropdown {
-    @include pos(100%,0);
-    width: 100%;
-    margin: 4px 0 0;
+  @include pos(100%, 0);
+  width: 100%;
+  margin: 4px 0 0;
 
-    &.map-dropdown_type_filter {
-        margin: 8px 0 0;
+  &.map-dropdown_type_filter {
+    margin: 8px 0 0;
 
-        .map-dropdown__wrapper {
-            gap: 0;
-            padding: 20px;
-            align-items: flex-end;
-        }
+    .map-dropdown__wrapper {
+      gap: 0;
+      padding: 20px;
+      align-items: flex-end;
     }
+  }
 }
 
 .map-dropdown__wrapper {
-    display: none;
-    gap: 8px 0;
-    padding: 8px;
-    border-radius: 16px;
-    background-color: #fff;
-    box-shadow: -4px 4px 16px 0 rgba(0,0,0,.1);
-    transition: all .3s ease;
+  display: none;
+  gap: 8px 0;
+  padding: 8px;
+  border-radius: 16px;
+  background-color: #fff;
+  box-shadow: -4px 4px 16px 0 rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 
-    &.map-dropdown__wrapper_active {
-        @extend %d-flex-column;
-        animation: show 0.5s;
-    }
+  &.is-active {
+    @extend %d-flex-column;
+    animation: show 0.5s;
+  }
 
-    &.map-dropdown__wrapper_height_min {
-        @include py(16px);
-        height: 100%;
-        max-height: 360px;
-        overflow-y: auto;
-    }
+  &.map-dropdown__wrapper_height_min {
+    @include py(16px);
+    height: 100%;
+    max-height: 360px;
+    overflow-y: auto;
+  }
 }
 
 .map-dropdown__close {
-    @extend %btn-default;
-    @extend %d-flex-column;
+  @extend %btn-default;
+  @extend %d-flex-column;
 }
 
 .map-dropdown__list {
-    @extend %d-flex-column;
-    width: 100%;
-    gap: 12px 0;
-    margin: 0 0 20px;
+  @extend %d-flex-column;
+  width: 100%;
+  gap: 12px 0;
+  margin: 0 0 20px;
 }
 
 .map-dropdown__toggler {
-    @extend %btn-default;
-    padding: 16px;
-    border-radius: 8px;
-    text-align: left;
+  @extend %btn-default;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: left;
 
-    &:hover,
-    &.map-dropdown__toggler_active {
-        background-color: #e3f2fc;
-    }
+  &:hover,
+  &.is-active {
+    background-color: #e3f2fc;
+  }
 }
 
 .map-dropdown__item {
-    @extend %btn-default;
-    @extend %d-flex-ai-center;
-    gap: 0 16px;
-    padding: 12px 16px;
-    color: #0d0d0d;
+  @extend %btn-default;
+  @extend %d-flex-ai-center;
+  gap: 0 16px;
+  padding: 12px 16px;
+  color: #0d0d0d;
 
-    &:hover {
-        color: #46A7EC;
-        transition: all .3s ease;
-    }
+  &:hover {
+    color: #46a7ec;
+    transition: all 0.3s ease;
+  }
 }
 
 @keyframes show {

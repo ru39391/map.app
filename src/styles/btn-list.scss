@@ -1,17 +1,18 @@
 .btn-list {
-    @extend %d-flex-wrap;
-    @extend %d-flex-ai-center;
-    gap: 12px;
+  @extend %d-flex-wrap;
+  @extend %d-flex-ai-center;
+  gap: 12px;
 }
 
 .btn-list__item {
-    @extend %btn-default;
-    padding: 12px 20px;
-    border-radius: 100px;
-    background-color: #fff;
-    transition: all .3s ease;
+  @extend %btn-default;
+  padding: 12px 20px;
+  border-radius: 100px;
+  background-color: #fff;
+  transition: all 0.3s ease;
 
-    &:hover {
-        background-color: #E3F2FC;
-    }
+  &:hover,
+  &.is-active {
+    background-color: #e3f2fc;
+  }
 }

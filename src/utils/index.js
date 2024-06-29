@@ -2,7 +2,8 @@ import {
   FILIAL_KEY,
   ATM_KEY,
   POINT_KEY,
-  TERMINAL_KEY
+  TERMINAL_KEY,
+  LOCATION_KEY
 } from './constants';
 
 import { fetchFilialData } from './fetchFilialData';
@@ -27,7 +28,7 @@ const handleLocationData = async (value) => {
     data = {
         isSucceed: true,
         data: {
-          location: value,
+          [LOCATION_KEY]: value,
           coords: geocodeRes.geoObjects.get(0).geometry.getCoordinates()
         }
     };
@@ -48,20 +49,19 @@ const setLocation = async (value) => {
 
   try {
     const { isSucceed, data: locData } = await handleLocationData(value);
-    const key = isSucceed ? Object.keys(locData).find((_, index) => typeof Object.values(locData)[index] === 'string') : null;
 
     if(isSucceed) {
-      if(isLocationSet(key)) {
-        localStorage.removeItem(key);
-        setLocationData(key, locData);
+      if(isLocationSet(LOCATION_KEY)) {
+        localStorage.removeItem(LOCATION_KEY);
+        setLocationData(LOCATION_KEY, locData);
       } else {
-        setLocationData(key, locData);
+        setLocationData(LOCATION_KEY, locData);
       }
 
-      data = isLocationSet(key)
+      data = isLocationSet(LOCATION_KEY)
         ? {
-          isSucceed: isLocationSet(key),
-          data: JSON.parse(localStorage.getItem(key))
+          isSucceed: isLocationSet(LOCATION_KEY),
+          data: JSON.parse(localStorage.getItem(LOCATION_KEY))
         }
         : data;
     }

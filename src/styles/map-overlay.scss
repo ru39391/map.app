@@ -1,51 +1,51 @@
 .map-overlay {
-    @extend %d-flex-centered;
-    @extend %d-flex-column;
-    @include wh(100%);
-    @include pos(0,0,fixed);
-    padding: 16px;
-    background-color: rgba(0,0,0,.5);
+  @extend %d-flex-centered;
+  @extend %d-flex-column;
+  @include wh(100%);
+  @include pos(0, 0, fixed);
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .map-modal {
-    display: none;
-    align-items: flex-end;
-    width: 100%;
-    max-width: 520px;
-    padding: 36px;
-    border-radius: 16px;
-    background-color: #F7F7F7;
+  display: none;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 520px;
+  padding: 36px;
+  border-radius: 16px;
+  background-color: #f7f7f7;
 
-    &.map-modal_active {
-        @extend %d-flex-column;
-        animation: show 0.5s;
-    }
+  &.is-active {
+    @extend %d-flex-column;
+    animation: show 0.5s;
+  }
 }
 
 .map-modal__close {
-    @extend %btn-default;
+  @extend %btn-default;
 }
 
 .map-modal__header {
-    @extend %d-flex-column;
-    width: 100%;
-    gap: 20px 0;
-    margin: 0 0 36px;
+  @extend %d-flex-column;
+  width: 100%;
+  gap: 20px 0;
+  margin: 0 0 36px;
 }
 
 .map-modal__title {
-    @include fs-lh(32px,36px);
-    font-weight: 500;
+  @include fs-lh(32px, 36px);
+  font-weight: 500;
 }
 
 .map-modal__subtitle {
-    @include fs-lh(24px,28px);
-    font-weight: 500;
-    margin: 0 0 20px;
+  @include fs-lh(24px, 28px);
+  font-weight: 500;
+  margin: 0 0 20px;
 }
 
 .map-modal__wrapper {
-    width: 100%;
+  width: 100%;
 }
 
 @keyframes show {

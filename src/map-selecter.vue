@@ -7,11 +7,11 @@
       </svg>
     </button>
     <div class="map-dropdown" v-if="isCategoryDropdownOpen">
-      <div :class="['map-dropdown__wrapper', { 'map-dropdown__wrapper_active': isCategoryDropdownOpen }]">
+      <div :class="['map-dropdown__wrapper', { 'is-active': isCategoryDropdownOpen }]">
         <button
           v-for="categoryItem in categoryList"
           :key="categoryItem.type"
-          :class="['map-dropdown__toggler', { 'map-dropdown__toggler_active': categoryItem.type === currentCategory.type }]"
+          :class="['map-dropdown__toggler', { 'is-active': categoryItem.type === currentCategory.type }]"
           type="button"
           @click="handleCurrentCategory(categoryItem)"
         >
