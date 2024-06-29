@@ -6,6 +6,8 @@ const TERMINAL_KEY = 'terminal';
 const ADDRESS_KEY = 'address';
 const LOCATION_KEY = 'location';
 
+const DEFAULT_LOC = 'Москва'
+
 export {
   FILIAL_KEY,
   ATM_KEY,

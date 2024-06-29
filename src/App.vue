@@ -15,6 +15,11 @@
           placeholder="Город, район, улица..."
         />
       </div>
+      <div
+        :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
+      >
+        <div className="map-sidebar__list"><InfoCardList /></div><!-- ref={itemsListRef} -->
+      </div>
     </div>
     <MapModal
       modalTitle="Где будем искать?"
@@ -47,10 +52,11 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { FILIAL_KEY, LOCATION_KEY } from './utils/constants';
+  import { FILIAL_KEY, LOCATION_KEY, DEFAULT_LOC } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
+  import InfoCardList from './assets/icons/info-card-list.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
@@ -62,6 +68,12 @@
       MapModal,
       MapSearch,
       MapSelecter
+    },
+
+    data() {
+      return {
+        isMapVisible: true
+      };
     },
 
     computed: {
@@ -80,7 +92,7 @@
       ),
 
       currLocationCaption() {
-        return this.currentLocation ? this.currentLocation.location : 'Москва';
+        return this.currentLocation ? this.currentLocation.location : DEFAULT_LOC;
       },
 
       currLocationList() {
@@ -116,14 +128,14 @@
       currentLocation(data) {
         this.setCurrentItemsList({
           arr: this.itemsList,
-          [LOCATION_KEY]: data && data[LOCATION_KEY]
+          [LOCATION_KEY]: data ? data[LOCATION_KEY] : DEFAULT_LOC
         });
       },
       itemsList(arr) {
         this.setLocationList(arr);
         this.setCurrentItemsList({
           arr,
-          [LOCATION_KEY]: this.currentLocation && this.currentLocation[LOCATION_KEY]
+          [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC
         });
       },
       currentItemsList(arr) {

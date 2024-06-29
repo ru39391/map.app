@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { setLocation, handleLocationList } from '../../utils';
-import { LOCATION_KEY } from '../../utils/constants';
+import { LOCATION_KEY, DEFAULT_LOC } from '../../utils/constants';
 
 const useLocationStore = defineStore({
   id: 'location',
@@ -43,7 +43,7 @@ const useLocationStore = defineStore({
       }
 
       try {
-        const { isSucceed, data } = await setLocation(value || 'Москва');
+        const { isSucceed, data } = await setLocation(value || DEFAULT_LOC);
 
         if(isSucceed) {
           this.currentLocation = data;
