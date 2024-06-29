@@ -56,7 +56,7 @@
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
-  import InfoCardList from './assets/icons/info-card-list.vue';
+  import InfoCardList from './info-card-list.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
@@ -64,6 +64,7 @@
 
   export default {
     components: {
+      InfoCardList,
       LocationIcon,
       MapModal,
       MapSearch,

@@ -30,7 +30,7 @@
     margin: 0 0 28px;
 }
 
-.info-card__item {   
+.info-card__item {
     &.info-card__item_type_row {
         @extend %d-flex-ai-center;
         gap: 0 14px;

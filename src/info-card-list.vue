@@ -5,24 +5,26 @@
     class="info-card"
   >
     <div class="info-card__header">
-      <div class="info-card__category">{currentCategory && currentCategory.category}</div>
-      <div class="info-card__caption">{item.name}</div>
+      <div class="info-card__category" v-if="currentCategory">{{ currentCategory.category }}</div>
+      <div class="info-card__caption">{{ item.name }}</div>
     </div>
     <div class="info-card__wrapper">
       <div class="info-card__item info-card__item_fw_bold info-card__item_color_primary" v-if="false">Открыто до 20:00</div>
       <div class="info-card__item info-card__item_fw_bold info-card__item_type_row">
-        {item.address}
+        {{ item.address }}
         <button class="info-card__item-toggler" type="button"><CopyIcon /></button>
       </div>
-      <template v-if="Array.isArray(item.work_mode) && item.work_mode.length">
-        <div
+      <div
+        v-if="Array.isArray(item.work_mode) && item.work_mode.length"
+        class="info-card__item"
+      >
+        <template
           v-for="(value, index) in item.work_mode"
           :key="index"
-          class="info-card__item"
         >
-          {{ value }}
-        </div>
-      </template>
+          {{ value }}<br />
+        </template>
+      </div>
     </div>
     <a class="info-card__readmore" href="#">Подробнее</a>
     <div class="info-card__footer">
@@ -56,7 +58,7 @@
         </template>
         <div class="info-card__content" v-if="item.director">
           <div class="info-card__item info-card__item_type_subtitle">Директор филиала:</div>
-          <div class="info-card__item info-card__item_fs_sm">{item.director}</div>
+          <div class="info-card__item info-card__item_fs_sm">{{ item.director }}</div>
         </div>
       </div>
       <div class="info-card__section">
@@ -64,12 +66,13 @@
         <template v-if="Array.isArray(item.fl) && item.fl.length">
           <div class="info-card__content">
             <div class="info-card__item info-card__item_type_subtitle">Обслуживание физических лиц</div>
-            <div
-              v-for="(value, index) in item.fl"
-              :key="index"
-              class="info-card__item info-card__item_fs_sm"
-            >
-              {{ value }}
+            <div class="info-card__item info-card__item_fs_sm">
+              <template
+                v-for="(value, index) in item.fl"
+                :key="index"
+              >
+                {{ value }}<br />
+              </template>
             </div>
           </div>
         </template>
@@ -92,6 +95,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
+  import { useCategoryStore } from './store/modules/category';
   import CopyIcon from './assets/icons/copy-icon.vue';
 
   export default {

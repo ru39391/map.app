@@ -49,7 +49,7 @@ const useLocationStore = defineStore({
           this.currentLocation = data;
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
   },
