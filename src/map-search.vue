@@ -8,7 +8,7 @@
       class="map-search__field"
       type="text"
       :placeholder="placeholder"
-      v-model="location"
+      v-model="searchValue"
       @focus="setSearchInputFocused(true)"
       @blur="setSearchInputFocused(false)"
     />
@@ -24,7 +24,7 @@
           :key="index"
           class="map-dropdown__item"
           type="button"
-          @click="handleResultItem(resultItem)"
+          @click="resetResultList(resultItem)"
         >
           <PinIcon class="map-dropdown__icon" />
           <span class="map-dropdown__caption">{{ resultItem[param] }}</span>
@@ -32,13 +32,14 @@
       </div>
     </div>
   </form>
-  <template v-if="location && !resultList.length">{{ noResultMess }}</template>
+  <template v-if="searchValue && !resultList.length">{{ noResultMess }}</template>
 </template>
 
 <script>
   import { mapActions, mapState } from 'pinia';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
+  import { LOCATION_KEY } from './utils/constants';
   import PinIcon from './assets/icons/pin-icon.vue';
   import SearchIcon from './assets/icons/search-icon.vue';
 
@@ -52,7 +53,7 @@
 
     data() {
       return {
-        location: '',
+        searchValue: '',
         resultList: [],
         isSearchInputFocused: false
       };
@@ -84,7 +85,7 @@
       ...mapState(useModalStore, ['isModalOpen']),
 
       isResultListOpen() {
-        return this.location && this.resultList.length;
+        return this.searchValue && this.resultList.length;
       }
     },
 
@@ -108,26 +109,48 @@
       },
 
       handleResultItem(data) {
-        if(data.id) {
-          const item = document.querySelector(`#card-${data.id}`);
+        const item = data.id ? document.querySelector(`#card-${data.id}`) : null;
 
+        if(data.id) {
           item.scrollIntoView({ behavior: 'smooth' });
         } else {
           this.setModalOpen(false);
 
-          if(this.currentLocation && value !== this.currentLocation.location) this.setCurrentLocation(value);
+          if(this.currentLocation && data[LOCATION_KEY] !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(data[LOCATION_KEY]);
+        }
+
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            data
+              ? resolve({
+                isSucceed: true,
+                ...(data.id ? { item } : { ...data })
+              })
+              : reject({ isSucceed: false, message: 'Некорректный формат данных' });
+          }, 200);
+        });
+      },
+
+      async resetResultList(data) {
+        try {
+          const { isSucceed } = await this.handleResultItem(data);
+
+          if(isSucceed) {
+            this.resultList = [];
+          }
+        } catch (error) {
+          console.error(error);
         }
       }
     },
 
     watch: {
-      location(value) {
+      searchValue(value) {
         this.handleChange(value);
       },
 
       isModalOpen() {
-        this.location = '';
-        this.resultList = [];
+        this.searchValue = '';
       }
     },
   };

@@ -96,7 +96,7 @@
       ),
 
       currLocationCaption() {
-        return this.currentLocation ? this.currentLocation.location : DEFAULT_LOC;
+        return this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC;
       },
 
       currLocationList() {
@@ -124,7 +124,7 @@
       handleCurrLocation(value) {
         this.setModalOpen(false);
 
-        if(this.currentLocation && value !== this.currentLocation.location) this.setCurrentLocation(value);
+        if(this.currentLocation && value !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(value);
       }
     },
 
