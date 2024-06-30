@@ -118,12 +118,6 @@
       ...mapActions(useCategoryStore, ['setCurrentRefsList'])
     },
 
-    watch: {
-      currentRefsList(arr) {
-        //console.log({ refs: arr });
-      },
-    },
-
     mounted() {
       //this.setCurrentRefsList(this.currentItemsList.map(({ id }) => ({ id, target: this.$refs[`card-${id}`]})));
     }

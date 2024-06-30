@@ -8,6 +8,7 @@
         </button>
         <div class="map-filter-holder">
           <MapSelecter />
+          <MapFilter />
         </div>
         <MapSearch
           :arr="currentItemsList"
@@ -58,6 +59,7 @@
   import { useModalStore } from './store/modules/modal';
   import InfoCardList from './info-card-list.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
+  import MapFilter from './map-filter.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
   import MapSelecter from './map-selecter.vue';
@@ -66,6 +68,7 @@
     components: {
       InfoCardList,
       LocationIcon,
+      MapFilter,
       MapModal,
       MapSearch,
       MapSelecter
