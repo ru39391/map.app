@@ -96,7 +96,7 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'pinia';
+  import { mapState } from 'pinia';
   import { useCategoryStore } from './store/modules/category';
   import CopyIcon from './assets/icons/copy-icon.vue';
 
@@ -110,16 +110,8 @@
     computed: {
       ...mapState(
         useCategoryStore,
-        ['currentItemsList', 'currentRefsList', 'currentCategory']
+        ['currentItemsList', 'currentCategory']
       ),
     },
-
-    methods: {
-      ...mapActions(useCategoryStore, ['setCurrentRefsList'])
-    },
-
-    mounted() {
-      //this.setCurrentRefsList(this.currentItemsList.map(({ id }) => ({ id, target: this.$refs[`card-${id}`]})));
-    }
   };
 </script>

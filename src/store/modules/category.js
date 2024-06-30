@@ -28,8 +28,9 @@ const useCategoryStore = defineStore({
     isCategoryDropdownOpen: false
   }),
   actions: {
-    async fetchCategoryData(key) {
-      console.log({api: `/api/branches/${key}`});
+    async fetchCategoryData(key, params = '') {
+      console.log({params});
+      console.log({api: `/api/branches/${key}${params}`});
       this.isCategoryListLoading = true;
 
       try {

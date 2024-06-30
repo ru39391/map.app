@@ -21,6 +21,7 @@
 <script>
   import { mapActions, mapState } from 'pinia';
   import { loadYmap, YandexMap, YandexMarker } from 'vue-yandex-maps';
+  import { DEFAULT_COORDS } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import PinIcon from './assets/icons/pin-icon.vue';
@@ -58,7 +59,7 @@
       ...mapState(useLocationStore, ['currentLocation']),
 
       currentCoords() {
-        return this.currentLocation ? this.currentLocation.coords : [];
+        return this.currentLocation ? this.currentLocation.coords : DEFAULT_COORDS;
       },
 
       mapMarkersList() {
@@ -67,24 +68,11 @@
     },
 
     methods: {
-      async initMap() {
-        try {
-          const res = await loadYmap();
-          console.log({res});
-        } catch (error) {
-          console.log(error);
-        }
-      },
-
       scrollToItemCard(id) {
         const item = document.querySelector(`#card-${id}`);
 
         item.scrollIntoView({ behavior: 'smooth' });
       }
-    },
-
-    mounted() {
-      //this.initMap();
     },
   };
 </script>
