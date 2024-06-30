@@ -1,5 +1,6 @@
 <template>
   <div class="map-wrapper h-100">
+    <MapSection :isMapVisible="isMapVisible" />
     <div class="map-sidebar">
       <div class="map-sidebar__header">
         <button class="map-location-toggler" type="button" @click="setModalOpen(true)">
@@ -62,6 +63,7 @@
   import MapFilter from './map-filter.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
+  import MapSection from './map-section.vue';
   import MapSelecter from './map-selecter.vue';
 
   export default {
@@ -71,6 +73,7 @@
       MapFilter,
       MapModal,
       MapSearch,
+      MapSection,
       MapSelecter
     },
 
