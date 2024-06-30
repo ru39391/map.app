@@ -1,38 +1,34 @@
 <template>
-  <div id="map" :class="['map-section', { 'is-hidden': !isMapVisible }]">
-    <YandexMap
-      :coordinates="currentCoords"
-      :controls="[]"
-      class="map-section__container"
-      zoom="13"
-    >
-      <YandexMarker
-        v-for="item in mapMarkersList"
-        :key="item.id"
-        :marker-id="item.id"
-        :coordinates="item.coords"
-        :options="markerOptions"
-        @click="scrollToItemCard(item.id)"
-      />
-    </YandexMap>
-  </div>
+  <YandexMap
+    :coordinates="currentCoords"
+    :controls="[]"
+    class="map-section__container"
+    zoom="13"
+  >
+    <YandexMarker
+      v-for="item in mapMarkersList"
+      :key="item.id"
+      :marker-id="item.id"
+      :coordinates="item.coords"
+      :options="markerOptions"
+      @click="scrollToItemCard(item.id)"
+    />
+  </YandexMap>
 </template>
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { loadYmap, YandexMap, YandexMarker } from 'vue-yandex-maps';
+  import { YandexMap, YandexMarker } from 'vue-yandex-maps';
   import { DEFAULT_COORDS } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
-  import PinIcon from './assets/icons/pin-icon.vue';
 
   export default {
-    name: 'map-section',
+    name: 'main-map',
 
     components: {
       YandexMap,
-      YandexMarker,
-      PinIcon
+      YandexMarker
     },
 
     data() {
@@ -44,13 +40,6 @@
           iconImageOffset: [-25, -72]
         }
       };
-    },
-
-    props: {
-      isMapVisible: {
-        type: Boolean,
-        required: true
-      }
     },
 
     computed: {
