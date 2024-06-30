@@ -14,6 +14,14 @@
   }
 }
 
+.map-dropdown__icon {
+  @include fw(16px);
+}
+
+.map-dropdown__caption {
+  text-align: left;
+}
+
 .map-dropdown__wrapper {
   display: none;
   gap: 8px 0;

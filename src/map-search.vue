@@ -26,8 +26,8 @@
           type="button"
           @click="handleResultItem(resultItem)"
         >
-          <PinIcon />
-          <span class="map-dropdown__caption">{{ resultItem }}</span>
+          <PinIcon class="map-dropdown__icon" />
+          <span class="map-dropdown__caption">{{ resultItem[param] }}</span>
         </button>
       </div>
     </div>
@@ -99,20 +99,25 @@
 
       handleChange(value) {
         const currValue = value.toLowerCase();
-        const handledArr = this.arr.filter(item => {
+
+        this.resultList = this.arr.filter(item => {
           const itemValue = item[this.param].toLowerCase();
 
           return itemValue.includes(currValue);
         });
-
-        this.resultList = handledArr.map(item => item[this.param]);
       },
 
-      handleResultItem(value) {
-        this.setModalOpen(false);
+      handleResultItem(data) {
+        if(data.id) {
+          const item = document.querySelector(`#card-${data.id}`);
 
-        if(this.currentLocation && value !== this.currentLocation.location) this.setCurrentLocation(value);
-      },
+          item.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          this.setModalOpen(false);
+
+          if(this.currentLocation && value !== this.currentLocation.location) this.setCurrentLocation(value);
+        }
+      }
     },
 
     watch: {

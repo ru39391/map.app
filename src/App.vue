@@ -138,9 +138,6 @@
           arr,
           [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC
         });
-      },
-      currentItemsList(arr) {
-        console.log(arr);
       }
     },
 
@@ -148,6 +145,6 @@
       this.fetchCategoryData(FILIAL_KEY);
       this.setCurrentCategory(this.categoryList[0]);
       this.setCurrentLocation();
-    }
+    },
   }
 </script>

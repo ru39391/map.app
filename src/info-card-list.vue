@@ -2,6 +2,8 @@
   <div
     v-for="item in currentItemsList"
     :key="item.id"
+    :ref="`card-${item.id}`"
+    :id="`card-${item.id}`"
     class="info-card"
   >
     <div class="info-card__header">
@@ -108,14 +110,22 @@
     computed: {
       ...mapState(
         useCategoryStore,
-        [
-          'currentItemsList',
-          'currentCategory'
-        ]
+        ['currentItemsList', 'currentRefsList', 'currentCategory']
       ),
     },
 
     methods: {
+      ...mapActions(useCategoryStore, ['setCurrentRefsList'])
+    },
+
+    watch: {
+      currentRefsList(arr) {
+        //console.log({ refs: arr });
+      },
+    },
+
+    mounted() {
+      //this.setCurrentRefsList(this.currentItemsList.map(({ id }) => ({ id, target: this.$refs[`card-${id}`]})));
     }
   };
 </script>
