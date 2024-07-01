@@ -24,7 +24,7 @@
         <template v-if="item.workingStatus.isWork">Открыто</template>
         <template v-else>Закрыто</template>
 
-        <template v-if="item.workingStatus.time">до {{ item.workingStatus.time }}</template>
+        <template v-if="item.workingStatus.time"> до {{ item.workingStatus.time }}</template>
       </div>
       <div class="info-card__item info-card__item_fw_bold info-card__item_type_row">
         {{ item.address }}

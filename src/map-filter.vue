@@ -234,12 +234,35 @@
         this.fetchCategoryData(this.currentCategory ? this.currentCategory.type : this.categoryList[0].type, params);
       },
 
+      updatePointsFilterData(boundedBy) {
+        if(!this.pointsFilterData) {
+          return {};
+        }
+
+        return Object.values(this.pointsFilterData).reduce(
+          (acc, item, index) => ({ ...acc, [Object.keys(this.pointsFilterData)[index]]: { ...item, boundedBy } }), {}
+        );
+      },
+
       handlePointsFilterData(data) {
         const { key, target } = data;
+        const { boundedBy } = this.currentLocation;
+
+        const pointsFilterData = this.updatePointsFilterData(boundedBy);
 
         this.pointsFilterData = this.pointsFilterData
-          ? { ...this.pointsFilterData, [key]: { ...data, checked: target.checked, boundedBy: this.currentLocation.boundedBy } }
-          : { [key]: { ...data, checked: target.checked, boundedBy: this.currentLocation.boundedBy } };
+          ? { ...pointsFilterData, [key]: { ...data, checked: target.checked, boundedBy } }
+          : { [key]: { ...data, checked: target.checked, boundedBy } };
+      },
+
+      updatePointsList({ boundedBy }) {
+        if(!this.isPointsListVisible) {
+          return;
+        }
+
+        const pointsFilterData = this.updatePointsFilterData(boundedBy);
+
+        this.fetchPointsData(pointsFilterData);
       }
     },
 
@@ -251,6 +274,10 @@
 
       isCategoryListLoading(value) {
         if(!value) this.setFilterDropdownOpen(false);
+      },
+
+      currentLocation(data) {
+        this.updatePointsList(data);
       },
 
       filterData(data) {
