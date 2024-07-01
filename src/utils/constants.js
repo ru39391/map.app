@@ -7,6 +7,13 @@ const FILTER_KEY = 'filter';
 const ADDRESS_KEY = 'address';
 const LOCATION_KEY = 'location';
 
+const BEELINE_KEY = 'beeline';
+const MTS_KEY = 'mts';
+const KH_KEY = 'kh';
+const KARI_KEY = 'kari';
+const LXNET_KEY = 'lxnet';
+const RUPOST_KEY = 'rupost';
+
 const DEFAULT_LOC = 'Москва';
 const DEFAULT_COORDS = [55.755864, 37.617698];
 
@@ -20,6 +27,12 @@ export {
   FILTER_KEY,
   ADDRESS_KEY,
   LOCATION_KEY,
+  BEELINE_KEY,
+  MTS_KEY,
+  KH_KEY,
+  KARI_KEY,
+  LXNET_KEY,
+  RUPOST_KEY,
   DEFAULT_LOC,
   DEFAULT_COORDS,
   API_URL

@@ -28,6 +28,10 @@
     @extend %d-flex-column;
     gap: 28px 0;
     margin: 0 0 28px;
+
+    &.info-card__wrapper_mb_none {
+      margin-bottom: 0;
+    }
 }
 
 .info-card__item {

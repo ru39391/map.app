@@ -17,13 +17,12 @@ const useCategoryStore = defineStore({
     isCategoryListLoading: false,
     itemsList: [],
     currentItemsList: [],
-    currentRefsList: [],
     filterList: [],
     categoryList: [
       {type: FILIAL_KEY, caption: 'Отделения', category: 'Филиал'},
       {type: ATM_KEY, caption: 'Банкоматы', category: 'Банкомат'},
-      {type: POINT_KEY, caption: 'Точки погашения кредита', category: ''},
-      {type: TERMINAL_KEY, caption: 'Терминалы', category: 'Банкомат'}
+      {type: POINT_KEY, caption: 'Точки погашения кредита', category: 'Точка погашения кредита'},
+      {type: TERMINAL_KEY, caption: 'Терминалы', category: 'Терминал'}
     ],
     currentCategory: null,
   }),
@@ -114,9 +113,6 @@ const useCategoryStore = defineStore({
       const currentItemsArr = handleLocationList(arr, 'id').filter(item => item[LOCATION_KEY] === data[LOCATION_KEY]);
 
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
-    },
-    setCurrentRefsList(arr) {
-      this.currentRefsList = arr;
     },
     setCurrentCategory(data) {
       this.currentCategory = data;

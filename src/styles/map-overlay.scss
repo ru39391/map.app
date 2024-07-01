@@ -48,6 +48,10 @@
   width: 100%;
 }
 
+.map-preloader {
+  flex: 0 0 180px;
+}
+
 @keyframes show {
   0% {
     opacity: 0;

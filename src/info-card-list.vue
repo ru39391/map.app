@@ -10,8 +10,22 @@
       <div class="info-card__category" v-if="currentCategory">{{ currentCategory.category }}</div>
       <div class="info-card__caption">{{ item.name }}</div>
     </div>
-    <div class="info-card__wrapper">
-      <div class="info-card__item info-card__item_fw_bold info-card__item_color_primary" v-if="false">Открыто до 20:00</div>
+    <div
+      :class="['info-card__wrapper', { 'info-card__wrapper_mb_none': isPointsListVisible }]"
+    >
+      <div
+        :class="[
+          'info-card__item info-card__item_fw_bold',
+          { 'info-card__item_color_primary': item.workingStatus && item.workingStatus.isWork },
+          { 'info-card__item_color_danger': item.workingStatus && !item.workingStatus.isWork }
+        ]"
+        v-if="item.workingStatus"
+      >
+        <template v-if="item.workingStatus.isWork">Открыто</template>
+        <template v-else>Закрыто</template>
+
+        <template v-if="item.workingStatus.time">до {{ item.workingStatus.time }}</template>
+      </div>
       <div class="info-card__item info-card__item_fw_bold info-card__item_type_row">
         {{ item.address }}
         <button class="info-card__item-toggler" type="button"><CopyIcon /></button>
@@ -28,7 +42,7 @@
         </template>
       </div>
     </div>
-    <a class="info-card__readmore" href="#">Подробнее</a>
+    <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
     <div class="info-card__footer">
       <a class="map-filter-btn" href="#">маршрут от меня</a>
       <div class="info-card__section">
@@ -98,6 +112,7 @@
 <script>
   import { mapState } from 'pinia';
   import { useCategoryStore } from './store/modules/category';
+  import { POINT_KEY } from './utils/constants';
   import CopyIcon from './assets/icons/copy-icon.vue';
 
   export default {
@@ -112,14 +127,19 @@
         useCategoryStore,
         ['currentItemsList', 'currentCategory']
       ),
+
+      isPointsListVisible() {
+        return this.currentCategory && this.currentCategory.type === POINT_KEY;
+      }
     },
 
     watch: {
       currentItemsList(arr) {
-        console.log({ current: arr });
+        console.log('Cписок карточек обновлён', arr);
       },
-      currentCategory(value) {
-        console.log({ value });
+
+      currentCategory(data) {
+        console.log('Категория обновлена', data);
       }
     }
   };

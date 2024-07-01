@@ -96,7 +96,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY } from './utils/constants';
+  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import CheckedIcon from './assets/icons/checked-icon.vue';
@@ -120,19 +120,19 @@
         pointsFilterList: [{
           title: 'Золотая корона',
           params: [{
-            key: 'beeline',
+            key: [BEELINE_KEY],
             caption: 'Билайн',
             request: 'Салон Билайн'
           }, {
-            key: 'mts',
+            key: [MTS_KEY],
             caption: 'МТС',
             request: 'Салон МТС'
           }, {
-            key: 'kh',
+            key: [KH_KEY],
             caption: 'Ноу-Хау',
             request: 'Магазин ИОН'
           }, {
-            key: 'kari',
+            key: [KARI_KEY],
             caption: 'Kari Россия',
             request: 'Kari Россия'
           }],
@@ -152,7 +152,7 @@
         }, {
           title: 'Другие способы',
           params: [{
-            key: 'lxnet',
+            key: [LXNET_KEY],
             caption: 'Элекснет',
             request: 'Элекснет'
           }],
@@ -172,7 +172,7 @@
         }, {
           title: '',
           params: [{
-            key: 'rupost',
+            key: [RUPOST_KEY],
             caption: 'Почта Росии',
             request: 'Почта Росии'
           }],
@@ -246,6 +246,7 @@
     watch: {
       currentCategory() {
         this.filterData = null;
+        this.pointsFilterData = null;
       },
 
       isCategoryListLoading(value) {
@@ -253,11 +254,11 @@
       },
 
       filterData(data) {
-        console.log({ filterData: data});
+        console.log('Список параметров фильтра обновлён', data);
       },
 
       pointsFilterData(data) {
-        console.log({ pointsFilterData: data});
+        console.log('Список параметров фильтра точек погашения обновлён', data);
       }
     }
   };

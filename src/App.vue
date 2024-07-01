@@ -51,7 +51,7 @@
         </div>
       </template>
     </MapModal>
-    <div class="map-overlay" v-if="isCategoryListLoading"></div>
+    <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
   </div>
 </template>
 
@@ -63,6 +63,7 @@
   import { useModalStore } from './store/modules/modal';
   import InfoCardList from './info-card-list.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
+  import LoaderIcon from './assets/icons/loader-icon.vue';
   import MapFilter from './map-filter.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
@@ -73,6 +74,7 @@
     components: {
       InfoCardList,
       LocationIcon,
+      LoaderIcon,
       MapFilter,
       MapModal,
       MapSearch,
@@ -149,7 +151,7 @@
         });
       },
       itemsList(arr) {
-        console.log({arr});
+        console.log('Получили и обработали данные', arr);
         this.setLocationList({
           arr,
           category: this.currentCategoryKey,

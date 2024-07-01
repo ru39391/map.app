@@ -24,7 +24,7 @@ const handlePointsData = async ({ key, request, boundedBy }) => {
 
   try {
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
-    const searchRes = await ymapsRes.search(request, { results: 5, boundedBy });
+    const searchRes = await ymapsRes.search(request, { results: 10000, boundedBy });
     const resultsArr = searchRes.geoObjects.properties.get('resultsArray');
 
     //console.log(resultsArr.map(item => item.properties));
