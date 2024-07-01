@@ -17,11 +17,11 @@
         <button class="info-card__item-toggler" type="button"><CopyIcon /></button>
       </div>
       <div
-        v-if="Array.isArray(item.work_mode) && item.work_mode.length"
+        v-if="Array.isArray(item.workMode) && item.workMode.length"
         class="info-card__item"
       >
         <template
-          v-for="(value, index) in item.work_mode"
+          v-for="(value, index) in item.workMode"
           :key="index"
         >
           {{ value }}<br />
@@ -113,5 +113,14 @@
         ['currentItemsList', 'currentCategory']
       ),
     },
+
+    watch: {
+      currentItemsList(arr) {
+        console.log({ current: arr });
+      },
+      currentCategory(value) {
+        console.log({ value });
+      }
+    }
   };
 </script>

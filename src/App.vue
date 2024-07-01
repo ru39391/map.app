@@ -1,9 +1,6 @@
 <template>
   <div class="map-wrapper h-100">
-    <div :class="['map-section', { 'is-hidden': !isMapVisible }]">
-      <MainMap v-show="!isPointsMapVisible" />
-      <PointsMap v-show="isPointsMapVisible" />
-    </div>
+    <MapSection :isMapVisible="isMapVisible" />
     <div class="map-sidebar">
       <div class="map-sidebar__header">
         <button class="map-location-toggler" type="button" @click="setModalOpen(true)">
@@ -54,6 +51,7 @@
         </div>
       </template>
     </MapModal>
+    <div class="map-overlay" v-if="isCategoryListLoading"></div>
   </div>
 </template>
 
@@ -65,23 +63,21 @@
   import { useModalStore } from './store/modules/modal';
   import InfoCardList from './info-card-list.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
-  import MainMap from './main-map.vue';
   import MapFilter from './map-filter.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
+  import MapSection from './map-section.vue';
   import MapSelecter from './map-selecter.vue';
-  import PointsMap from './points-map.vue';
 
   export default {
     components: {
       InfoCardList,
       LocationIcon,
-      MainMap,
       MapFilter,
       MapModal,
       MapSearch,
-      MapSelecter,
-      PointsMap
+      MapSection,
+      MapSelecter
     },
 
     data() {
@@ -94,9 +90,11 @@
       ...mapState(
         useCategoryStore,
         [
+          'isCategoryListLoading',
           'itemsList',
           'currentItemsList',
-          'categoryList'
+          'categoryList',
+          'currentCategory'
         ]
       ),
 
@@ -111,10 +109,6 @@
 
       currLocationList() {
         return this.locationList.reduce((acc, { location }, index) => index < 6 ? [...acc, location] : acc, []);
-      },
-
-      isPointsMapVisible() {
-        return this.currentCategory && this.currentCategory.type === POINT_KEY;
       }
     },
 
@@ -146,21 +140,24 @@
       currentLocation(data) {
         this.setCurrentItemsList({
           arr: this.itemsList,
+          category: this.currentCategory ? this.currentCategory.type : FILIAL_KEY,
           [LOCATION_KEY]: data ? data[LOCATION_KEY] : DEFAULT_LOC
         });
       },
       itemsList(arr) {
-        this.setLocationList(arr);
+        console.log({arr});
+        this.setLocationList({ key: POINT_KEY, arr });
         this.setCurrentItemsList({
           arr,
-          [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC
+          category: this.currentCategory ? this.currentCategory.type : FILIAL_KEY,
+          [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC,
         });
       }
     },
 
     beforeMount() {
-      this.fetchCategoryData(FILIAL_KEY);
-      this.setCurrentCategory(this.categoryList[0]);
+      this.fetchCategoryData(POINT_KEY); // FILIAL_KEY
+      this.setCurrentCategory(this.categoryList[2]); //[0]
       this.setCurrentLocation();
     },
   }

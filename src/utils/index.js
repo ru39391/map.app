@@ -19,7 +19,7 @@ const fetchersData = {
   [TERMINAL_KEY]: async () => await fetchTerminalData(),
 }
 
-const handlePointsData = async ({ request, boundedBy }) => {
+const handlePointsData = async ({ key, request, boundedBy }) => {
   let data = {isSucceed: false, data: null};
 
   try {
@@ -27,14 +27,19 @@ const handlePointsData = async ({ request, boundedBy }) => {
     const searchRes = await ymapsRes.search(request, { results: 5, boundedBy });
     const resultsArr = searchRes.geoObjects.properties.get('resultsArray');
 
-    console.log(resultsArr.map(item => item.properties));
+    //console.log(resultsArr.map(item => item.properties));
 
     data = {
         isSucceed: true,
         data: resultsArr.map(item => ({
-          coords: item.geometry.getCoordinates(),
+          key,
+          id: item.properties.get('id'),
           name: item.properties.get('name'),
           address: item.properties.get('address'),
+          phone: item.properties.get('phoneNumbers'),
+          workingStatus: item.properties.get('workingStatus'),
+          workMode: [item.properties.get('workingTime')],
+          coords: item.geometry.getCoordinates(),
         }))
     };
   } catch (error) {

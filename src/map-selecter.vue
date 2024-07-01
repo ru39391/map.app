@@ -32,13 +32,18 @@
       ExpendMoreIcon
     },
 
+    data() {
+      return {
+        isCategoryDropdownOpen: false
+      }
+    },
+
     computed: {
       ...mapState(
         useCategoryStore,
         [
           'categoryList',
-          'currentCategory',
-          'isCategoryDropdownOpen'
+          'currentCategory'
         ]
       ),
 
@@ -52,10 +57,13 @@
         useCategoryStore,
         [
           'fetchCategoryData',
-          'setCurrentCategory',
-          'setCategoryDropdownOpen'
+          'setCurrentCategory'
         ]
       ),
+
+      setCategoryDropdownOpen(value) {
+        this.isCategoryDropdownOpen = value;
+      },
 
       handleCurrentCategory({type, caption, category}) {
         this.setCategoryDropdownOpen(false);

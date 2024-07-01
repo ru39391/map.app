@@ -53,7 +53,7 @@
             class="map-filter-btn"
             type="submit"
             :disabled="!pointsFilterData"
-            @click="setPointsList(pointsFilterData)"
+            @click="fetchPointsData(pointsFilterData)"
           >
             Применить
           </button>
@@ -115,7 +115,7 @@
     data() {
       return {
         filterData: null,
-        isFilterDropdownOpen: true,
+        isFilterDropdownOpen: false,
         pointsFilterData: null,
         pointsFilterList: [{
           title: 'Золотая корона',
@@ -203,6 +203,8 @@
         ]
       ),
 
+      ...mapState(useCategoryStore, ['isCategoryListLoading']),
+
       ...mapState(useLocationStore, ['currentLocation']),
 
       isPointsListVisible() {
@@ -211,9 +213,7 @@
     },
 
     methods: {
-      ...mapActions(useCategoryStore, ['fetchCategoryData']),
-
-      ...mapActions(useLocationStore, ['setPointsList']),
+      ...mapActions(useCategoryStore, ['fetchCategoryData', 'fetchPointsData']),
 
       setFilterDropdownOpen(value) {
         this.isFilterDropdownOpen = value;
@@ -248,12 +248,16 @@
         this.filterData = null;
       },
 
+      isCategoryListLoading(value) {
+        if(!value) this.setFilterDropdownOpen(false);
+      },
+
       filterData(data) {
-        console.log(data);
+        console.log({ filterData: data});
       },
 
       pointsFilterData(data) {
-        console.log(data);
+        console.log({ pointsFilterData: data});
       }
     }
   };

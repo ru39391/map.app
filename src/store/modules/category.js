@@ -4,10 +4,11 @@ import {
   ATM_KEY,
   POINT_KEY,
   TERMINAL_KEY,
+  FILTER_KEY,
   LOCATION_KEY
 } from '../../utils/constants';
 
-import { fetchersData, handleLocationList } from '../../utils';
+import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
 import { fetchFilterData } from '../../utils/fetchFilterData';
 
 const useCategoryStore = defineStore({
@@ -25,42 +26,52 @@ const useCategoryStore = defineStore({
       {type: TERMINAL_KEY, caption: 'Терминалы', category: 'Банкомат'}
     ],
     currentCategory: null,
-    isCategoryDropdownOpen: false
   }),
   actions: {
     async fetchCategoryData(key, params = '') {
-      console.log({params});
-      console.log({api: `/api/branches/${key}${params}`});
+      this.itemsList = [];
+      this.filterList = [];
       this.isCategoryListLoading = true;
 
       if(key === POINT_KEY) {
-        this.itemsList = [];
-        this.filterList = [];
         this.isCategoryListLoading = false;
         return;
       }
 
       try {
-        const [ filtersData, {data: itemsArr, success} ] = await Promise.all([fetchFilterData(), fetchersData[key]()]);
+        const [ filtersData, {data: itemsData, success} ] = await Promise.all([fetchFilterData(), fetchersData[key]()]);
+        /*
+        const [
+          { data: filtersData },
+          { data: itemsData }
+        ] = await Promise.all([
+          `${API_URL}${FILTER_KEY}/`,
+          `${API_URL}${key}${params}`,
+        ].map((url) => axios.get(url)));
+
+        console.log({filtersData});
+        console.log({itemsData});
+        */
 
         if(filtersData && success) {
-          const items = itemsArr.map(data => {
+        //if (filtersData && itemsData.success) {
+          const items = itemsData.map(data => {
             const {
               name,
               address,
-              work_mode
+              workMode
             } = {
               name: data.name,
               address: data.address,
-              work_mode: data.work_mode
+              workMode: data.work_mode
             };
-            const workModeArr = work_mode.split('<br/><b>');
+            const workModeArr = workMode.split('<br/><b>');
 
             return {
               ...data,
               name: name.replace(/&quot;/g, ''),
               address: address.replace(/&quot;/g, ''),
-              work_mode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item)
+              workMode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item)
             };
           });
 
@@ -70,11 +81,36 @@ const useCategoryStore = defineStore({
       } catch (error) {
         console.error(error);
       } finally {
+        console.log({params, api: `/api/branches/${key}${params}`});
+        this.isCategoryListLoading = false;
+      }
+    },
+    async fetchPointsData(data) {
+      const paramsArr = Object.values(data).filter(({ checked }) => checked);
+
+      this.itemsList = [];
+      this.isCategoryListLoading = true;
+
+      try {
+        const resultArr = await Promise.all(
+          paramsArr.map(({ key, request, boundedBy }) => handlePointsData({ key, request, boundedBy }))
+        );
+
+        this.itemsList =  resultArr.reduce((acc, item) => Object.values(item)[0] ? [...acc, ...Object.values(item)[1]] : acc, []);
+      } catch (error) {
+        console.error(error);
+      } finally {
         this.isCategoryListLoading = false;
       }
     },
     setCurrentItemsList(data) {
-      const { arr } = data;
+      const { arr, category } = data;
+
+      if(category === POINT_KEY) {
+        this.currentItemsList = arr;
+        return;
+      }
+
       const currentItemsArr = handleLocationList(arr, 'id').filter(item => item[LOCATION_KEY] === data[LOCATION_KEY]);
 
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
@@ -84,9 +120,6 @@ const useCategoryStore = defineStore({
     },
     setCurrentCategory(data) {
       this.currentCategory = data;
-    },
-    setCategoryDropdownOpen(value) {
-      this.isCategoryDropdownOpen = value;
     }
   },
 });
