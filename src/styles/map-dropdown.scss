@@ -49,11 +49,45 @@
   @extend %d-flex-column;
 }
 
+.map-dropdown__section {
+  width: 100%;
+  margin: 0 0 20px;
+}
+
+.map-dropdown__title {
+  @include fs-lh(24px,28px);
+  font-weight: 500;
+  margin: 0 0 16px;
+}
+
 .map-dropdown__list {
   @extend %d-flex-column;
   width: 100%;
   gap: 12px 0;
   margin: 0 0 20px;
+
+  &.map-dropdown__list_mb_min {
+    margin: 0 0 8px;
+  }
+}
+
+.map-dropdown__desc {
+  @extend %d-flex-column;
+  @include fs-lh(16px,18px);
+  gap: 8px 0;
+  padding: 12px;
+  border-radius: 16px;
+  background-color: #f7f7f7;
+}
+
+.map-dropdown__desc-caption {
+  display: inline-block;
+  margin: 0 6px 0 0;
+}
+
+.map-dropdown__desc-value {
+  display: inline;
+  color: #8c8c8c;
 }
 
 .map-dropdown__toggler {

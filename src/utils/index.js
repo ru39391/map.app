@@ -19,18 +19,47 @@ const fetchersData = {
   [TERMINAL_KEY]: async () => await fetchTerminalData(),
 }
 
+const handlePointsData = async ({ request, boundedBy }) => {
+  let data = {isSucceed: false, data: null};
+
+  try {
+    const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
+    const searchRes = await ymapsRes.search(request, { results: 5, boundedBy });
+    const resultsArr = searchRes.geoObjects.properties.get('resultsArray');
+
+    console.log(resultsArr.map(item => item.properties));
+
+    data = {
+        isSucceed: true,
+        data: resultsArr.map(item => ({
+          coords: item.geometry.getCoordinates(),
+          name: item.properties.get('name'),
+          address: item.properties.get('address'),
+        }))
+    };
+  } catch (error) {
+    console.error(error);
+  }
+
+  console.log('handlePointsData: ', data);
+
+  return data;
+}
+
 const handleLocationData = async (value) => {
   let data = {isSucceed: false, data: null};
 
   try {
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
-    const geocodeRes = await ymapsRes.geocode(value);
+    const geocodeRes = await ymapsRes.geocode(value, { results: 1 });
+    const geoObject = geocodeRes.geoObjects.get(0);
 
     data = {
         isSucceed: true,
         data: {
           [LOCATION_KEY]: value,
-          coords: geocodeRes.geoObjects.get(0).geometry.getCoordinates()
+          coords: geoObject.geometry.getCoordinates(),
+          boundedBy: geoObject.properties.get('boundedBy')
         }
     };
   } catch (error) {
@@ -91,5 +120,6 @@ const handleLocationList = (arr, key = '') => arr.reduce(
 export {
   fetchersData,
   setLocation,
-  handleLocationList
+  handleLocationList,
+  handlePointsData
 };

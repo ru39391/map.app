@@ -33,6 +33,13 @@ const useCategoryStore = defineStore({
       console.log({api: `/api/branches/${key}${params}`});
       this.isCategoryListLoading = true;
 
+      if(key === POINT_KEY) {
+        this.itemsList = [];
+        this.filterList = [];
+        this.isCategoryListLoading = false;
+        return;
+      }
+
       try {
         const [ filtersData, {data: itemsArr, success} ] = await Promise.all([fetchFilterData(), fetchersData[key]()]);
 

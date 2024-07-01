@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
-import { setLocation, handleLocationList } from '../../utils';
+import { setLocation, handleLocationList, handlePointsData } from '../../utils';
 import { LOCATION_KEY, DEFAULT_LOC } from '../../utils/constants';
 
 const useLocationStore = defineStore({
   id: 'location',
   state: () => ({
     locationList: [],
-    locationResultList: null,
-    currentLocation: null
+    currentLocation: null,
+    pointsList: null
   }),
   actions: {
     setLocationList(arr) {
@@ -32,7 +32,16 @@ const useLocationStore = defineStore({
         return 0;
       })
     },
-    setLocationResultList(value) {
+    async setPointsList(data) {
+      const paramsArr = Object.values(data).filter(({ checked }) => checked);
+
+      try {
+        const resultArr = await Promise.all(paramsArr.map(({ request, boundedBy }) => handlePointsData({ request, boundedBy })));
+
+        console.log(resultArr);
+      } catch (error) {
+        console.error(error);
+      }
     },
     async setCurrentLocation(value = '') {
       const locationData = localStorage.getItem(LOCATION_KEY);
