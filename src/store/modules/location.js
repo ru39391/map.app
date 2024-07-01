@@ -9,8 +9,8 @@ const useLocationStore = defineStore({
     currentLocation: null,
   }),
   actions: {
-    setLocationList({ key, arr }) {
-      if(key === POINT_KEY) {
+    setLocationList({ arr, category }) {
+      if(category === POINT_KEY) {
         return;
       }
 

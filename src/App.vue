@@ -57,7 +57,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { FILIAL_KEY, POINT_KEY, LOCATION_KEY, DEFAULT_LOC } from './utils/constants';
+  import { LOCATION_KEY, DEFAULT_LOC } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
@@ -109,6 +109,10 @@
 
       currLocationList() {
         return this.locationList.reduce((acc, { location }, index) => index < 6 ? [...acc, location] : acc, []);
+      },
+
+      currentCategoryKey() {
+        return this.currentCategory ? this.currentCategory.type : this.categoryList[0].type
       }
     },
 
@@ -140,24 +144,27 @@
       currentLocation(data) {
         this.setCurrentItemsList({
           arr: this.itemsList,
-          category: this.currentCategory ? this.currentCategory.type : FILIAL_KEY,
+          category: this.currentCategoryKey,
           [LOCATION_KEY]: data ? data[LOCATION_KEY] : DEFAULT_LOC
         });
       },
       itemsList(arr) {
         console.log({arr});
-        this.setLocationList({ key: POINT_KEY, arr });
+        this.setLocationList({
+          arr,
+          category: this.currentCategoryKey,
+        });
         this.setCurrentItemsList({
           arr,
-          category: this.currentCategory ? this.currentCategory.type : FILIAL_KEY,
+          category: this.currentCategoryKey,
           [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC,
         });
       }
     },
 
     beforeMount() {
-      this.fetchCategoryData(POINT_KEY); // FILIAL_KEY
-      this.setCurrentCategory(this.categoryList[2]); //[0]
+      this.fetchCategoryData(this.categoryList[0].type); // POINT_KEY
+      this.setCurrentCategory(this.categoryList[0]); //[0]
       this.setCurrentLocation();
     },
   }

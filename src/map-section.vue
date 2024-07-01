@@ -52,7 +52,7 @@
     },
 
     computed: {
-      ...mapState(useCategoryStore, ['currentItemsList']),
+      ...mapState(useCategoryStore, ['currentItemsList', 'currentCategory']),
 
       ...mapState(useLocationStore, ['currentLocation']),
 
@@ -63,7 +63,9 @@
 
     methods: {
       setMapMarkersList(arr) {
-        this.mapMarkersList = POINT_KEY ? arr : arr.map(({ id, lon, lat }) => ({ id, coords: [Number(lon), Number(lat)] }));
+        this.mapMarkersList = this.currentCategory && this.currentCategory === POINT_KEY
+          ? arr
+          : arr.map(({ id, lon, lat }) => ({ id, coords: [Number(lon), Number(lat)] }));
       },
 
       scrollToItemCard(id) {
