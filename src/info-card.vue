@@ -1,11 +1,5 @@
 <template>
-  <div
-    v-for="item in currentItemsList"
-    :key="item.id"
-    :ref="`card-${item.id}`"
-    :id="`card-${item.id}`"
-    class="info-card"
-  >
+  <div class="info-card">
     <div class="info-card__header">
       <div class="info-card__category" v-if="currentCategory">{{ currentCategory.category }}</div>
       <div class="info-card__caption">{{ item.name }}</div>
@@ -43,7 +37,7 @@
       </div>
     </div>
     <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
-    <div class="info-card__footer">
+    <div class="info-card__footer" v-if="isCardFooterVisible">
       <a class="map-filter-btn" href="#">маршрут от меня</a>
       <div class="info-card__section">
         <div class="info-card__item info-card__item_type_title">О филиале</div>
@@ -110,37 +104,29 @@
 </template>
 
 <script>
-  import { mapState } from 'pinia';
-  import { useCategoryStore } from './store/modules/category';
-  import { POINT_KEY } from './utils/constants';
   import CopyIcon from './assets/icons/copy-icon.vue';
 
   export default {
-    name: 'info-card-list',
+    name: 'info-card',
 
     components: {
       CopyIcon
     },
 
-    computed: {
-      ...mapState(
-        useCategoryStore,
-        ['currentItemsList', 'currentCategory']
-      ),
-
-      isPointsListVisible() {
-        return this.currentCategory && this.currentCategory.type === POINT_KEY;
+    props: {
+      item: {
+        type: Object,
+        required: true
+      },
+      currentCategory: {
+        type: Object
+      },
+      isPointsListVisible: {
+        type: Boolean
+      },
+      isCardFooterVisible: {
+        type: Boolean
       }
     },
-
-    watch: {
-      currentItemsList(arr) {
-        console.log('Cписок карточек обновлён', arr);
-      },
-
-      currentCategory(data) {
-        console.log('Категория обновлена', data);
-      }
-    }
   };
 </script>

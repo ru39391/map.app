@@ -99,8 +99,8 @@
 }
 
 .info-card__footer {
-  //@extend %d-flex-column;
-  //@include mobileOnly;
+  @extend %d-flex-column;
+  @include mobileOnly;
   gap: 32px 0;
 
   display: none;

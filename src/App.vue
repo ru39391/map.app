@@ -23,7 +23,15 @@
         :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
       >
         <div className="map-sidebar__list">
-          <InfoCardList />
+          <InfoCard
+            v-for="item in currentItemsList"
+            :key="item.id"
+            :ref="`card-${item.id}`"
+            :id="`card-${item.id}`"
+            :item="item"
+            :currentCategory="currentCategory"
+            :isPointsListVisible="isPointsListVisible"
+          />
         </div><!-- ref={itemsListRef} -->
       </div>
     </div>
@@ -54,48 +62,43 @@
       </template>
     </MapModal>
   </div>
+  <MapSwitcher
+    :isMapVisible="isMapVisible"
+    @handleMapVisibility="setMapVisible"
+  />
+  <MapPanel v-if="false" />
   <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
-  <button class="map-switcher" type="button" @click="setMapVisible">
-    <template v-if="isMapVisible">
-      Список
-      <ListIcon />
-    </template>
-    <template v-else>
-      Карта
-      <MapIcon />
-    </template>
-  </button>
 </template>
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { LOCATION_KEY, DEFAULT_LOC } from './utils/constants';
+  import { POINT_KEY, LOCATION_KEY, DEFAULT_LOC } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
-  import InfoCardList from './info-card-list.vue';
-  import ListIcon from './assets/icons/list-icon.vue';
+  import InfoCard from './info-card.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import LoaderIcon from './assets/icons/loader-icon.vue';
-  import MapIcon from './assets/icons/map-icon.vue';
   import MapFilter from './map-filter.vue';
   import MapModal from './map-modal.vue';
+  import MapPanel from './map-panel.vue';
   import MapSearch from './map-search.vue';
   import MapSection from './map-section.vue';
   import MapSelecter from './map-selecter.vue';
+  import MapSwitcher from './map-switcher.vue';
 
   export default {
     components: {
-      InfoCardList,
-      ListIcon,
+      InfoCard,
       LocationIcon,
       LoaderIcon,
-      MapIcon,
       MapFilter,
       MapModal,
+      MapPanel,
       MapSearch,
       MapSection,
-      MapSelecter
+      MapSelecter,
+      MapSwitcher
     },
 
     data() {
@@ -131,6 +134,10 @@
 
       currentCategoryKey() {
         return this.currentCategory ? this.currentCategory.type : this.categoryList[0].type
+      },
+
+      isPointsListVisible() {
+        return this.currentCategory && this.currentCategory.type === POINT_KEY;
       }
     },
 
@@ -170,6 +177,7 @@
           [LOCATION_KEY]: data ? data[LOCATION_KEY] : DEFAULT_LOC
         });
       },
+
       itemsList(arr) {
         console.log('Получили и обработали данные', arr);
         this.setLocationList({
@@ -181,12 +189,20 @@
           category: this.currentCategoryKey,
           [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC,
         });
+      },
+
+      currentItemsList(arr) {
+        console.log('Cписок карточек обновлён', arr);
+      },
+
+      currentCategory(data) {
+        console.log('Категория обновлена', data);
       }
     },
 
     beforeMount() {
-      this.fetchCategoryData(this.categoryList[0].type); // POINT_KEY
-      this.setCurrentCategory(this.categoryList[0]); //[0]
+      this.fetchCategoryData(this.categoryList[0].type);
+      this.setCurrentCategory(this.categoryList[0]);
       this.setCurrentLocation();
     },
   }
