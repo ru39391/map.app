@@ -2,6 +2,10 @@
   @extend %d-flex-wrap;
   @extend %d-flex-ai-center;
   gap: 12px;
+
+  @media (max-width: 991px) {
+    gap: 8px;
+  }
 }
 
 .btn-list__item {
@@ -10,6 +14,11 @@
   border-radius: 100px;
   background-color: #fff;
   transition: all 0.3s ease;
+
+  @media (max-width: 991px) {
+    @include fs-lh(18px, 22px);
+    padding: 8px 12px;
+  }
 
   &:hover,
   &.is-active {
