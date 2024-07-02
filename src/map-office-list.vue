@@ -80,18 +80,20 @@
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
-  import InfoCard from './info-card.vue';
+  import InfoCard from './modules/info-card.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import LoaderIcon from './assets/icons/loader-icon.vue';
-  import MapFilter from './map-filter.vue';
-  import MapModal from './map-modal.vue';
-  import MapPanel from './map-panel.vue';
-  import MapSearch from './map-search.vue';
-  import MapSection from './map-section.vue';
-  import MapSelecter from './map-selecter.vue';
-  import MapSwitcher from './map-switcher.vue';
+  import MapFilter from './modules/map-filter.vue';
+  import MapModal from './modules/map-modal.vue';
+  import MapPanel from './modules/map-panel.vue';
+  import MapSearch from './modules/map-search.vue';
+  import MapSection from './modules/map-section.vue';
+  import MapSelecter from './modules/map-selecter.vue';
+  import MapSwitcher from './modules/map-switcher.vue';
 
   export default {
+    name: 'map-office-list',
+
     components: {
       InfoCard,
       LocationIcon,

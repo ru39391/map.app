@@ -22,9 +22,9 @@
 <script>
   import { mapActions, mapState } from 'pinia';
   import { YandexMap, YandexMarker } from 'vue-yandex-maps';
-  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS } from './utils/constants';
-  import { useCategoryStore } from './store/modules/category';
-  import { useLocationStore } from './store/modules/location';
+  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS } from '../utils/constants';
+  import { useCategoryStore } from '../store/modules/category';
+  import { useLocationStore } from '../store/modules/location';
 
   export default {
     name: 'map-section',

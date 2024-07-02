@@ -115,8 +115,8 @@
 
 <script>
   import { mapActions } from 'pinia';
-  import { useCategoryStore } from './store/modules/category';
-  import CopyIcon from './assets/icons/copy-icon.vue';
+  import { useCategoryStore } from '../store/modules/category';
+  import CopyIcon from '../assets/icons/copy-icon.vue';
 
   export default {
     name: 'info-card',

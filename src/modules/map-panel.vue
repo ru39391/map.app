@@ -15,9 +15,9 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { useCategoryStore } from './store/modules/category';
+  import { useCategoryStore } from '../store/modules/category';
   import InfoCard from './info-card.vue';
-  import CloseIcon from './assets/icons/close-icon.vue';
+  import CloseIcon from '../assets/icons/close-icon.vue';
 
   export default {
     name: 'map-panel',

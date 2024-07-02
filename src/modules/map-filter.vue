@@ -104,12 +104,12 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY } from './utils/constants';
-  import { useCategoryStore } from './store/modules/category';
-  import { useLocationStore } from './store/modules/location';
-  import CheckedIcon from './assets/icons/checked-icon.vue';
-  import CloseIcon from './assets/icons/close-icon.vue';
-  import FilterIcon from './assets/icons/filter-icon.vue';
+  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY } from '../utils/constants';
+  import { useCategoryStore } from '../store/modules/category';
+  import { useLocationStore } from '../store/modules/location';
+  import CheckedIcon from '../assets/icons/checked-icon.vue';
+  import CloseIcon from '../assets/icons/close-icon.vue';
+  import FilterIcon from '../assets/icons/filter-icon.vue';
 
   export default {
     name: 'map-filter',

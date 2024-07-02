@@ -22,8 +22,8 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { useCategoryStore } from './store/modules/category';
-  import ExpendMoreIcon from './assets/icons/expend-more-icon.vue';
+  import { useCategoryStore } from '../store/modules/category';
+  import ExpendMoreIcon from '../assets/icons/expend-more-icon.vue';
 
   export default {
     name: 'map-selecter',

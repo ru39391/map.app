@@ -16,8 +16,8 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { useModalStore } from './store/modules/modal';
-  import CloseIcon from './assets/icons/close-icon.vue';
+  import { useModalStore } from '../store/modules/modal';
+  import CloseIcon from '../assets/icons/close-icon.vue';
 
   export default {
     name: 'map-modal',

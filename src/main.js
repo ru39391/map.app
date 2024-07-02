@@ -5,9 +5,9 @@ import YmapPlugin from 'vue-yandex-maps'
 import './style.css'
 import './styles/_import.scss'
 
-import App from './App.vue'
+import MapOfficeList from './map-office-list.vue'
 
-const app = createApp(App);
+const app = createApp(MapOfficeList);
 const ymapConfig = {
   apiKey: 'b4274aa7-cd77-407a-bb75-ef7ca5534af0',
   suggestApiKey: '',
@@ -19,4 +19,4 @@ const ymapConfig = {
 
 app.use(piniaStore);
 app.use(YmapPlugin, ymapConfig)
-app.mount('#app')
+app.mount('#map-office-list')

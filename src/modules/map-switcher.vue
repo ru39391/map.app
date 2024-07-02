@@ -16,8 +16,8 @@
 </template>
 
 <script>
-  import ListIcon from './assets/icons/list-icon.vue';
-  import MapIcon from './assets/icons/map-icon.vue';
+  import ListIcon from '../assets/icons/list-icon.vue';
+  import MapIcon from '../assets/icons/map-icon.vue';
 
   export default {
     name: 'map-switcher',
