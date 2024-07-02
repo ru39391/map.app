@@ -8,6 +8,11 @@
   background-color: #fff;
   transition: all 0.3s ease;
 
+  @media (max-width: 991px) {
+    padding: 0 0 0 16px;
+    border-radius: 12px;
+  }
+
   &.is-active {
     border-color: #0d0d0d;
   }
@@ -20,6 +25,11 @@
   padding: 20px 24px 20px 0;
   color: #0d0d0d;
   background-color: rgba(0, 0, 0, 0);
+
+  @media (max-width: 991px) {
+    @include fs-lh(18px,22px);
+    padding: 16px 16px 16px 0;
+  }
 }
 
 .map-search__btn {

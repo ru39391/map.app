@@ -1,18 +1,26 @@
 .map-selecter {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .map-selecter__placeholder {
-    @extend %btn-default;
-    @extend %d-flex-ai-center;
-    width: 100%;
-    gap: 0 12px;
-    padding: 22px 24px;
-    justify-content: space-between;
-    border-radius: 16px;
-    background-color: #fff;
+  @extend %btn-default;
+  @extend %d-flex-ai-center;
+  width: 100%;
+  gap: 0 12px;
+  padding: 22px 24px;
+  text-align: left;
+  justify-content: space-between;
+  border-radius: 16px;
+  background-color: #fff;
+
+  @media (max-width: 991px) {
+    @include fs-lh(18px,22px);
+    height: 100%;
+    padding: 5px 16px;
+    border-radius: 12px;
+  }
 }
 
 .map-selecter__dropdown {
-    display: none;
+  display: none;
 }

@@ -12,7 +12,7 @@
       @focus="setSearchInputFocused(true)"
       @blur="setSearchInputFocused(false)"
     />
-    <div class="map-dropdown" v-if="isResultListOpen">
+    <div class="map-dropdown map-dropdown_type_search" v-if="isResultListOpen">
       <div
         :class="[
           'map-dropdown__wrapper',

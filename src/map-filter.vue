@@ -11,7 +11,7 @@
     >
       <div
         :class="[
-          'map-dropdown__wrapper map-dropdown__wrapper_type_filter',
+          'map-dropdown__wrapper',
           { 'map-dropdown__wrapper_height_min': isPointsListVisible },
           { 'is-active': isFilterDropdownOpen }
         ]"
