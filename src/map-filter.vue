@@ -1,7 +1,14 @@
 <template>
   <div class="map-filter"> <!--  ref={filterDropdownRef} -->
     <button class="map-filter__toggler" type="button" @click="setFilterDropdownOpen(!isFilterDropdownOpen)"><FilterIcon /></button>
-    <form class="map-dropdown map-dropdown_type_filter" @submit.prevent>
+    <form
+      :class="[
+        'map-dropdown map-dropdown_type_filter',
+        { 'map-dropdown_type_panel': isPointsListVisible },
+        { 'is-active': isFilterDropdownOpen }
+      ]"
+      @submit.prevent
+    >
       <div
         :class="[
           'map-dropdown__wrapper map-dropdown__wrapper_type_filter',
@@ -59,6 +66,7 @@
           </button>
         </template>
         <template v-else>
+          <div class="map-dropdown__title is-mobile-only">Фильтры</div>
           <div class="map-dropdown__list">
             <template
               v-for="item in filterList"

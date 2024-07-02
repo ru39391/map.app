@@ -16,6 +16,7 @@
     @extend %d-flex-column;
     @include fs-lh(24px,20px);
     font-weight: 500;
+    font-family: "Golos Text", sans-serif;
     width: 100%;
     padding: 20px;
     color: #242424;
@@ -24,6 +25,11 @@
     text-transform: uppercase;
     border-radius: 100px;
     background-color: #c1ff05;
+
+    @media (max-width:991px) {
+      @include fs-lh(20px,16px);
+      padding: 16px;
+    }
 
     &:disabled {
         opacity: .75;
