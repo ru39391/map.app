@@ -3,6 +3,7 @@
   border-radius: 16px;
   background-color: #fff;
   transition: all 0.3s ease;
+  position: relative;
 
   &:hover {
     box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.1);
@@ -45,11 +46,12 @@
 
   @media (max-width: 991px) {
     gap: 24px 0;
-    //margin-bottom: 0;
   }
 
   &.info-card__wrapper_mb_none {
-    margin-bottom: 0;
+    @media (max-width: 991px) {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -119,4 +121,19 @@
 .info-card__readmore {
   @include desktopOnly(inline-block);
   color: #242424;
+}
+
+.info-card__toggler {
+  @include mobileOnly(block);
+  @extend %btn-default;
+
+  &:after {
+    content: '';
+
+    @media (max-width: 991px) {
+      @include wh(100%);
+      @include pos(0,0);
+      cursor: pointer;
+    }
+  }
 }

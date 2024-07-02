@@ -21,6 +21,10 @@
       }
     }
   }
+
+  &.is-mobile-only {
+    @include mobileOnly;
+  }
 }
 
 .map-modal {

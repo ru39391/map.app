@@ -288,6 +288,10 @@
         this.updatePointsList(data);
       },
 
+      isFilterDropdownOpen(value) {
+        this.$emit('handleFilterVisibility', value);
+      },
+
       filterData(data) {
         console.log('Список параметров фильтра обновлён', data);
       },

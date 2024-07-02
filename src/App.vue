@@ -2,7 +2,11 @@
   <div class="map-wrapper h-100">
     <MapSection />
     <div
-      :class="['map-sidebar', { 'is-active': !isMapVisible }]"
+      :class="[
+        'map-sidebar',
+        { 'is-active': !isMapVisible && !isFilterVisible },
+        { 'is-fixed': !isMapVisible && isFilterVisible }
+      ]"
     >
       <div class="map-sidebar__header">
         <button class="map-location-toggler" type="button" @click="setModalOpen(true)">
@@ -11,7 +15,7 @@
         </button>
         <div class="map-filter-holder">
           <MapSelecter />
-          <MapFilter />
+          <MapFilter @handleFilterVisibility="setFilterVisible" />
         </div>
         <MapSearch
           :arr="currentItemsList"
@@ -22,7 +26,7 @@
       <div
         :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
       >
-        <div className="map-sidebar__list">
+        <div class="map-sidebar__list">
           <InfoCard
             v-for="item in currentItemsList"
             :key="item.id"
@@ -103,7 +107,8 @@
 
     data() {
       return {
-        isMapVisible: true
+        isMapVisible: true,
+        isFilterVisible: false
       };
     },
 
@@ -166,6 +171,10 @@
 
       setMapVisible() {
         this.isMapVisible = !this.isMapVisible;
+      },
+
+      setFilterVisible(value) {
+        this.isFilterVisible = value;
       }
     },
 

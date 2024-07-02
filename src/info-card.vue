@@ -36,6 +36,13 @@
         </template>
       </div>
     </div>
+    <button
+      class="info-card__toggler"
+      type="button"
+        v-if="!isCardFooterVisible"
+       @click="setCurrentItem({ ...item, ...(!item.coords && { coords: [Number(item.lon), Number(item.lat)] }) })"
+    >
+    </button>
     <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
     <div class="info-card__footer" v-if="isCardFooterVisible">
       <a
@@ -107,6 +114,8 @@
 </template>
 
 <script>
+  import { mapActions } from 'pinia';
+  import { useCategoryStore } from './store/modules/category';
   import CopyIcon from './assets/icons/copy-icon.vue';
 
   export default {
@@ -151,5 +160,9 @@
         return this.item && Array.isArray(this.item.fl) && this.item.fl.length || this.servicesDataList.reduce((acc, { key }) => acc || Boolean(this.item[key]), false);
       }
     },
+
+    methods: {
+      ...mapActions(useCategoryStore, ['setCurrentItem'])
+    }
   };
 </script>

@@ -16,6 +16,12 @@
     background-color: rgba(0,0,0,0);
   }
 
+  &.is-fixed {
+    @media (max-width: 991px) {
+      bottom: 0;
+    }
+  }
+
   &.is-active {
     @media (max-width: 991px) {
       bottom: 0;

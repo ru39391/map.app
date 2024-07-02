@@ -37,6 +37,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
+  import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
   import { LOCATION_KEY } from './utils/constants';
@@ -90,6 +91,8 @@
     },
 
     methods: {
+      ...mapActions(useCategoryStore, ['setCurrentItem']),
+
       ...mapActions(useLocationStore, ['setCurrentLocation']),
 
       ...mapActions(useModalStore, ['setModalOpen']),
@@ -113,6 +116,10 @@
 
         if(data.id) {
           item.scrollIntoView({ behavior: 'smooth' });
+          this.setCurrentItem({
+            ...data,
+            ...(!data.coords && { coords: [Number(data.lon), Number(data.lat)] })
+          });
         } else {
           this.setModalOpen(false);
 
