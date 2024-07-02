@@ -1,5 +1,5 @@
 <template>
-  <div :class="['map-section', { 'is-hidden': !isMapVisible }]">
+  <div class="map-section">
     <YandexMap
       :coordinates="currentCoords"
       :controls="[]"
@@ -32,12 +32,6 @@
     components: {
       YandexMap,
       YandexMarker
-    },
-
-    props: {
-      isMapVisible: {
-        type: Boolean
-      }
     },
 
     data() {

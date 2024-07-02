@@ -1,7 +1,9 @@
 <template>
   <div class="map-wrapper h-100">
-    <MapSection :isMapVisible="isMapVisible" />
-    <div class="map-sidebar">
+    <MapSection />
+    <div
+      :class="['map-sidebar', { 'is-active': !isMapVisible }]"
+    >
       <div class="map-sidebar__header">
         <button class="map-location-toggler" type="button" @click="setModalOpen(true)">
           <LocationIcon />
@@ -51,8 +53,18 @@
         </div>
       </template>
     </MapModal>
-    <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
   </div>
+  <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
+  <button class="map-switcher" type="button" @click="setMapVisible">
+    <template v-if="isMapVisible">
+      Список
+      <ListIcon />
+    </template>
+    <template v-else>
+      Карта
+      <MapIcon />
+    </template>
+  </button>
 </template>
 
 <script>
@@ -62,8 +74,10 @@
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
   import InfoCardList from './info-card-list.vue';
+  import ListIcon from './assets/icons/list-icon.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import LoaderIcon from './assets/icons/loader-icon.vue';
+  import MapIcon from './assets/icons/map-icon.vue';
   import MapFilter from './map-filter.vue';
   import MapModal from './map-modal.vue';
   import MapSearch from './map-search.vue';
@@ -73,8 +87,10 @@
   export default {
     components: {
       InfoCardList,
+      ListIcon,
       LocationIcon,
       LoaderIcon,
+      MapIcon,
       MapFilter,
       MapModal,
       MapSearch,
@@ -139,6 +155,10 @@
         this.setModalOpen(false);
 
         if(this.currentLocation && value !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(value);
+      },
+
+      setMapVisible() {
+        this.isMapVisible = !this.isMapVisible;
       }
     },
 

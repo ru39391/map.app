@@ -4,6 +4,7 @@
   @include wh(100%);
   @include pos(0, 0, fixed);
   padding: 16px;
+  z-index: 1060;
   background-color: rgba(0, 0, 0, 0.5);
 
   &.map-overlay_type_holder {

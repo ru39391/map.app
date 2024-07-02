@@ -9,7 +9,6 @@
     @media (max-width:991px) {
       @include pos(auto, 0, fixed);
       bottom: 0;
-      z-index: 1060;
     }
 
     &:before {

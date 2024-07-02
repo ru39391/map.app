@@ -1,0 +1,14 @@
+.map-switcher {
+  @extend %btn-default;
+  @extend %d-flex-ai-center;
+  @include fs-lh(20px,24px);
+  @include offset(0 0 0 -25%,8px 24px);
+  position: fixed;
+  left: 50%;
+  bottom: 44px;
+  gap: 0 8px;
+  z-index: 1040;
+  border-radius: 100px;
+  background-color: #c1ff05;
+  box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.1);
+}
