@@ -5,7 +5,7 @@
       :controls="[]"
       v-if="!isCategoryListLoading"
       class="map-section__container"
-      zoom="13"
+      zoom="11"
     >
       <YandexMarker
         v-for="item in mapMarkersList"

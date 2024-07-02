@@ -13,6 +13,16 @@
   @extend %d-flex-column;
   gap: 4px 0;
   margin: 0 0 16px;
+
+  @media (max-width: 991px) {
+    margin: 0 0 24px;
+  }
+}
+
+.info-card__category {
+  @media (max-width: 991px) {
+    @include fs-lh(18px, 22px);
+  }
 }
 
 .info-card__caption {
@@ -22,6 +32,10 @@
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  @media (max-width: 991px) {
+    @include fs-lh(28px, 1);
+  }
 }
 
 .info-card__wrapper {
@@ -30,6 +44,7 @@
   margin: 0 0 28px;
 
   @media (max-width: 991px) {
+    gap: 24px 0;
     margin-bottom: 0;
   }
 
@@ -62,6 +77,10 @@
   &.info-card__item_fw_bold {
     font-weight: 500;
     line-height: 28px;
+
+    @media (max-width: 991px) {
+      line-height: 24px;
+    }
   }
 
   &.info-card__item_color_primary {
