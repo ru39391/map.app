@@ -1,17 +1,21 @@
 .map-sidebar {
   @extend %d-flex-column;
-  @include pos(0, 0, fixed);
+  @include fw(496px);
+  /*
   bottom: 0;
-  gap: 20px 0;
   width: 496px;
+  */
+  gap: 20px 0;
   padding: 24px 0 0;
   background-color: #f7f7f7;
 
   @media (max-width: 991px) {
+    @include pos(0, 0, fixed);
     width: 100%;
+    max-width: 100%;
     gap: 0;
     padding: 0;
-    bottom: auto;
+    //bottom: auto;
     z-index: 1060;
     background-color: rgba(0,0,0,0);
   }

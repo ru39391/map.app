@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia';
 import { setLocation, handleLocationList } from '../../utils';
-import { POINT_KEY, LOCATION_KEY, DEFAULT_LOC } from '../../utils/constants';
+import { POINT_KEY, LOCATION_KEY, DEFAULT_LOC, DEFAULT_COORDS } from '../../utils/constants';
 
 const useLocationStore = defineStore({
   id: 'location',
   state: () => ({
     locationList: [],
     currentLocation: null,
+    currentCoords: []
   }),
   actions: {
     setLocationList({ arr, category }) {
@@ -47,13 +48,18 @@ const useLocationStore = defineStore({
         const { isSucceed, data } = await setLocation(value || DEFAULT_LOC);
 
         if(isSucceed) {
+          console.log({data});
           this.currentLocation = data;
+          this.currentCoords = data.coords || DEFAULT_COORDS;
         }
       } catch (error) {
         console.error(error);
       }
     }
   },
+  setCurrentCoords(arr) {
+    this.currentCoords = arr;
+  }
 });
 
 export {
