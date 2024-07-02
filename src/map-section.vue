@@ -76,7 +76,8 @@
           'isCategoryListLoading',
           'itemsList',
           'currentItemsList',
-          'currentCategory'
+          'currentCategory',
+          'setCurrentItem'
         ]
       ),
 
@@ -107,9 +108,11 @@
 
       scrollToItemCard(data) {
         console.log('Данные объекта карты', data);
-        const item = document.querySelector(`#card-${data.id}`);
+        const target = document.querySelector(`#card-${data.id}`);
+        const item = this.currentItemsList.find(({ id }) => id === data.id);
 
-        item.scrollIntoView({ behavior: 'smooth' });
+        target.scrollIntoView({ behavior: 'smooth' });
+        this.setCurrentItem(item ? { ...item, coords: data.coords } : null);
       }
     },
 

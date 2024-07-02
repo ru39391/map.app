@@ -5,7 +5,7 @@
       <div class="info-card__caption">{{ item.name }}</div>
     </div>
     <div
-      :class="['info-card__wrapper', { 'info-card__wrapper_mb_none': isPointsListVisible }]"
+      :class="['info-card__wrapper', { 'info-card__wrapper_mb_none': isPointsListVisible || !isCardFooterVisible }]"
     >
       <div
         :class="[
@@ -38,7 +38,14 @@
     </div>
     <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
     <div class="info-card__footer" v-if="isCardFooterVisible">
-      <a class="map-filter-btn" href="#">маршрут от меня</a>
+      <a
+        class="map-filter-btn"
+        v-if="item.coords && item.coords.length"
+        :href="`https://yandex.ru/maps/?rtext=~${item.coords[0].toString()},${item.coords[1].toString()}`"
+        target="_blank"
+      >
+        маршрут от меня
+      </a>
       <div class="info-card__section">
         <div class="info-card__item info-card__item_type_title">О филиале</div>
         <div class="info-card__content" v-if="(Array.isArray(item.phone) && item.phone.length) || item.email">
@@ -71,7 +78,7 @@
           <div class="info-card__item info-card__item_fs_sm">{{ item.director }}</div>
         </div>
       </div>
-      <div class="info-card__section">
+      <div class="info-card__section" v-if="isServicesListExist">
         <div class="info-card__item info-card__item_type_title">Услуги</div>
         <template v-if="Array.isArray(item.fl) && item.fl.length">
           <div class="info-card__content">
@@ -87,11 +94,7 @@
           </div>
         </template>
         <template
-          v-for="(param, index) in [
-            {value: item.sb, caption: 'Обслуживание малого и среднего бизнеса'},
-            {value: item.crp, caption: 'Обслуживание корпоративных клиентов'},
-            {value: item.mobile_group, caption: 'Отделение оборудовано средствами для доступа маломобильных групп населения'}
-          ]"
+          v-for="(param, index) in servicesList"
           :key="index"
         >
           <div class="info-card__content" v-if="param.value">
@@ -113,6 +116,16 @@
       CopyIcon
     },
 
+    data() {
+      return {
+        servicesDataList: [
+          {key: 'sb', caption: 'Обслуживание малого и среднего бизнеса'},
+          {key: 'crp', caption: 'Обслуживание корпоративных клиентов'},
+          {key: 'mobile_group', caption: 'Отделение оборудовано средствами для доступа маломобильных групп населения'}
+        ]
+      }
+    },
+
     props: {
       item: {
         type: Object,
@@ -126,6 +139,16 @@
       },
       isCardFooterVisible: {
         type: Boolean
+      }
+    },
+
+    computed: {
+      servicesList() {
+        return this.item && this.servicesDataList.map(({ key, caption }) => ({ value: this.item[key], caption }));
+      },
+
+      isServicesListExist() {
+        return this.item && Array.isArray(this.item.fl) && this.item.fl.length || this.servicesDataList.reduce((acc, { key }) => acc || Boolean(this.item[key]), false);
       }
     },
   };

@@ -3,18 +3,20 @@
   @extend %d-flex-column;
   @include wh(100%);
   @include pos(0, 0, fixed);
-  padding: 16px;
+  padding: 40px 16px 16px;
   z-index: 1060;
   background-color: rgba(0, 0, 0, 0.5);
 
   &.map-overlay_type_holder {
     @media (max-width: 991px) {
-      padding: 0;
+      padding: 40px 0 0;
       justify-content: flex-end;
     }
 
     .map-modal {
       @media (max-width: 991px) {
+        max-height: 100%;
+        overflow-x: auto;
         border-radius: 16px 16px 0 0;
       }
     }

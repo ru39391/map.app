@@ -61,13 +61,13 @@
         </div>
       </template>
     </MapModal>
+    <MapSwitcher
+      :isMapVisible="isMapVisible"
+      @handleMapVisibility="setMapVisible"
+    />
+    <MapPanel />
+    <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
   </div>
-  <MapSwitcher
-    :isMapVisible="isMapVisible"
-    @handleMapVisibility="setMapVisible"
-  />
-  <MapPanel v-if="false" />
-  <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
 </template>
 
 <script>

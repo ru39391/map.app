@@ -4,7 +4,6 @@ import {
   ATM_KEY,
   POINT_KEY,
   TERMINAL_KEY,
-  FILTER_KEY,
   LOCATION_KEY
 } from '../../utils/constants';
 
@@ -24,6 +23,7 @@ const useCategoryStore = defineStore({
       {type: POINT_KEY, caption: 'Точки погашения кредита', category: 'Точка погашения кредита'},
       {type: TERMINAL_KEY, caption: 'Терминалы', category: 'Терминал'}
     ],
+    currentItem: null,
     currentCategory: null,
   }),
   actions: {
@@ -113,6 +113,9 @@ const useCategoryStore = defineStore({
       const currentItemsArr = handleLocationList(arr, 'id').filter(item => item[LOCATION_KEY] === data[LOCATION_KEY]);
 
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
+    },
+    setCurrentItem(data) {
+      this.currentItem = data;
     },
     setCurrentCategory(data) {
       this.currentCategory = data;

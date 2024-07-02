@@ -66,6 +66,7 @@
     &.is-active {
       @media (max-width:991px) {
         top: 40px;
+        margin-top: 0;
       }
     }
 
