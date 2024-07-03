@@ -12,8 +12,10 @@
         v-for="item in mapMarkersList"
         :key="item.id"
         :marker-id="item.id"
+        :ref="`marker-${item.id}`"
         :coordinates="item.coords"
         :options="{...markerOptions, ...markerIcons[item.key]}"
+        @mouseover="console.log(item.id)"
         @click="scrollToItemCard(item)"
       />
     </YandexMap>
@@ -22,7 +24,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { loadYmap, YandexMap, YandexMarker } from 'vue-yandex-maps';
+  import { YandexMap, YandexMarker } from 'vue-yandex-maps';
   import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
@@ -104,6 +106,7 @@
       },
 
       scrollToItemCard(data) {
+        //console.log(this.$refs[`marker-${data.id}`]);
         console.log('Данные объекта карты', data);
         const target = document.querySelector(`#card-${data.id}`);
         const item = this.currentItemsList.find(({ id }) => id === data.id);
@@ -111,6 +114,10 @@
         target.scrollIntoView({ behavior: 'smooth' });
         this.setCurrentItem(item ? { ...item, coords: data.coords } : null);
       },
+
+      onMouseEnter(id) {
+        console.log(this.$refs[`marker-${id}`]);
+      }
     },
 
     watch: {

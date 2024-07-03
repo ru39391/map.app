@@ -16,6 +16,7 @@ const RUPOST_KEY = 'rupost';
 
 const DEFAULT_LOC = 'Москва';
 const DEFAULT_COORDS = [55.755864, 37.617698];
+const LOCATION_LIST = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Новосибирск', 'Омск', 'Ростов-на-Дону'];
 
 const API_URL = '/api/branches/';
 
@@ -35,5 +36,6 @@ export {
   RUPOST_KEY,
   DEFAULT_LOC,
   DEFAULT_COORDS,
+  LOCATION_LIST,
   API_URL
 };

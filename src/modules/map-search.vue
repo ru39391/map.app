@@ -2,7 +2,7 @@
   <form
     :class="['map-search', { 'is-active': isSearchInputFocused }]"
     @submit.prevent
-  > <!-- ref={searchDropdownRef} -->
+  >
     <button class="map-search__btn map-search__btn_pe_none" type="button"><SearchIcon /></button>
     <input
       class="map-search__field"
@@ -148,7 +148,7 @@
         } catch (error) {
           console.error(error);
         }
-      }
+      },
     },
 
     watch: {
@@ -159,6 +159,6 @@
       isModalOpen() {
         this.searchValue = '';
       }
-    },
+    }
   };
 </script>

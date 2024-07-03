@@ -36,7 +36,7 @@
             :currentCategory="currentCategory"
             :isPointsListVisible="isPointsListVisible"
           />
-        </div><!-- ref={itemsListRef} -->
+        </div>
       </div>
     </div>
     <MapModal
@@ -76,7 +76,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, LOCATION_KEY, DEFAULT_LOC } from './utils/constants';
+  import { POINT_KEY, LOCATION_KEY, DEFAULT_LOC, LOCATION_LIST } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
@@ -136,7 +136,8 @@
       },
 
       currLocationList() {
-        return this.locationList.reduce((acc, { location }, index) => index < 6 ? [...acc, location] : acc, []);
+        // this.locationList.reduce((acc, { location }, index) => index < 6 ? [...acc, location] : acc, []);
+        return [...LOCATION_LIST];
       },
 
       currentCategoryKey() {

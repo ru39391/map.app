@@ -1,5 +1,5 @@
 <template>
-  <div class="map-selecter"> <!--  ref={categoryDropdownRef} -->
+  <div class="map-selecter" ref="mapSelecter">
     <button class="map-selecter__placeholder" type="button" @click="setCategoryDropdownOpen(!isCategoryDropdownOpen)">
       <span class="map-selecter__caption">{{ selecterCaption }}</span>
       <ExpendMoreIcon />
@@ -73,10 +73,22 @@
         }
 
         this.setCurrentCategory({type, caption, category});
-
-        //this.setFilterData(null);
         this.fetchCategoryData(type);
+      },
+
+      closeDropdown({ target }) {
+        if(!this.$refs.mapSelecter.contains(target)) {
+          this.setCategoryDropdownOpen(false);
+        }
       }
+    },
+
+    mounted() {
+      document.addEventListener('mousedown', this.closeDropdown);
+    },
+
+    beforeUnmount() {
+      document.removeEventListener('mousedown', this.closeDropdown);
     }
   };
 </script>

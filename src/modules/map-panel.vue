@@ -1,5 +1,9 @@
 <template>
-  <div class="map-overlay map-overlay_type_holder is-mobile-only" v-if="currentItem">
+  <div
+    class="map-overlay map-overlay_type_holder is-mobile-only"
+    v-if="currentItem"
+    @click.self="setCurrentItem(null)"
+  >
     <div class="map-modal is-active">
       <button class="map-modal__close" type="button" @click="setCurrentItem(null)"><CloseIcon /></button>
       <InfoCard

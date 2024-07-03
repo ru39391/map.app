@@ -1,5 +1,5 @@
 <template>
-  <div class="map-filter"> <!--  ref={filterDropdownRef} -->
+  <div class="map-filter" ref="mapFilter">
     <button class="map-filter__toggler" type="button" @click="setFilterDropdownOpen(!isFilterDropdownOpen)"><FilterIcon /></button>
     <form
       :class="[
@@ -8,6 +8,7 @@
         { 'is-active': isFilterDropdownOpen }
       ]"
       @submit.prevent
+      @click.self="setFilterDropdownOpen(false)"
     >
       <div
         :class="[
@@ -271,6 +272,12 @@
         const pointsFilterData = this.updatePointsFilterData(boundedBy);
 
         this.fetchPointsData(pointsFilterData);
+      },
+
+      closeFilter({ target }) {
+        if(!this.$refs.mapFilter.contains(target)) {
+          this.setFilterDropdownOpen(false);
+        }
       }
     },
 
@@ -299,6 +306,15 @@
       pointsFilterData(data) {
         console.log('Список параметров фильтра точек погашения обновлён', data);
       }
+    },
+
+    mounted() {
+      console.log(this.$refs.mapFilter);
+      document.addEventListener('mousedown', this.closeFilter);
+    },
+
+    beforeUnmount() {
+      document.removeEventListener('mousedown', this.closeFilter);
     }
   };
 </script>
