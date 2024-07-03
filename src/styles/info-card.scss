@@ -122,6 +122,7 @@
 .info-card__readmore {
   @include desktopOnly(inline-block);
   color: #242424;
+  text-decoration: underline;
 }
 
 .info-card__toggler {

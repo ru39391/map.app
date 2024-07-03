@@ -309,7 +309,6 @@
     },
 
     mounted() {
-      console.log(this.$refs.mapFilter);
       document.addEventListener('mousedown', this.closeFilter);
     },
 
