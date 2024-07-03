@@ -3,7 +3,7 @@
     <YandexMap
       :coordinates="currentCoords"
       :bounds="currentLocation.boundedBy"
-      :controls="['zoomControl']"
+      :controls="['zoomControl', 'geolocationControl']"
       zoom="11"
       v-if="!isCategoryListLoading && currentCoords.length"
       class="map-section__container"
@@ -22,7 +22,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { YandexMap, YandexMarker } from 'vue-yandex-maps';
+  import { loadYmap, YandexMap, YandexMarker } from 'vue-yandex-maps';
   import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
@@ -110,7 +110,7 @@
 
         target.scrollIntoView({ behavior: 'smooth' });
         this.setCurrentItem(item ? { ...item, coords: data.coords } : null);
-      }
+      },
     },
 
     watch: {
@@ -126,6 +126,6 @@
       mapMarkersList(arr) {
         console.log('Список объектов карты обновлён', arr);
       }
-    }
+    },
   };
 </script>
