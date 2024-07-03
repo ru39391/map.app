@@ -2,10 +2,11 @@
   <div class="map-section">
     <YandexMap
       :coordinates="currentCoords"
-      :controls="[]"
-      v-if="!isCategoryListLoading"
-      class="map-section__container"
+      :bounds="currentLocation.boundedBy"
+      :controls="['zoomControl']"
       zoom="11"
+      v-if="!isCategoryListLoading && currentCoords.length"
+      class="map-section__container"
     >
       <YandexMarker
         v-for="item in mapMarkersList"
@@ -81,11 +82,7 @@
         ]
       ),
 
-      ...mapState(useLocationStore, ['currentLocation']),
-
-      currentCoords() {
-        return this.currentLocation ? this.currentLocation.coords : DEFAULT_COORDS;
-      },
+      ...mapState(useLocationStore, ['currentLocation', 'currentCoords']),
 
       isPointsListVisible() {
         return this.currentCategory && this.currentCategory.type === POINT_KEY;

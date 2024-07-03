@@ -98,6 +98,7 @@
   @extend %btn-default;
   @extend %d-flex-ai-center;
   @extend %d-flex-column;
+  display: none;
 }
 
 .info-card__footer {

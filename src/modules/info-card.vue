@@ -22,7 +22,7 @@
       </div>
       <div class="info-card__item info-card__item_fw_bold info-card__item_type_row">
         {{ item.address }}
-        <button class="info-card__item-toggler" type="button"><CopyIcon /></button>
+        <button class="info-card__item-toggler" type="button" @click="copyItemAddress(item.address)"><CopyIcon /></button>
       </div>
       <div
         v-if="Array.isArray(item.workMode) && item.workMode.length"
@@ -162,7 +162,17 @@
     },
 
     methods: {
-      ...mapActions(useCategoryStore, ['setCurrentItem'])
+      ...mapActions(useCategoryStore, ['setCurrentItem']),
+
+      async copyItemAddress(value) {
+        try {
+          await navigator.clipboard.writeText(value);
+
+          console.log({value});
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
   };
 </script>

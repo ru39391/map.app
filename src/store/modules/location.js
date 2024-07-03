@@ -38,9 +38,11 @@ const useLocationStore = defineStore({
     },
     async setCurrentLocation(value = '') {
       const locationData = localStorage.getItem(LOCATION_KEY);
+      const currentLocationData = locationData ? JSON.parse(locationData) : null;
 
       if(!value && locationData) {
-        this.currentLocation = JSON.parse(locationData);
+        this.currentLocation = currentLocationData;
+        this.currentCoords = currentLocationData.coords;
         return;
       }
 
@@ -48,9 +50,8 @@ const useLocationStore = defineStore({
         const { isSucceed, data } = await setLocation(value || DEFAULT_LOC);
 
         if(isSucceed) {
-          console.log({data});
           this.currentLocation = data;
-          this.currentCoords = data.coords || DEFAULT_COORDS;
+          this.currentCoords = data.coords;
         }
       } catch (error) {
         console.error(error);
