@@ -1,9 +1,18 @@
+import { useCategoryStore } from '../store/modules/category';
 import { CLOSED_KEY, MAP_ID } from './constants';
+
+const categoryStore = useCategoryStore();
 
 class YMapHandler {
   constructor() {
     this.mapId = MAP_ID;
     this.mapItem = null;
+  }
+
+  setCardData(data) {
+    const item = categoryStore.currentItemsList.find(({ id }) => id === data.id);
+
+    categoryStore.setCurrentItem(item ? { ...item, coords: data.coords } : null);
   }
 
   isMapItemExist() {
@@ -53,7 +62,6 @@ class YMapHandler {
       const res = await Promise.all([this.loadYMap(), this.destroyYMap()]);
 
       if(res.reduce((acc, { isSucceed }) => acc && isSucceed, true)) {
-        console.log(res);
         const { yMaps } = res.reduce((acc, item) => {
           const key = Object.keys(item).find(key => key !== 'isSucceed');
 
@@ -72,23 +80,21 @@ class YMapHandler {
 
   async renderYMap(data) {
     const { arr, config, icons } = data;
-    console.log({ config, icons });
+    //console.log({ config, icons });
 
     const scrollToCard = (event) => {
-      const { properties, options } = event.get('target');
+      const { properties } = event.get('target');
       const card = document.querySelector(`#card-${properties._data.id}`);
 
       card.scrollIntoView({ behavior: 'smooth' });
-      console.log(options);
+      this.setCardData({ ...properties._data });
     };
 
     const hoverPin = (event) => {
       const { properties, options } = event.get('target');
       const { key } = properties._data;
 
-      if(key) {
-        options.set('iconImageSize', [48, 48]);
-      }
+      options.set('iconImageSize', key ? [48, 48] : [66, 94]);
     };
 
     const leavePin = (event) => {

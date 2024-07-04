@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "pinia": "^2.1.7",
-    "vue": "^3.4.29",
-    "vue-yandex-maps": "^1.0.8"
+    "vue": "^3.4.29"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
