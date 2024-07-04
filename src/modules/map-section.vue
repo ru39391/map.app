@@ -142,7 +142,7 @@
 
       mapMarkersList(arr) {
         console.log('Список объектов карты обновлён', arr);
-        yMapHandler.renderYMap({ arr, ...this.currLocationData });
+        yMapHandler.renderYMap({ arr, ...this.currLocationData, options: this.markerOptions, icons: this.markerIcons });
       },
 
       currentLocation(data) {

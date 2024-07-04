@@ -71,8 +71,14 @@ class YMapHandler {
   }
 
   async renderYMap(data) {
-    const { arr } = data;
-    console.log(arr.length);
+    const { arr, options, icons } = data;
+    console.log(arr.map(({ key }) => key));
+
+    const addEvent = (event) => {
+      const { properties, options } = event.get('target');
+      //console.log(options);
+      //options.set('iconImageHref', './src/assets/map-icons/beeline-icon.png');
+    };
 
     try {
       const { isSucceed, map, yMaps } = await this.setMapItem(data);
@@ -80,10 +86,12 @@ class YMapHandler {
       if(isSucceed) {
         const collection = new yMaps.GeoObjectCollection(null, { preset: 'islands#blackDotIcon' });
 
-        arr.forEach(({ id, coords }) => {
+        arr.forEach(({ id, coords, key }, index) => {
           //console.log({ id, coords });
-          collection.add(new yMaps.Placemark(coords, { id }));
+          collection.add(new yMaps.Placemark(coords, { id, idx: index }, { ...options, ...(key && { ...icons[key] }) }));
         });
+
+        map.geoObjects.events.add('hover', addEvent);
         map.geoObjects.add(collection);
       };
     } catch (error) {

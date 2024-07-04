@@ -182,8 +182,8 @@
           title: '',
           params: [{
             key: [RUPOST_KEY],
-            caption: 'Почта Росии',
-            request: 'Почта Росии'
+            caption: 'Почта России',
+            request: 'Почта России'
           }],
           desc: [{
             caption: 'Комиссия:',
