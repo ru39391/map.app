@@ -7,6 +7,8 @@ const FILTER_KEY = 'filter';
 const ADDRESS_KEY = 'address';
 const LOCATION_KEY = 'location';
 
+const DEFAULT_KEY = 'default';
+const CLOSED_KEY = 'closed';
 const BEELINE_KEY = 'beeline';
 const MTS_KEY = 'mts';
 const KH_KEY = 'kh';
@@ -21,6 +23,18 @@ const LOCATION_LIST = ['Москва', 'Санкт-Петербург', 'Ека�
 
 const MAP_ID = 'map';
 const API_URL = '/api/branches/';
+const ICONS_URL = './src/assets/map-icons';
+
+const MAP_PINS = {
+  [DEFAULT_KEY]: `${ICONS_URL}/pin-icon.svg`,
+  [CLOSED_KEY]: `${ICONS_URL}/pin-closed-icon.svg`,
+  [BEELINE_KEY]: `${ICONS_URL}/beeline-icon.png`,
+  [MTS_KEY]: `${ICONS_URL}/mts-icon.png`,
+  [KH_KEY]: `${ICONS_URL}/kh-icon.png`,
+  [LXNET_KEY]: `${ICONS_URL}/lxnet-icon.png`,
+  [KARI_KEY]: `${ICONS_URL}/kari-icon.png`,
+  [RUPOST_KEY]: `${ICONS_URL}/rupost-icon.png`,
+};
 
 export {
   FILIAL_KEY,
@@ -30,6 +44,8 @@ export {
   FILTER_KEY,
   ADDRESS_KEY,
   LOCATION_KEY,
+  DEFAULT_KEY,
+  CLOSED_KEY,
   BEELINE_KEY,
   MTS_KEY,
   KH_KEY,
@@ -40,6 +56,7 @@ export {
   DEFAULT_COORDS,
   DEFAULT_BOUNDS,
   LOCATION_LIST,
+  MAP_PINS,
   MAP_ID,
   API_URL
 };

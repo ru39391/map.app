@@ -27,7 +27,7 @@
 <script>
   import { mapActions, mapState } from 'pinia';
   //import { YandexMap, YandexMarker } from 'vue-yandex-maps';
-  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS, DEFAULT_BOUNDS } from '../utils/constants';
+  import { POINT_KEY, DEFAULT_KEY, CLOSED_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS, DEFAULT_BOUNDS, MAP_PINS } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
   import yMapHandler from '../utils/ymap-handler';
@@ -48,28 +48,33 @@
           iconImageOffset: [-18, -36]
         },
         markerIcons: {
-          default: {
-            iconImageHref: './src/assets/map-icons/pin-icon.svg',
+          [DEFAULT_KEY]: {
+            iconImageHref: MAP_PINS[DEFAULT_KEY],
+            iconImageSize: [50, 72],
+            iconImageOffset: [-25, -72]
+          },
+          [CLOSED_KEY]: {
+            iconImageHref: MAP_PINS[CLOSED_KEY],
             iconImageSize: [50, 72],
             iconImageOffset: [-25, -72]
           },
           [BEELINE_KEY]: {
-            iconImageHref: './src/assets/map-icons/beeline-icon.png',
+            iconImageHref: MAP_PINS[BEELINE_KEY],
           },
           [MTS_KEY]: {
-            iconImageHref: './src/assets/map-icons/mts-icon.png',
+            iconImageHref: MAP_PINS[MTS_KEY],
           },
           [KH_KEY]: {
-            iconImageHref: './src/assets/map-icons/kh-icon.png',
+            iconImageHref: MAP_PINS[KH_KEY],
           },
           [KARI_KEY]: {
-            iconImageHref: './src/assets/map-icons/kari-icon.png',
+            iconImageHref: MAP_PINS[KARI_KEY],
           },
           [LXNET_KEY]: {
-            iconImageHref: './src/assets/map-icons/lxnet-icon.png',
+            iconImageHref: MAP_PINS[LXNET_KEY],
           },
           [RUPOST_KEY]: {
-            iconImageHref: './src/assets/map-icons/rupost-icon.png',
+            iconImageHref: MAP_PINS[RUPOST_KEY],
           },
         }
       };
@@ -118,10 +123,8 @@
       scrollToItemCard(data) {
         //console.log(this.$refs[`marker-${data.id}`]);
         console.log('Данные объекта карты', data);
-        const target = document.querySelector(`#card-${data.id}`);
         const item = this.currentItemsList.find(({ id }) => id === data.id);
 
-        target.scrollIntoView({ behavior: 'smooth' });
         this.setCurrentItem(item ? { ...item, coords: data.coords } : null);
       },
 
@@ -142,7 +145,7 @@
 
       mapMarkersList(arr) {
         console.log('Список объектов карты обновлён', arr);
-        yMapHandler.renderYMap({ arr, ...this.currLocationData, options: this.markerOptions, icons: this.markerIcons });
+        yMapHandler.renderYMap({ arr, ...this.currLocationData, config: this.markerOptions, icons: this.markerIcons });
       },
 
       currentLocation(data) {

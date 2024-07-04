@@ -1,4 +1,4 @@
-import { MAP_ID } from './constants';
+import { CLOSED_KEY, MAP_ID } from './constants';
 
 class YMapHandler {
   constructor() {
@@ -71,13 +71,34 @@ class YMapHandler {
   }
 
   async renderYMap(data) {
-    const { arr, options, icons } = data;
-    console.log(arr.map(({ key }) => key));
+    const { arr, config, icons } = data;
+    console.log({ config, icons });
 
-    const addEvent = (event) => {
+    const scrollToCard = (event) => {
       const { properties, options } = event.get('target');
-      //console.log(options);
-      //options.set('iconImageHref', './src/assets/map-icons/beeline-icon.png');
+      const card = document.querySelector(`#card-${properties._data.id}`);
+
+      card.scrollIntoView({ behavior: 'smooth' });
+      console.log(options);
+    };
+
+    const hoverPin = (event) => {
+      const { properties, options } = event.get('target');
+      const { key } = properties._data;
+
+      if(key) {
+        options.set('iconImageSize', [48, 48]);
+      }
+    };
+
+    const leavePin = (event) => {
+      const { properties, options } = event.get('target');
+      const { key } = properties._data;
+      const data = key ? { ...config, ...icons[key] } : { ...config };
+
+      Object.keys(data).forEach((item, index) => {
+        options.set(item, Object.values(data)[index]);
+      });
     };
 
     try {
@@ -86,12 +107,27 @@ class YMapHandler {
       if(isSucceed) {
         const collection = new yMaps.GeoObjectCollection(null, { preset: 'islands#blackDotIcon' });
 
-        arr.forEach(({ id, coords, key }, index) => {
-          //console.log({ id, coords });
-          collection.add(new yMaps.Placemark(coords, { id, idx: index }, { ...options, ...(key && { ...icons[key] }) }));
+        arr.forEach(({ id, coords, key, workingStatus }, index) => {
+          collection.add(
+            new yMaps.Placemark(
+              coords,
+              {
+                id,
+                idx: index,
+                key
+              },
+              {
+                ...config,
+                ...(key && { ...icons[key] }),
+                ...(!key && workingStatus && !workingStatus.isWork && { ...icons[CLOSED_KEY] } )
+              }
+            )
+          );
         });
 
-        map.geoObjects.events.add('hover', addEvent);
+        map.geoObjects.events.add('mouseenter', hoverPin);
+        map.geoObjects.events.add('mouseleave', leavePin);
+        map.geoObjects.events.add('click', scrollToCard);
         map.geoObjects.add(collection);
       };
     } catch (error) {
