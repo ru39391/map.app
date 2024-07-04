@@ -1,5 +1,6 @@
 <template>
   <div id="map" class="map-section">
+    <!--
     <YandexMap
       :coordinates="currentCoords"
       :bounds="currentLocation.boundedBy"
@@ -19,27 +20,28 @@
         @click="scrollToItemCard(item)"
       />
     </YandexMap>
+    -->
   </div>
 </template>
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { YandexMap, YandexMarker } from 'vue-yandex-maps';
-  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS } from '../utils/constants';
+  //import { YandexMap, YandexMarker } from 'vue-yandex-maps';
+  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, DEFAULT_COORDS, DEFAULT_BOUNDS } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
+  import yMapHandler from '../utils/ymap-handler';
 
   export default {
     name: 'map-section',
 
     components: {
-      YandexMap,
-      YandexMarker
+      //YandexMap,
+      //YandexMarker
     },
 
     data() {
       return {
-        yMap: null,
         mapMarkersList: [],
         markerIconSizes: {
           iconImageSize: [36, 36],
@@ -87,6 +89,13 @@
 
       ...mapState(useLocationStore, ['currentLocation', 'currentCoords']),
 
+      currLocationData() {
+        return {
+          coords: this.currentLocation ? this.currentLocation.coords : DEFAULT_COORDS,
+          bounds: this.currentLocation ? this.currentLocation.boundedBy : DEFAULT_BOUNDS,
+        };
+      },
+
       isPointsListVisible() {
         return this.currentCategory && this.currentCategory.type === POINT_KEY;
       },
@@ -118,68 +127,6 @@
 
       onMouseEnter(id) {
         console.log(this.$refs[`marker-${id}`]);
-      },
-
-      destroyCurrMap(data) {
-        if(data) {
-          this.yMap.map.destroy();
-          this.yMap.map = null;
-        }
-
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            resolve({
-              isSucceed: true,
-              message: 'Карта обновлена'
-            })
-          }, 200);
-        });
-      },
-
-      async initMap(config) {
-        let data = { isSucceed: false };
-        console.log(config);
-
-        try {
-          const yMaps = await new Promise((resolve) => ymaps.ready(resolve));
-          const map = new yMaps.Map('map', { ...config, zoom: 11, controls: [] });
-
-          data = { isSucceed: Boolean(yMaps), yMaps };
-          this.yMap = { map };
-        } catch (error) {
-          console.error(error);
-        }
-
-        return data;
-      },
-
-      async renderMap({ arr, coords, bounds }) {
-        console.log(arr.length);
-        try {
-          const res = await Promise.all([this.destroyCurrMap(this.yMap), this.initMap({ center: coords, bounds })]);
-
-          if(res.reduce((acc, { isSucceed }) => acc && isSucceed, true)) {
-            console.log(res);
-            const { yMaps } = res.reduce((acc, item) => {
-              const key = Object.keys(item).find(key => key !== 'isSucceed');
-
-              return { ...acc, [key]: item[key] };
-            }, {});
-            /*
-            console.log({ yMaps });
-
-            const collection = new yMaps.GeoObjectCollection(null, { preset: 'islands#blackDotIcon' });
-
-            arr.forEach(({ id, coords }) => {
-              //console.log({ id, coords });
-              collection.add(new yMaps.Placemark(coords, { id }));
-            });
-            this.yMap.map.geoObjects.add(collection);
-            */
-          }
-        } catch (error) {
-          console.error(error);
-        }
       }
     },
 
@@ -195,17 +142,12 @@
 
       mapMarkersList(arr) {
         console.log('Список объектов карты обновлён', arr);
-        //this.renderMap({ arr, coords: this.currentLocation.coords, bounds: this.currentLocation.boundedBy });
+        yMapHandler.renderYMap({ arr, ...this.currLocationData });
       },
 
       currentLocation(data) {
         console.log('Геопозиция обновлена, map', data);
-        //if(data) this.renderMap({ arr: this.mapMarkersList, coords: data.coords, bounds: data.boundedBy });
       },
-
-      yMap(yMap) {
-        console.log({yMap});
-      }
     },
   };
 </script>
