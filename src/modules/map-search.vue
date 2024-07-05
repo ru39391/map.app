@@ -123,7 +123,7 @@
         } else {
           this.setModalOpen(false);
 
-          if(this.currentLocation && data[LOCATION_KEY] !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(data[LOCATION_KEY]);
+          if(this.currentLocation && data[LOCATION_KEY] !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(this.locationList, data[LOCATION_KEY]);
         }
 
         return new Promise((resolve, reject) => {

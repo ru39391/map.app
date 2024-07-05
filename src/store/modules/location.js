@@ -2,7 +2,7 @@ import { defineStore, setActivePinia } from 'pinia';
 import { piniaStore } from '../index';
 import { useCategoryStore } from './category';
 import { setLocation } from '../../utils';
-import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, FILTER_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, API_URL } from '../../utils/constants';
+import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, FILTER_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, DEFAULT_COORDS, DEFAULT_BOUNDS, API_URL } from '../../utils/constants';
 
 import { fetchFilterData } from '../../utils/fetchFilterData';
 //import axios from 'axios';
@@ -60,28 +60,19 @@ const useLocationStore = defineStore({
         console.error(error);
       }
     },
-    async setCurrentLocation(value = '') {
+    setCurrentLocation(arr, value = '') {
       const locationData = localStorage.getItem(LOCATION_KEY);
       const currentLocationData = locationData ? JSON.parse(locationData) : null;
-      const locationItemData = value ? this.locationList.find(data => data[LOCATION_KEY] === value) : {[LOCATION_CODE_KEY]: DEFAULT_LOC_CODE};
+      const locationItemData = value
+        ? arr.find(data => data[LOCATION_CODE_KEY] === value)
+        : {
+          [LOCATION_KEY]: DEFAULT_LOC,
+          [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE,
+          coords: DEFAULT_COORDS,
+          boundedBy: DEFAULT_BOUNDS
+        };
 
-      if(!value && locationData) {
-        this.currentLocation = currentLocationData;
-        return;
-      }
-
-      try {
-        const { isSucceed, data } = await setLocation({
-          value: value || DEFAULT_LOC,
-          code: locationItemData ? locationItemData[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE
-        });
-
-        if(isSucceed) {
-          this.currentLocation = data;
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      this.currentLocation = !value && locationData ? currentLocationData : locationItemData;
     }
   }
 });

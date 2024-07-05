@@ -181,6 +181,7 @@
     },
 
     watch: {
+      /*
       currentLocation(data) {
         this.setCurrentItemsList({
           arr: this.itemsList,
@@ -197,10 +198,7 @@
           [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC,
         });
       },
-
-      currentItemsList(arr) {
-        console.log('Cписок карточек обновлён', arr);
-      },
+      */
 
       currentCategory(data) {
         console.log('Категория обновлена', data);
@@ -208,19 +206,24 @@
 
       locationList(arr) {
         console.log('Список геолокаций обновлён', arr);
-      }
+        this.setCurrentLocation(arr);
+      },
+
+      currentLocation(data) {
+        this.fetchCategoryData({
+          type: this.currentCategoryKey,
+          [LOCATION_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
+        });
+      },
+
+      currentItemsList(arr) {
+        console.log('Cписок карточек обновлён', arr);
+      },
     },
 
     beforeMount() {
-      this.setLocationList(this.currentCategoryKey);
-      /*
-      this.fetchCategoryData({
-        type: this.categoryList[0].type,
-        [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
-      });
-      */
       this.setCurrentCategory(this.categoryList[0]);
-      this.setCurrentLocation();
+      this.setLocationList(this.currentCategoryKey);
     },
   }
 </script>
