@@ -204,14 +204,21 @@
 
       currentCategory(data) {
         console.log('Категория обновлена', data);
+      },
+
+      locationList(arr) {
+        console.log('Список геолокаций обновлён', arr);
       }
     },
 
     beforeMount() {
+      this.setLocationList(this.currentCategoryKey);
+      /*
       this.fetchCategoryData({
         type: this.categoryList[0].type,
         [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
       });
+      */
       this.setCurrentCategory(this.categoryList[0]);
       this.setCurrentLocation();
     },

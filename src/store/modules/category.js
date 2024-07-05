@@ -1,6 +1,4 @@
-import { defineStore, setActivePinia } from 'pinia';
-import { piniaStore } from '../index';
-import { useLocationStore } from './location';
+import { defineStore } from 'pinia';
 import {
   FILIAL_KEY,
   ATM_KEY,
@@ -12,9 +10,6 @@ import {
 
 import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
 import { fetchFilterData } from '../../utils/fetchFilterData';
-
-setActivePinia(piniaStore);
-const locationStore = useLocationStore();
 
 const useCategoryStore = defineStore({
   id: 'category',
@@ -62,7 +57,6 @@ const useCategoryStore = defineStore({
 
         if(filtersData && success) {
         //if (filtersData && itemsData.success) {
-          const { cities } = filtersData;
           const items = itemsData.map(data => {
             const {
               name,
@@ -86,10 +80,7 @@ const useCategoryStore = defineStore({
             };
           });
 
-          locationStore.setLocationList(cities);
-
           this.itemsList = items;
-          this.filterList = filtersData[data.type];
         }
       } catch (error) {
         console.error(error);

@@ -1,6 +1,14 @@
-import { defineStore } from 'pinia';
-import { setLocation, handleLocationList } from '../../utils';
-import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, DEFAULT_COORDS } from '../../utils/constants';
+import { defineStore, setActivePinia } from 'pinia';
+import { piniaStore } from '../index';
+import { useCategoryStore } from './category';
+import { setLocation } from '../../utils';
+import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, FILTER_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, API_URL } from '../../utils/constants';
+
+import { fetchFilterData } from '../../utils/fetchFilterData';
+//import axios from 'axios';
+
+setActivePinia(piniaStore);
+const categoryStore = useCategoryStore();
 
 const useLocationStore = defineStore({
   id: 'location',
@@ -9,37 +17,48 @@ const useLocationStore = defineStore({
     currentLocation: null
   }),
   actions: {
-    async setLocationList(arr) {
-      this.locationList = arr.map(
-        ({ UF_NAME: location, UF_XML_ID: locationCode }) => ({ location, locationCode })
-      );
-      console.log(this.locationList);
-      /*
+    async setLocationList(category) {
       if(category === POINT_KEY) {
         return;
       }
 
-      const locationArr = handleLocationList(arr).reduce(
-        (acc, item) => acc.find(value => value === item) ? acc : [...acc, item], []
-      );
-      const locationDataList = locationArr.map(location => ({
-        location,
-        value: handleLocationList(arr).filter(item => item === location).length
-      }));
+      try {
+        const data = await fetchFilterData();
+        //const data = await axios.get(`${API_URL}${FILTER_KEY}/`);
+        console.log({data});
 
-      this.locationList = locationDataList.sort((a, b) => {
-        const paramA = a.value;
-        const paramB = b.value;
+        if(data) {
+          categoryStore.filterList = data[category];
+        }
 
-        if(paramA < paramB) {
-          return 1;
+        if(data.cities.length) {
+          this.locationList = data.cities.map(({
+            UF_NAME,
+            UF_XML_ID,
+            UF_LATITUDE,
+            UF_LONGITUDE,
+            UF_RANGE_LOW_LAT,
+            UF_RANGE_LOW_LNG,
+            UF_RANGE_UP_LAT,
+            UF_RANGE_UP_LNG
+          }) => {
+            const [coords, leftBottom, rightTop] = [
+              [UF_LATITUDE, UF_LONGITUDE],
+              [UF_RANGE_LOW_LAT, UF_RANGE_LOW_LNG],
+              [UF_RANGE_UP_LAT, UF_RANGE_UP_LNG]
+            ].map(item => [Number(item[0]), Number(item[1])]);
+
+            return {
+              [LOCATION_KEY]: UF_NAME,
+              [LOCATION_CODE_KEY]: UF_XML_ID,
+              coords,
+              boundedBy: [leftBottom, rightTop]
+            }
+          });
         }
-        if(paramA > paramB) {
-          return -1;
-        }
-        return 0;
-      });
-      */
+      } catch (error) {
+        console.error(error);
+      }
     },
     async setCurrentLocation(value = '') {
       const locationData = localStorage.getItem(LOCATION_KEY);

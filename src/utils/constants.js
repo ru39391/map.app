@@ -19,8 +19,8 @@ const RUPOST_KEY = 'rupost';
 
 const DEFAULT_LOC = 'Москва';
 const DEFAULT_LOC_CODE = 'MOSKVA';
-const DEFAULT_COORDS = [55.755864, 37.617698];
-const DEFAULT_BOUNDS = [[55.142226,36.803079],[56.021286,37.967799]];
+const DEFAULT_COORDS = [55.755773,37.617815];
+const DEFAULT_BOUNDS = [[55.491126,37.32624],[55.957565,37.967682]];
 const LOCATION_LIST = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Новосибирск', 'Омск', 'Ростов-на-Дону'];
 
 const MAP_ID = 'map';
