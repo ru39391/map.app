@@ -181,17 +181,6 @@
     },
 
     watch: {
-      /*
-      itemsList(arr) {
-        console.log('Получили и обработали данные', arr);
-        this.setCurrentItemsList({
-          arr,
-          category: this.currentCategoryKey,
-          [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC,
-        });
-      },
-      */
-
       currentCategory(data) {
         console.log('Категория обновлена', data);
       },

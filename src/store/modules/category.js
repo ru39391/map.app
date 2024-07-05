@@ -10,13 +10,11 @@ import {
 } from '../../utils/constants';
 
 import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
-import { fetchFilterData } from '../../utils/fetchFilterData';
 
 const useCategoryStore = defineStore({
   id: 'category',
   state: () => ({
     isCategoryListLoading: false,
-    itemsList: [],
     currentItemsList: [],
     categoryList: [
       {type: FILIAL_KEY, caption: 'Отделения', category: 'Филиал'},
@@ -82,7 +80,7 @@ const useCategoryStore = defineStore({
     async fetchPointsData(data) {
       const paramsArr = Object.values(data).filter(({ checked }) => checked);
 
-      this.itemsList = [];
+      this.currentItemsList = [];
       this.isCategoryListLoading = true;
 
       try {
@@ -90,7 +88,7 @@ const useCategoryStore = defineStore({
           paramsArr.map(({ key, request, boundedBy }) => handlePointsData({ key, request, boundedBy }))
         );
 
-        this.itemsList =  resultArr.reduce((acc, item) => Object.values(item)[0] ? [...acc, ...Object.values(item)[1]] : acc, []);
+        this.currentItemsList =  resultArr.reduce((acc, item) => Object.values(item)[0] ? [...acc, ...Object.values(item)[1]] : acc, []);
       } catch (error) {
         console.error(error);
       } finally {
