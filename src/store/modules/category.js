@@ -4,7 +4,8 @@ import {
   ATM_KEY,
   POINT_KEY,
   TERMINAL_KEY,
-  LOCATION_KEY
+  LOCATION_KEY,
+  API_URL
 } from '../../utils/constants';
 
 import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
@@ -51,6 +52,7 @@ const useCategoryStore = defineStore({
         console.log({filtersData});
         console.log({itemsData});
         */
+        console.log({filtersData});
 
         if(filtersData && success) {
         //if (filtersData && itemsData.success) {
@@ -80,7 +82,7 @@ const useCategoryStore = defineStore({
       } catch (error) {
         console.error(error);
       } finally {
-        console.log({params, api: `/api/branches/${key}${params}`});
+        console.log({params, api: `${API_URL}${key}${params}`});
         this.isCategoryListLoading = false;
       }
     },

@@ -1,5 +1,9 @@
+import { setActivePinia } from 'pinia';
+import { piniaStore } from '../store';
 import { useCategoryStore } from '../store/modules/category';
 import { CLOSED_KEY, MAP_ID } from './constants';
+
+setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();
 
@@ -120,7 +124,8 @@ class YMapHandler {
               {
                 id,
                 idx: index,
-                key
+                key,
+                coords
               },
               {
                 ...config,
