@@ -56,11 +56,11 @@
           <button
             v-for="(locationItem, index) in currLocationList"
             :key="index"
-            :class="['btn-list__item', { 'is-active': locationItem === currLocationCaption }]"
+            :class="['btn-list__item', { 'is-active': locationItem.locationCode === currentLocation.locationCode }]"
             type="button"
             @click="handleCurrLocation(locationItem)"
           >
-            {{ locationItem }}
+            {{ locationItem.location }}
           </button>
         </div>
       </template>
@@ -136,7 +136,7 @@
       },
 
       currLocationList() {
-        return [...LOCATION_LIST];
+        return [...LOCATION_LIST].map(item => this.locationList.find(data => data[LOCATION_KEY] === item));
       },
 
       currentCategoryKey() {
@@ -168,7 +168,7 @@
       handleCurrLocation(value) {
         this.setModalOpen(false);
 
-        if(this.currentLocation && value !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(value);
+        if(this.currentLocation && value[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]) this.setCurrentLocation(this.locationList, value[LOCATION_CODE_KEY]);
       },
 
       setMapVisible() {
@@ -182,14 +182,6 @@
 
     watch: {
       /*
-      currentLocation(data) {
-        this.setCurrentItemsList({
-          arr: this.itemsList,
-          category: this.currentCategoryKey,
-          [LOCATION_KEY]: data ? data[LOCATION_KEY] : DEFAULT_LOC
-        });
-      },
-
       itemsList(arr) {
         console.log('Получили и обработали данные', arr);
         this.setCurrentItemsList({

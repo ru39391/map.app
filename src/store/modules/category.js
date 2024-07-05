@@ -30,6 +30,9 @@ const useCategoryStore = defineStore({
   }),
   actions: {
     async fetchCategoryData(data, params = '') {
+      this.currentItemsList = [];
+      this.isCategoryListLoading = true;
+
       if(data.type === POINT_KEY) {
         this.isCategoryListLoading = false;
         return;
@@ -37,30 +40,13 @@ const useCategoryStore = defineStore({
 
       const requestUrl = `${API_URL}${data.type}${params ? `${params}&HL_CITY=${data[LOCATION_CODE_KEY]}` : `?HL_CITY=${data[LOCATION_CODE_KEY]}`}`
 
-      console.log(requestUrl);
-      return;
-
-      this.itemsList = [];
-      this.isCategoryListLoading = true;
-
       try {
-        const [ filtersData, {data: itemsData, success} ] = await Promise.all([fetchFilterData(), fetchersData[data.type]()]);
-        /*
-        const [
-          { data: filtersData },
-          { data: itemsData }
-        ] = await Promise.all([
-          `${API_URL}${FILTER_KEY}/`,
-          `${API_URL}${data.type}${params}`,
-        ].map((url) => axios.get(url)));
+        const {data: itemsData, success} = await fetchersData[data.type]();
+        //const { data: itemsData } = await axios.get(requestUrl);
+        //console.log({itemsData});
 
-        console.log({filtersData});
-        console.log({itemsData});
-        */
-        //console.log(filtersData.cities[0]);
-
-        if(filtersData && success) {
-        //if (filtersData && itemsData.success) {
+        if(success) {
+        //if (itemsData.success) {
           const items = itemsData.map(data => {
             const {
               name,
@@ -84,12 +70,12 @@ const useCategoryStore = defineStore({
             };
           });
 
-          this.itemsList = items;
+          this.currentItemsList = items;
         }
       } catch (error) {
         console.error(error);
       } finally {
-        console.log({params, api: `${API_URL}${data.type}${params}`});
+        console.log({requestUrl});
         this.isCategoryListLoading = false;
       }
     },

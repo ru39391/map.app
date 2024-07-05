@@ -63,7 +63,7 @@ const useLocationStore = defineStore({
         categoryStore.isCategoryListLoading = false;
       }
     },
-    setCurrentLocation(arr, value = '') {
+    async setCurrentLocation(arr, value = '') {
       const locationData = localStorage.getItem(LOCATION_KEY);
       const currentLocationData = locationData ? JSON.parse(locationData) : null;
       const locationItemData = value
@@ -75,7 +75,20 @@ const useLocationStore = defineStore({
           boundedBy: DEFAULT_BOUNDS
         };
 
-      this.currentLocation = !value && locationData ? currentLocationData : locationItemData;
+      if(!value && locationData) {
+        this.currentLocation = currentLocationData;
+        return;
+      }
+
+      try {
+        const { isSucceed, data } = await setLocation(locationItemData);
+
+        if(isSucceed) {
+          this.currentLocation = data;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 });

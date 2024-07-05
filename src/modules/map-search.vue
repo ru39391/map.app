@@ -40,7 +40,7 @@
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
   import { useModalStore } from '../store/modules/modal';
-  import { LOCATION_KEY } from '../utils/constants';
+  import { LOCATION_CODE_KEY } from '../utils/constants';
   import PinIcon from '../assets/icons/pin-icon.vue';
   import SearchIcon from '../assets/icons/search-icon.vue';
 
@@ -123,7 +123,7 @@
         } else {
           this.setModalOpen(false);
 
-          if(this.currentLocation && data[LOCATION_KEY] !== this.currentLocation[LOCATION_KEY]) this.setCurrentLocation(this.locationList, data[LOCATION_KEY]);
+          if(this.currentLocation && data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]) this.setCurrentLocation(this.locationList, data[LOCATION_CODE_KEY]);
         }
 
         return new Promise((resolve, reject) => {

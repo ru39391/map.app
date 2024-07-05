@@ -84,29 +84,23 @@ const setLocation = async (values) => {
   const isLocationSet = (key) => localStorage.getItem(key) !== null;
   const setLocationData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
 
-  try {
-    const { isSucceed, data: locData } = await handleLocationData(values);
-
-    if(isSucceed) {
-      if(isLocationSet(LOCATION_KEY)) {
-        localStorage.removeItem(LOCATION_KEY);
-        setLocationData(LOCATION_KEY, locData);
-      } else {
-        setLocationData(LOCATION_KEY, locData);
-      }
-
-      data = isLocationSet(LOCATION_KEY)
-        ? {
-          isSucceed: isLocationSet(LOCATION_KEY),
-          data: JSON.parse(localStorage.getItem(LOCATION_KEY))
-        }
-        : data;
-    }
-  } catch (error) {
-    console.error(error);
+  if(isLocationSet(LOCATION_KEY)) {
+    localStorage.removeItem(LOCATION_KEY);
+    setLocationData(LOCATION_KEY, values);
+  } else {
+    setLocationData(LOCATION_KEY, values);
   }
 
-  return data;
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isLocationSet(LOCATION_KEY)
+        ? resolve({
+            isSucceed: isLocationSet(LOCATION_KEY),
+            data: JSON.parse(localStorage.getItem(LOCATION_KEY))
+          })
+        : reject({ ...data });
+    }, 200);
+  });
 }
 
 const handleLocationList = (arr, key = '') => arr.reduce(
