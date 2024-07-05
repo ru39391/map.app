@@ -76,7 +76,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, LOCATION_KEY, DEFAULT_LOC, LOCATION_LIST } from './utils/constants';
+  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, LOCATION_LIST } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
@@ -136,7 +136,6 @@
       },
 
       currLocationList() {
-        // this.locationList.reduce((acc, { location }, index) => index < 6 ? [...acc, location] : acc, []);
         return [...LOCATION_LIST];
       },
 
@@ -192,10 +191,6 @@
 
       itemsList(arr) {
         console.log('Получили и обработали данные', arr);
-        this.setLocationList({
-          arr,
-          category: this.currentCategoryKey,
-        });
         this.setCurrentItemsList({
           arr,
           category: this.currentCategoryKey,
@@ -213,7 +208,10 @@
     },
 
     beforeMount() {
-      this.fetchCategoryData(this.categoryList[0].type);
+      this.fetchCategoryData({
+        type: this.categoryList[0].type,
+        [LOCATION_KEY]: this.currentLocation ? this.currentLocation[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
+      });
       this.setCurrentCategory(this.categoryList[0]);
       this.setCurrentLocation();
     },

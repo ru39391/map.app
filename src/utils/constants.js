@@ -6,6 +6,7 @@ const FILTER_KEY = 'filter';
 
 const ADDRESS_KEY = 'address';
 const LOCATION_KEY = 'location';
+const LOCATION_CODE_KEY = 'locationCode';
 
 const DEFAULT_KEY = 'default';
 const CLOSED_KEY = 'closed';
@@ -17,6 +18,7 @@ const LXNET_KEY = 'lxnet';
 const RUPOST_KEY = 'rupost';
 
 const DEFAULT_LOC = 'Москва';
+const DEFAULT_LOC_CODE = 'MOSKVA';
 const DEFAULT_COORDS = [55.755864, 37.617698];
 const DEFAULT_BOUNDS = [[55.142226,36.803079],[56.021286,37.967799]];
 const LOCATION_LIST = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Новосибирск', 'Омск', 'Ростов-на-Дону'];
@@ -44,6 +46,7 @@ export {
   FILTER_KEY,
   ADDRESS_KEY,
   LOCATION_KEY,
+  LOCATION_CODE_KEY,
   DEFAULT_KEY,
   CLOSED_KEY,
   BEELINE_KEY,
@@ -53,6 +56,7 @@ export {
   LXNET_KEY,
   RUPOST_KEY,
   DEFAULT_LOC,
+  DEFAULT_LOC_CODE,
   DEFAULT_COORDS,
   DEFAULT_BOUNDS,
   LOCATION_LIST,

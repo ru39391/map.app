@@ -74,7 +74,7 @@
         ]
       ),
 
-      ...mapState(useLocationStore, ['currentLocation', 'currentCoords']),
+      ...mapState(useLocationStore, ['currentLocation']),
 
       currLocationData() {
         return {

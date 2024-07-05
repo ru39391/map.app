@@ -5,7 +5,11 @@
       <div class="info-card__caption">{{ item.name }}</div>
     </div>
     <div
-      :class="['info-card__wrapper', { 'info-card__wrapper_mb_none': isPointsListVisible || !isCardFooterVisible }]"
+      :class="[
+        'info-card__wrapper',
+        { 'info-card__wrapper_margin_bottom': !isPointsListVisible },
+        { 'info-card__wrapper_mb_none': !isCardFooterVisible }
+      ]"
     >
       <div
         :class="[
@@ -15,10 +19,13 @@
         ]"
         v-if="item.workingStatus"
       >
-        <template v-if="item.workingStatus.isWork">Открыто</template>
-        <template v-else>Закрыто</template>
+        <template v-if="isPointsListVisible">
+          <template v-if="item.workingStatus.isWork">Открыто</template>
+          <template v-else>Закрыто</template>
+          до
+        </template>
 
-        <template v-if="item.workingStatus.time"> до {{ item.workingStatus.time }}</template>
+        <template v-if="item.workingStatus.time">{{ item.workingStatus.time }}</template>
       </div>
       <div class="info-card__item info-card__item_fw_bold info-card__item_type_row">
         {{ item.address }}

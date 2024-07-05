@@ -4,7 +4,8 @@ import {
   POINT_KEY,
   TERMINAL_KEY,
   ADDRESS_KEY,
-  LOCATION_KEY
+  LOCATION_KEY,
+  LOCATION_CODE_KEY
 } from './constants';
 
 import { fetchFilialData } from './fetchFilialData';
@@ -51,7 +52,7 @@ const handlePointsData = async ({ key, request, boundedBy }) => {
   return data;
 }
 
-const handleLocationData = async (value) => {
+const handleLocationData = async ({value, code}) => {
   let data = {isSucceed: false, data: null};
 
   try {
@@ -63,6 +64,7 @@ const handleLocationData = async (value) => {
         isSucceed: true,
         data: {
           [LOCATION_KEY]: value,
+          [LOCATION_CODE_KEY]: code,
           coords: geoObject.geometry.getCoordinates(),
           boundedBy: geoObject.properties.get('boundedBy')
         }
@@ -76,14 +78,14 @@ const handleLocationData = async (value) => {
   return data;
 }
 
-const setLocation = async (value) => {
+const setLocation = async (values) => {
   let data = {isSucceed: false, data: null};
 
   const isLocationSet = (key) => localStorage.getItem(key) !== null;
   const setLocationData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
 
   try {
-    const { isSucceed, data: locData } = await handleLocationData(value);
+    const { isSucceed, data: locData } = await handleLocationData(values);
 
     if(isSucceed) {
       if(isLocationSet(LOCATION_KEY)) {

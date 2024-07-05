@@ -1,4 +1,6 @@
-import { defineStore } from 'pinia';
+import { defineStore, setActivePinia } from 'pinia';
+import { piniaStore } from '../index';
+import { useLocationStore } from './location';
 import {
   FILIAL_KEY,
   ATM_KEY,
@@ -10,6 +12,9 @@ import {
 
 import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
 import { fetchFilterData } from '../../utils/fetchFilterData';
+
+setActivePinia(piniaStore);
+const locationStore = useLocationStore();
 
 const useCategoryStore = defineStore({
   id: 'category',
@@ -28,43 +33,47 @@ const useCategoryStore = defineStore({
     currentCategory: null,
   }),
   actions: {
-    async fetchCategoryData(key, params = '') {
+    async fetchCategoryData(data, params = '') {
+      console.log(data[LOCATION_KEY]);
       this.itemsList = [];
       this.filterList = [];
       this.isCategoryListLoading = true;
 
-      if(key === POINT_KEY) {
+      if(data.type === POINT_KEY) {
         this.isCategoryListLoading = false;
         return;
       }
 
       try {
-        const [ filtersData, {data: itemsData, success} ] = await Promise.all([fetchFilterData(), fetchersData[key]()]);
+        const [ filtersData, {data: itemsData, success} ] = await Promise.all([fetchFilterData(), fetchersData[data.type]()]);
         /*
         const [
           { data: filtersData },
           { data: itemsData }
         ] = await Promise.all([
           `${API_URL}${FILTER_KEY}/`,
-          `${API_URL}${key}${params}`,
+          `${API_URL}${data.type}${params}`,
         ].map((url) => axios.get(url)));
 
         console.log({filtersData});
         console.log({itemsData});
         */
-        console.log({filtersData});
+        //console.log(filtersData.cities[0]);
 
         if(filtersData && success) {
         //if (filtersData && itemsData.success) {
+          const { cities } = filtersData;
           const items = itemsData.map(data => {
             const {
               name,
               address,
-              workMode
+              workMode,
+              workTime
             } = {
               name: data.name,
               address: data.address,
-              workMode: data.work_mode
+              workMode: data.work_mode,
+              workTime: data.work_time
             };
             const workModeArr = workMode.split('<br/><b>');
 
@@ -72,17 +81,20 @@ const useCategoryStore = defineStore({
               ...data,
               name: name.replace(/&quot;/g, ''),
               address: address.replace(/&quot;/g, ''),
-              workMode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item)
+              workMode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item),
+              ...(workTime && { workingStatus: { isWork: workTime.color === 'blue', time: workTime.title } })
             };
           });
 
+          locationStore.setLocationList(cities);
+
           this.itemsList = items;
-          this.filterList = filtersData[key];
+          this.filterList = filtersData[data.type];
         }
       } catch (error) {
         console.error(error);
       } finally {
-        console.log({params, api: `${API_URL}${key}${params}`});
+        console.log({params, api: `${API_URL}${data.type}${params}`});
         this.isCategoryListLoading = false;
       }
     },
