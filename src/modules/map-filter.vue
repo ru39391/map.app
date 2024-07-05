@@ -105,7 +105,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY } from '../utils/constants';
+  import { POINT_KEY, BEELINE_KEY, MTS_KEY, KH_KEY, KARI_KEY, LXNET_KEY, RUPOST_KEY, LOCATION_CODE_KEY, DEFAULT_LOC_CODE } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
   import CheckedIcon from '../assets/icons/checked-icon.vue';
@@ -206,7 +206,7 @@
       ...mapState(
         useCategoryStore,
         [
-          'filterList',
+          'categoryFilterData',
           'currentCategory',
           'categoryList'
         ]
@@ -218,6 +218,17 @@
 
       isPointsListVisible() {
         return this.currentCategory && this.currentCategory.type === POINT_KEY;
+      },
+
+      currentCategoryData() {
+        return {
+          type: this.currentCategory ? this.currentCategory.type : this.categoryList[0].type,
+          [LOCATION_CODE_KEY]: this.currentLocation ? this.currentLocation[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE
+        };
+      },
+
+      filterList() {
+        return this.categoryFilterData ? this.categoryFilterData[this.currentCategoryData.type] : [];
       }
     },
 
@@ -240,7 +251,7 @@
           (acc, item, index) => acc + `${index === 0 ? '?' : '&'}${item}=${Object.values(paramsData)[index]}`, ''
         );
 
-        this.fetchCategoryData(this.currentCategory ? this.currentCategory.type : this.categoryList[0].type, params);
+        this.fetchCategoryData({ ...this.currentCategoryData }, params);
       },
 
       updatePointsFilterData(boundedBy) {
@@ -305,7 +316,7 @@
 
       pointsFilterData(data) {
         console.log('Список параметров фильтра точек погашения обновлён', data);
-      }
+      },
     },
 
     mounted() {

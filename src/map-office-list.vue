@@ -212,7 +212,7 @@
       currentLocation(data) {
         this.fetchCategoryData({
           type: this.currentCategoryKey,
-          [LOCATION_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
+          [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
         });
       },
 

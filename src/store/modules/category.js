@@ -5,6 +5,7 @@ import {
   POINT_KEY,
   TERMINAL_KEY,
   LOCATION_KEY,
+  LOCATION_CODE_KEY,
   API_URL
 } from '../../utils/constants';
 
@@ -17,7 +18,6 @@ const useCategoryStore = defineStore({
     isCategoryListLoading: false,
     itemsList: [],
     currentItemsList: [],
-    filterList: [],
     categoryList: [
       {type: FILIAL_KEY, caption: 'Отделения', category: 'Филиал'},
       {type: ATM_KEY, caption: 'Банкоматы', category: 'Банкомат'},
@@ -26,18 +26,22 @@ const useCategoryStore = defineStore({
     ],
     currentItem: null,
     currentCategory: null,
+    categoryFilterData: null,
   }),
   actions: {
     async fetchCategoryData(data, params = '') {
-      console.log(data[LOCATION_KEY]);
-      this.itemsList = [];
-      this.filterList = [];
-      this.isCategoryListLoading = true;
-
       if(data.type === POINT_KEY) {
         this.isCategoryListLoading = false;
         return;
       }
+
+      const requestUrl = `${API_URL}${data.type}${params ? `${params}&HL_CITY=${data[LOCATION_CODE_KEY]}` : `?HL_CITY=${data[LOCATION_CODE_KEY]}`}`
+
+      console.log(requestUrl);
+      return;
+
+      this.itemsList = [];
+      this.isCategoryListLoading = true;
 
       try {
         const [ filtersData, {data: itemsData, success} ] = await Promise.all([fetchFilterData(), fetchersData[data.type]()]);

@@ -22,7 +22,9 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
+  import { LOCATION_CODE_KEY, DEFAULT_LOC_CODE } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
+  import { useLocationStore } from '../store/modules/location';
   import ExpendMoreIcon from '../assets/icons/expend-more-icon.vue';
 
   export default {
@@ -47,8 +49,14 @@
         ]
       ),
 
+      ...mapState(useLocationStore, ['currentLocation']),
+
       selecterCaption() {
         return this.currentCategory ? this.currentCategory.caption : '';
+      },
+
+      currentLocationData() {
+        return { [LOCATION_CODE_KEY]: this.currentLocation ? this.currentLocation[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE };
       }
     },
 
@@ -73,7 +81,11 @@
         }
 
         this.setCurrentCategory({type, caption, category});
-        this.fetchCategoryData(type);
+
+        this.fetchCategoryData({
+          type,
+          ...this.currentLocationData
+        });
       },
 
       closeDropdown({ target }) {

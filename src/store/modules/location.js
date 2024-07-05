@@ -18,7 +18,10 @@ const useLocationStore = defineStore({
   }),
   actions: {
     async setLocationList(category) {
+      categoryStore.isCategoryListLoading = true;
+
       if(category === POINT_KEY) {
+        categoryStore.isCategoryListLoading = false;
         return;
       }
 
@@ -28,10 +31,8 @@ const useLocationStore = defineStore({
         console.log({data});
 
         if(data) {
-          categoryStore.filterList = data[category];
-        }
+          categoryStore.categoryFilterData = data;
 
-        if(data.cities.length) {
           this.locationList = data.cities.map(({
             UF_NAME,
             UF_XML_ID,
@@ -58,6 +59,8 @@ const useLocationStore = defineStore({
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        categoryStore.isCategoryListLoading = false;
       }
     },
     setCurrentLocation(arr, value = '') {
