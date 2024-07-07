@@ -99,7 +99,7 @@
       setMapMarkersList(arr) {
         this.mapMarkersList = this.isPointsListVisible
           ? arr
-          : arr.map(({ id, lon, lat }) => ({ id, coords: [Number(lon), Number(lat)] }));
+          : arr.map(({ id, lon, lat, workingStatus }) => ({ id, coords: [Number(lon), Number(lat)], isWork: workingStatus.isWork }));
       },
     },
 
@@ -115,6 +115,7 @@
 
       mapMarkersList(arr) {
         console.log('Список объектов карты обновлён', arr);
+        console.log({ ...this.currLocationData, config: this.markerOptions, icons: this.markerIcons });
         yMapHandler.renderYMap({ arr, ...this.currLocationData, config: this.markerOptions, icons: this.markerIcons });
       },
 

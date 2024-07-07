@@ -11,12 +11,53 @@ class YMapHandler {
   constructor() {
     this.mapId = MAP_ID;
     this.mapItem = null;
+    this.iconsData = null;
+    this.pinConfig = null;
   }
 
   setCardData(data) {
     const item = categoryStore.currentItemsList.find(({ id }) => id === data.id);
 
     categoryStore.setCurrentItem(item ? { ...item, coords: data.coords } : null);
+  }
+
+  hoverPlacemark(options, key) {
+    options.set('iconImageSize', key ? [48, 48] : [66, 94]);
+    options.set('iconImageOffset', key ? [-24, -48] : [-33, -94]);
+  }
+
+  leavePlacemark(options, key, isClosed) {
+    const data = key ? { ...this.pinConfig, ...this.iconsData[key] } : { ...this.pinConfig, ...(isClosed && { ...this.iconsData[CLOSED_KEY] }) };
+
+    Object.keys(data).forEach((item, index) => {
+      options.set(item, Object.values(data)[index]);
+    });
+  }
+
+  selectPlacemark(arr, placemarks) {
+    const cards = arr.map(({ id }) => ({ id, card: document.querySelector(`#card-${id}`) }));
+    const targets = placemarks.map(
+      ({ properties, options }) => ({
+        id: properties._data.id,
+        key: properties._data.key,
+        isClosed: properties._data.isClosed,
+        options
+      })
+    );
+
+    cards.forEach(({ id, card }) => {
+      card.addEventListener('mouseenter', () => {
+        const target = targets.find(item => item.id === id);
+
+        this.hoverPlacemark(target.options, target.key);
+      });
+
+      card.addEventListener('mouseleave', () => {
+        const target = targets.find(item => item.id === id);
+
+        this.leavePlacemark(target.options, target.key, target.isClosed);
+      });
+    })
   }
 
   isMapItemExist() {
@@ -27,6 +68,8 @@ class YMapHandler {
     if(this.isMapItemExist()) {
       this.mapItem.destroy();
       this.mapItem = null;
+      this.iconsData = null;
+      this.pinConfig = null;
     }
 
     return new Promise((resolve, reject) => {
@@ -83,8 +126,8 @@ class YMapHandler {
   }
 
   async renderYMap(data) {
+    const placemarks = [];
     const { arr, config, icons } = data;
-    //console.log({ config, icons });
 
     const scrollToCard = (event) => {
       const { properties } = event.get('target');
@@ -98,17 +141,14 @@ class YMapHandler {
       const { properties, options } = event.get('target');
       const { key } = properties._data;
 
-      options.set('iconImageSize', key ? [48, 48] : [66, 94]);
+      this.hoverPlacemark(options, key);
     };
 
     const leavePin = (event) => {
       const { properties, options } = event.get('target');
-      const { key } = properties._data;
-      const data = key ? { ...config, ...icons[key] } : { ...config };
+      const { key, isClosed } = properties._data;
 
-      Object.keys(data).forEach((item, index) => {
-        options.set(item, Object.values(data)[index]);
-      });
+      this.leavePlacemark(options, key, isClosed);
     };
 
     try {
@@ -117,29 +157,34 @@ class YMapHandler {
       if(isSucceed) {
         const collection = new yMaps.GeoObjectCollection(null, { preset: 'islands#blackDotIcon' });
 
-        arr.forEach(({ id, coords, key, workingStatus }, index) => {
-          collection.add(
-            new yMaps.Placemark(
+        arr.forEach(({ id, coords, key, isWork }, index) => {
+          const placemark = new yMaps.Placemark(
+            coords,
+            {
+              id,
+              idx: index,
+              key,
               coords,
-              {
-                id,
-                idx: index,
-                key,
-                coords
-              },
-              {
-                ...config,
-                ...(key && { ...icons[key] }),
-                ...(!key && workingStatus && !workingStatus.isWork && { ...icons[CLOSED_KEY] } )
-              }
-            )
+              isClosed: !key && !isWork
+            },
+            {
+              ...config,
+              ...(key && { ...icons[key] }),
+              ...(!key && !isWork && { ...icons[CLOSED_KEY] } )
+            }
           );
+          collection.add(placemark);
+          placemarks.push(placemark);
         });
 
         map.geoObjects.events.add('mouseenter', hoverPin);
         map.geoObjects.events.add('mouseleave', leavePin);
         map.geoObjects.events.add('click', scrollToCard);
         map.geoObjects.add(collection);
+
+        this.iconsData = icons;
+        this.pinConfig = config;
+        this.selectPlacemark(arr, placemarks);
       };
     } catch (error) {
       console.error(error);
