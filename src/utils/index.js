@@ -122,5 +122,5 @@ export {
   fetchersData,
   setLocation,
   handleLocationList,
-  handlePointsData
+  handlePointsData,
 };

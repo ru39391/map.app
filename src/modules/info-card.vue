@@ -12,7 +12,7 @@
       :class="[
         'info-card__wrapper',
         { 'info-card__wrapper_margin_bottom': !isPointsListVisible },
-        { 'info-card__wrapper_mb_none': !isCardFooterVisible }
+        { 'info-card__wrapper_mb_none': !isCardFooterVisible || isPointsListVisible }
       ]"
     >
       <div
@@ -21,12 +21,13 @@
           { 'info-card__item_color_primary': item.workingStatus && item.workingStatus.isWork },
           { 'info-card__item_color_danger': item.workingStatus && !item.workingStatus.isWork }
         ]"
-        v-if="item.workingStatus"
+        v-if="item.workingStatus && !isPointsListVisible"
       >
         <template v-if="isPointsListVisible">
           <template v-if="item.workingStatus.isWork">Открыто</template>
           <template v-else>Закрыто</template>
-          до
+
+          <template v-if="item.workingStatus.time"> до </template>
         </template>
 
         <template v-if="item.workingStatus.time">{{ item.workingStatus.time }}</template>
@@ -36,7 +37,7 @@
         <button class="info-card__item-toggler" type="button" @click="copyItemAddress(item.address)"><CopyIcon /></button>
       </div>
       <div
-        v-if="Array.isArray(item.workMode) && item.workMode.length"
+        v-if="Array.isArray(item.workMode) && item.workMode.length && !isPointsListVisible"
         class="info-card__item"
       >
         <template
@@ -46,12 +47,6 @@
           {{ value }}<br />
         </template>
       </div>
-
-      <template
-        v-if="!isDept && item.content && isCardFooterVisible"
-      >
-        {{ item.content }}
-      </template>
     </div>
     <button
       class="info-card__toggler"
@@ -61,7 +56,7 @@
     >
     </button>
     <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
-    <div class="info-card__footer" v-if="isCardFooterVisible">
+    <div class="info-card__footer" v-if="isCardFooterVisible && !isPointsListVisible">
       <a
         class="map-filter-btn"
         v-if="isDept && item.coords && item.coords.length"
@@ -136,7 +131,7 @@
 <script>
   import { mapActions } from 'pinia';
   import { useCategoryStore } from '../store/modules/category';
-  import { FILIAL_KEY, ATM_KEY } from '../utils/constants';
+  import { FILIAL_KEY, ATM_KEY, POINT_KEY } from '../utils/constants';
   import CopyIcon from '../assets/icons/copy-icon.vue';
 
   export default {
@@ -164,9 +159,6 @@
       currentCategory: {
         type: Object
       },
-      isPointsListVisible: {
-        type: Boolean
-      },
       isCardFooterVisible: {
         type: Boolean
       }
@@ -181,12 +173,16 @@
         return this.item && Array.isArray(this.item.fl) && this.item.fl.length || this.servicesDataList.reduce((acc, { key }) => acc || Boolean(this.item[key]), false);
       },
 
+      isPointsListVisible() {
+        return this.currentCategory && this.currentCategory.type === POINT_KEY;
+      },
+
       isDept() {
-        return this.currentCategory.type === FILIAL_KEY;
+        return this.currentCategory && this.currentCategory.type === FILIAL_KEY;
       },
 
       isAtm() {
-        return this.currentCategory.type === ATM_KEY;
+        return this.currentCategory && this.currentCategory.type === ATM_KEY;
       }
     },
 

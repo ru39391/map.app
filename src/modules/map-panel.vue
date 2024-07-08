@@ -37,6 +37,12 @@
 
     methods: {
       ...mapActions(useCategoryStore, ['setCurrentItem'])
+    },
+
+    watch: {
+      currentItem(data) {
+        console.log('Подробные данные обновлены', data);
+      }
     }
   };
 </script>

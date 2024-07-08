@@ -34,7 +34,6 @@
             :id="`card-${item.id}`"
             :item="item"
             :currentCategory="currentCategory"
-            :isPointsListVisible="isPointsListVisible"
           />
         </div>
       </div>
@@ -66,6 +65,7 @@
       </template>
     </MapModal>
     <MapSwitcher
+      v-if="!isPointsListVisible"
       :isMapVisible="isMapVisible"
       @handleMapVisibility="setMapVisible"
     />
@@ -200,6 +200,10 @@
       currentItemsList(arr) {
         console.log('Cписок карточек обновлён', arr);
       },
+
+      isPointsListVisible(value) {
+        if(value) this.isMapVisible = value;
+      }
     },
 
     beforeMount() {

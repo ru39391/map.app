@@ -49,22 +49,27 @@ const useCategoryStore = defineStore({
             const {
               name,
               address,
+              category,
+              content,
               workMode,
               workTime
             } = {
               name: data.name,
               address: data.address,
+              category: data.category,
+              content: data.content,
               workMode: data.work_mode,
               workTime: data.work_time
             };
             const workModeArr = workMode.split('<br/><b>');
+            const about = [];
 
             return {
               ...data,
               name: name.replace(/&quot;/g, ''),
               address: address.replace(/&quot;/g, ''),
               workMode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item),
-              ...(workTime && { workingStatus: { isWork: workTime.color === 'blue', time: workTime.title } })
+              ...(workTime && { workingStatus: { isWork: workTime.color === 'blue', time: workTime.title } }),
             };
           });
 
