@@ -212,20 +212,17 @@ class YMapHandler {
               ...(!key && !isWork && { ...icons[CLOSED_KEY] } )
             }
           );
-          clusterer.add(placemark);
-          //collection.add(placemark);
+          //clusterer.add(placemark);
+          collection.add(placemark);
           placemarks.push(placemark);
         });
 
         map.geoObjects.events.add('mouseenter', hoverPin);
         map.geoObjects.events.add('mouseleave', leavePin);
         map.geoObjects.events.add('click', scrollToCard);
-        clusterer.events.add('click', (event) => {
-          console.log(event.get('target'));
-        });
 
-        map.geoObjects.add(clusterer);
-        //map.geoObjects.add(collection);
+        //map.geoObjects.add(clusterer);
+        map.geoObjects.add(collection);
 
         this.iconsData = icons;
         this.pinConfig = config;

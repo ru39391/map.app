@@ -2,7 +2,11 @@
   <div class="info-card">
     <div class="info-card__header">
       <div class="info-card__category" v-if="currentCategory">{{ currentCategory.category }}</div>
-      <div class="info-card__caption">{{ item.name }}</div>
+      <div class="info-card__caption">
+        <template v-if="isAtm">ОТП Банк</template><template v-else>{{ item.name }}</template>
+
+        <template v-if="isDept && item.subname"> ({{ item.subname.toLowerCase() }})</template>
+      </div>
     </div>
     <div
       :class="[
@@ -42,6 +46,12 @@
           {{ value }}<br />
         </template>
       </div>
+
+      <template
+        v-if="!isDept && item.content && isCardFooterVisible"
+      >
+        {{ item.content }}
+      </template>
     </div>
     <button
       class="info-card__toggler"
@@ -54,14 +64,17 @@
     <div class="info-card__footer" v-if="isCardFooterVisible">
       <a
         class="map-filter-btn"
-        v-if="item.coords && item.coords.length"
+        v-if="isDept && item.coords && item.coords.length"
         :href="`https://yandex.ru/maps/?rtext=~${item.coords[0].toString()},${item.coords[1].toString()}`"
         target="_blank"
       >
         маршрут от меня
       </a>
       <div class="info-card__section">
-        <div class="info-card__item info-card__item_type_title">О филиале</div>
+        <div class="info-card__item info-card__item_type_title" v-if="isDept">
+          <template v-if="item.subname === 'Дополнительный офис'">О дополнительном офисе</template>
+          <template v-else>О филиале</template>
+        </div>
         <div class="info-card__content" v-if="(Array.isArray(item.phone) && item.phone.length) || item.email">
           <div class="info-card__item info-card__item_type_subtitle">Контактная информация:</div>
           <div class="info-card__item info-card__item_fs_sm">
@@ -123,6 +136,7 @@
 <script>
   import { mapActions } from 'pinia';
   import { useCategoryStore } from '../store/modules/category';
+  import { FILIAL_KEY, ATM_KEY } from '../utils/constants';
   import CopyIcon from '../assets/icons/copy-icon.vue';
 
   export default {
@@ -165,6 +179,14 @@
 
       isServicesListExist() {
         return this.item && Array.isArray(this.item.fl) && this.item.fl.length || this.servicesDataList.reduce((acc, { key }) => acc || Boolean(this.item[key]), false);
+      },
+
+      isDept() {
+        return this.currentCategory.type === FILIAL_KEY;
+      },
+
+      isAtm() {
+        return this.currentCategory.type === ATM_KEY;
       }
     },
 
