@@ -41,7 +41,8 @@ const useLocationStore = defineStore({
             UF_RANGE_LOW_LAT,
             UF_RANGE_LOW_LNG,
             UF_RANGE_UP_LAT,
-            UF_RANGE_UP_LNG
+            UF_RANGE_UP_LNG,
+            UF_TOP
           }) => {
             const [coords, leftBottom, rightTop] = [
               [UF_LATITUDE, UF_LONGITUDE],
@@ -53,7 +54,8 @@ const useLocationStore = defineStore({
               [LOCATION_KEY]: UF_NAME,
               [LOCATION_CODE_KEY]: UF_XML_ID,
               coords,
-              boundedBy: [leftBottom, rightTop]
+              boundedBy: [leftBottom, rightTop],
+              isPopular: Boolean(UF_TOP)
             }
           });
         }

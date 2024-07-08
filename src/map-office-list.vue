@@ -76,7 +76,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, LOCATION_LIST } from './utils/constants';
+  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
@@ -136,7 +136,7 @@
       },
 
       currLocationList() {
-        return [...LOCATION_LIST].map(item => this.locationList.find(data => data[LOCATION_KEY] === item));
+        return this.locationList.filter(({ isPopular }) => isPopular);
       },
 
       currentCategoryKey() {

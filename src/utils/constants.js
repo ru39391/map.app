@@ -10,6 +10,8 @@ const LOCATION_CODE_KEY = 'locationCode';
 
 const DEFAULT_KEY = 'default';
 const CLOSED_KEY = 'closed';
+const SELECTED_KEY = 'selected';
+const SELECTED_CLOSED_KEY = 'selected_closed';
 const BEELINE_KEY = 'beeline';
 const MTS_KEY = 'mts';
 const KH_KEY = 'kh';
@@ -21,7 +23,6 @@ const DEFAULT_LOC = 'Москва';
 const DEFAULT_LOC_CODE = 'MOSKVA';
 const DEFAULT_COORDS = [55.755773,37.617815];
 const DEFAULT_BOUNDS = [[55.491126,37.32624],[55.957565,37.967682]];
-const LOCATION_LIST = ['Москва', 'Санкт-Петербург', 'Екатеринбург', 'Новосибирск', 'Омск', 'Ростов-на-Дону'];
 
 const MAP_ID = 'map';
 const API_URL = '/api/branches/';
@@ -30,6 +31,8 @@ const ICONS_URL = './src/assets/map-icons';
 const MAP_PINS = {
   [DEFAULT_KEY]: `${ICONS_URL}/pin-icon.svg`,
   [CLOSED_KEY]: `${ICONS_URL}/pin-closed-icon.svg`,
+  [SELECTED_KEY]: `${ICONS_URL}/pin-selected-icon.svg`,
+  [SELECTED_CLOSED_KEY]: `${ICONS_URL}/pin-selected-closed-icon.svg`,
   [BEELINE_KEY]: `${ICONS_URL}/beeline-icon.png`,
   [MTS_KEY]: `${ICONS_URL}/mts-icon.png`,
   [KH_KEY]: `${ICONS_URL}/kh-icon.png`,
@@ -49,6 +52,8 @@ export {
   LOCATION_CODE_KEY,
   DEFAULT_KEY,
   CLOSED_KEY,
+  SELECTED_KEY,
+  SELECTED_CLOSED_KEY,
   BEELINE_KEY,
   MTS_KEY,
   KH_KEY,
@@ -59,7 +64,6 @@ export {
   DEFAULT_LOC_CODE,
   DEFAULT_COORDS,
   DEFAULT_BOUNDS,
-  LOCATION_LIST,
   MAP_PINS,
   MAP_ID,
   API_URL

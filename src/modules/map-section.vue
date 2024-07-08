@@ -8,6 +8,8 @@
     POINT_KEY,
     DEFAULT_KEY,
     CLOSED_KEY,
+    SELECTED_KEY,
+    SELECTED_CLOSED_KEY,
     BEELINE_KEY,
     MTS_KEY,
     KH_KEY,
@@ -42,6 +44,12 @@
             iconImageHref: MAP_PINS[CLOSED_KEY],
             iconImageSize: [50, 72],
             iconImageOffset: [-25, -72]
+          },
+          [SELECTED_KEY]: {
+            iconImageHref: MAP_PINS[SELECTED_KEY],
+          },
+          [SELECTED_CLOSED_KEY]: {
+            iconImageHref: MAP_PINS[SELECTED_CLOSED_KEY],
           },
           [BEELINE_KEY]: {
             iconImageHref: MAP_PINS[BEELINE_KEY],

@@ -5,7 +5,9 @@
   transition: all 0.3s ease;
   position: relative;
 
-  &:hover {
+
+  &:hover,
+  &.is-active {
     box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.1);
   }
 }
