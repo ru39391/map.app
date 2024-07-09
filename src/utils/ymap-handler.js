@@ -18,9 +18,17 @@ const categoryStore = useCategoryStore();
 class YMapHandler {
   constructor() {
     this.mapId = MAP_ID;
+    this.zoomInBtnSel = '.js-zoom-in';
+    this.zoomOutBtnSel = '.js-zoom-out';
     this.mapItem = null;
     this.iconsData = null;
     this.pinConfig = null;
+  }
+
+  initControllers() {
+    this.mapWrapper = document.querySelector(`#${this.mapId}`);
+    this.zoomInBtn = this.mapWrapper.querySelector(this.zoomInBtnSel);
+    this.zoomOutBtn = this.mapWrapper.querySelector(this.zoomOutBtnSel);
   }
 
   setCardData(data) {
@@ -139,7 +147,8 @@ class YMapHandler {
           return { ...acc, [key]: item[key] };
         }, {});
 
-        this.mapItem = new yMaps.Map(this.mapId, { coords, bounds, zoom: 11, controls: [] });
+        this.initControllers();
+        this.mapItem = new yMaps.Map(this.mapId, { coords, bounds, zoom: 12, controls: [] });
         data = { isSucceed: true, map: this.mapItem, yMaps };
       }
     } catch (error) {
@@ -209,6 +218,16 @@ class YMapHandler {
       })
     }
 
+    const zoomMap = (map, isZoomIn = true) => {
+      const currZoomValue = map.getZoom();
+      const zoomValue = isZoomIn ? 1 : -1;
+
+      this.zoomInBtn.disabled = currZoomValue === 23;
+      this.zoomOutBtn.disabled = currZoomValue === 0;
+
+      map.setZoom(currZoomValue + zoomValue, { duration: 300 });
+    }
+
     try {
       const { isSucceed, map, yMaps } = await this.setMapItem(data);
 
@@ -247,8 +266,8 @@ class YMapHandler {
               ...(!key && !isWork && { ...icons[CLOSED_KEY] } )
             }
           );
-          clusterer.add(placemark);
-          //collection.add(placemark);
+          //clusterer.add(placemark);
+          collection.add(placemark);
           placemarks.push(placemark);
         });
 
@@ -257,8 +276,11 @@ class YMapHandler {
         map.geoObjects.events.add('click', scrollToCard);
         clusterer.events.add('mapchange', handleClusters);
 
-        map.geoObjects.add(clusterer);
-        //map.geoObjects.add(collection);
+        //map.geoObjects.add(clusterer);
+        map.geoObjects.add(collection);
+
+        this.zoomInBtn.addEventListener('click', () => zoomMap(map));
+        this.zoomOutBtn.addEventListener('click', () => zoomMap(map, false));
 
         this.iconsData = icons;
         this.pinConfig = config;

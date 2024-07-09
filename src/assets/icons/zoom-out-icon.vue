@@ -1,0 +1,22 @@
+<template>
+  <svg
+    width="22"
+    height="2"
+    viewBox="0 0 22 2"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M1 1H21"
+      stroke="#242424"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+  </svg>
+</template>
+
+<script>
+  export default {
+    name: 'zoom-out-icon',
+  };
+</script>

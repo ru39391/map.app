@@ -1,5 +1,11 @@
 <template>
-  <div id="map" class="map-section"></div>
+  <div id="map" class="map-section">
+    <div class="map-controllers">
+      <button class="map-controllers__btn js-zoom-in" type="button"><ZoomInIcon /></button>
+      <button class="map-controllers__btn js-zoom-out" type="button"><ZoomOutIcon /></button>
+      <button class="map-controllers__btn js-location" type="button"><LocationIcon /></button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -22,10 +28,19 @@
   } from '../utils/constants';
   import { useCategoryStore } from '../store/modules/category';
   import { useLocationStore } from '../store/modules/location';
+  import LocationIcon from '../assets/icons/location-icon.vue';
+  import ZoomInIcon from '../assets/icons/zoom-in-icon.vue';
+  import ZoomOutIcon from '../assets/icons/zoom-out-icon.vue';
   import yMapHandler from '../utils/ymap-handler';
 
   export default {
     name: 'map-section',
+
+    components: {
+      LocationIcon,
+      ZoomInIcon,
+      ZoomOutIcon,
+    },
 
     data() {
       return {
