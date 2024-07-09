@@ -5,6 +5,9 @@ import {
   CLOSED_KEY,
   SELECTED_KEY,
   SELECTED_CLOSED_KEY,
+  CLUSTER_KEY,
+  CLUSTER_CLOSED_KEY,
+  MAP_PINS,
   MAP_ID
 } from './constants';
 
@@ -154,9 +157,11 @@ class YMapHandler {
       const { properties } = event.get('target');
       const card = document.querySelector(`#card-${properties._data.id}`);
 
-      this.setCardData({ ...properties._data });
-      if(card) {
+      if(!properties.get('geoObjects')) {
         card.scrollIntoView({ behavior: 'smooth' });
+        this.setCardData({ ...properties._data });
+      } else {
+        console.log(properties.get('geoObjects'));
       }
     };
 
@@ -165,9 +170,9 @@ class YMapHandler {
       const { id, key, isClosed } = properties._data;
       const card = document.querySelector(`#card-${id}`);
 
-      this.hoverPlacemark(options, key, isClosed, true);
-      if(card) {
+      if(!properties.get('geoObjects')) {
         card.classList.add('is-active');
+        this.hoverPlacemark(options, key, isClosed, true);
       }
     };
 
@@ -176,24 +181,53 @@ class YMapHandler {
       const { id, key, isClosed } = properties._data;
       const card = document.querySelector(`#card-${id}`);
 
-      this.leavePlacemark(options, key, isClosed);
-      if(card) {
+      if(!properties.get('geoObjects')) {
         card.classList.remove('is-active');
+        this.leavePlacemark(options, key, isClosed);
       }
     };
+
+    const handleClusters = (event) => {
+      const currentMap = event.get('target');
+      const clusters = currentMap.getClusters();
+
+      clusters.forEach(item => {
+        const { properties: clusterProps, options } = item;
+        const isClosed = clusterProps.get('geoObjects').reduce((acc, { properties }) => acc || properties._data.isClosed, false);
+
+        console.log(clusterProps.get('geoObjects').map(({ properties }) => properties._data.isClosed));
+        if(isClosed) {
+          options.set(
+            'clusterIcons',
+            [{
+              href: MAP_PINS[CLUSTER_CLOSED_KEY],
+              size: [48, 48],
+              offset: [-24, -24]
+            }]
+          );
+        }
+      })
+    }
 
     try {
       const { isSucceed, map, yMaps } = await this.setMapItem(data);
 
       if(isSucceed) {
         const collection = new yMaps.GeoObjectCollection(null, { preset: 'islands#blackDotIcon' });
-        const clusterIconLayout = yMaps.templateLayoutFactory.createClass('<div class="map-cluster">{{ properties.geoObjects.length }}</div>');
+        const clusterIconContentLayout = yMaps.templateLayoutFactory.createClass(
+          `<div class="map-cluster {{ properties.geoObjects[0].properties._data.clusterMod}} {{ properties.geoObjects[1].properties._data.clusterMod}}">{{ properties.geoObjects.length }}</div>`
+        );
         const clusterer = new yMaps.Clusterer({
-          //preset: 'islands#blueClusterIcons',
-          clusterIconLayout,
+          preset: 'islands#blueClusterIcons',
+          clusterIconContentLayout,
+          clusterIcons: [{
+            href: MAP_PINS[CLUSTER_KEY],
+            size: [48, 48],
+            offset: [-24, -24]
+          }],
           groupByCoordinates: true,
           clusterDisableClickZoom: true,
-          clusterOpenBalloonOnClick: false
+          clusterOpenBalloonOnClick: false,
         });
 
         arr.forEach(({ id, coords, key, isWork }, index) => {
@@ -204,7 +238,8 @@ class YMapHandler {
               idx: index,
               key,
               coords,
-              isClosed: !key && !isWork
+              isClosed: !key && !isWork,
+              clusterMod: !key && !isWork ? 'map-cluster__closed' : ''
             },
             {
               ...config,
@@ -212,17 +247,18 @@ class YMapHandler {
               ...(!key && !isWork && { ...icons[CLOSED_KEY] } )
             }
           );
-          //clusterer.add(placemark);
-          collection.add(placemark);
+          clusterer.add(placemark);
+          //collection.add(placemark);
           placemarks.push(placemark);
         });
 
         map.geoObjects.events.add('mouseenter', hoverPin);
         map.geoObjects.events.add('mouseleave', leavePin);
         map.geoObjects.events.add('click', scrollToCard);
+        clusterer.events.add('mapchange', handleClusters);
 
-        //map.geoObjects.add(clusterer);
-        map.geoObjects.add(collection);
+        map.geoObjects.add(clusterer);
+        //map.geoObjects.add(collection);
 
         this.iconsData = icons;
         this.pinConfig = config;
