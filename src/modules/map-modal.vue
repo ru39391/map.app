@@ -1,6 +1,6 @@
 <template>
   <div class="map-overlay map-overlay_type_holder" v-if="isModalOpen" @click.self="setModalOpen(false)">
-    <div :class="['map-modal', { 'is-active': isModalOpen }]"> <!-- ref={modalRef} -->
+    <div :class="['map-modal', { 'is-active': isModalOpen }]">
       <button class="map-modal__close" type="button" @click="setModalOpen(false)"><CloseIcon /></button>
       <div class="map-modal__header">
         <div class="map-modal__title" v-if="modalTitle">{{ modalTitle }}</div>

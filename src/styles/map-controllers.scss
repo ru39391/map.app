@@ -9,9 +9,10 @@
 
   @media (max-width: 991px) {
     gap: 8px 0;
-    top: 0;
-    bottom: 0;
+    top: 50%;
+    bottom: auto;
     right: 20px;
+    transform: translateY(-25%);
   }
 }
 

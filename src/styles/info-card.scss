@@ -5,6 +5,9 @@
   transition: all 0.3s ease;
   position: relative;
 
+  @media (max-width: 991px) {
+    padding: 20px;
+  }
 
   &:hover,
   &.is-active {
