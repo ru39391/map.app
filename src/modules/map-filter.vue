@@ -246,6 +246,10 @@
       },
 
       submitFilter(data) {
+        if(!data)  {
+          return;
+        }
+
         const paramsData = Object.values(data).reduce((acc, item, index) => item ? ({ ...acc, [Object.keys(data)[index]]: item }) : acc, {});
         const params = Object.keys(paramsData).reduce(
           (acc, item, index) => acc + `${index === 0 ? '?' : '&'}${item}=${Object.values(paramsData)[index]}`, ''
@@ -289,13 +293,17 @@
         if(!this.$refs.mapFilter.contains(target)) {
           this.setFilterDropdownOpen(false);
         }
+      },
+
+      resetFilter() {
+        this.filterData = null;
+        this.pointsFilterData = null;
       }
     },
 
     watch: {
       currentCategory() {
-        this.filterData = null;
-        this.pointsFilterData = null;
+        this.resetFilter();
       },
 
       isCategoryListLoading(value) {
@@ -303,7 +311,15 @@
       },
 
       currentLocation(data) {
-        this.updatePointsList(data);
+        this.resetFilter();
+        /*
+        if(this.isPointsListVisible) {
+          this.updatePointsList(data);
+        } else {
+          // срабатывает вотчер из map-office-list, что вызывает ошибку удаления карты
+          this.submitFilter(this.filterData);
+        }
+        */
       },
 
       isFilterDropdownOpen(value) {

@@ -131,6 +131,16 @@
   text-decoration: underline;
 }
 
+.info-card__link {
+  color: #242424;
+  text-decoration: none;
+
+  &:hover {
+    color: #242424;
+    text-decoration: none;
+  }
+}
+
 .info-card__toggler {
   @include mobileOnly(block);
   @extend %btn-default;

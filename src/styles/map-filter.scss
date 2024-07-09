@@ -59,6 +59,11 @@
     padding: 16px;
   }
 
+  &:hover {
+    color: #242424;
+    text-decoration: none;
+  }
+
   &:disabled {
     opacity: 0.75;
     cursor: default;

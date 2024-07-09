@@ -21,7 +21,7 @@
           { 'info-card__item_color_primary': item.workingStatus && item.workingStatus.isWork },
           { 'info-card__item_color_danger': item.workingStatus && !item.workingStatus.isWork }
         ]"
-        v-if="item.workingStatus && !isPointsListVisible"
+        v-if="item.workingStatus && !isTerminal && !isPointsListVisible"
       >
         <template v-if="isPointsListVisible">
           <template v-if="item.workingStatus.isWork">Открыто</template>
@@ -78,10 +78,10 @@
                 v-for="(value, index) in item.phone"
                 :key="index"
               >
-                {{ value }}<br />
+                <a class="info-card__link" :href="`tel:${value.replace(/\s+/g, '')}`">{{ value }}</a><br />
               </template>
             </template>
-            <template v-if="item.email">{{ item.email }}</template>
+            <a class="info-card__link" :href="`mailto:${item.email}`" v-if="item.email">{{ item.email }}</a>
           </div>
         </div>
         <template v-if="false">
@@ -131,7 +131,7 @@
 <script>
   import { mapActions } from 'pinia';
   import { useCategoryStore } from '../store/modules/category';
-  import { FILIAL_KEY, ATM_KEY, POINT_KEY } from '../utils/constants';
+  import { FILIAL_KEY, ATM_KEY, POINT_KEY, TERMINAL_KEY } from '../utils/constants';
   import CopyIcon from '../assets/icons/copy-icon.vue';
 
   export default {
@@ -183,6 +183,10 @@
 
       isAtm() {
         return this.currentCategory && this.currentCategory.type === ATM_KEY;
+      },
+
+      isTerminal() {
+        return this.currentCategory && this.currentCategory.type === TERMINAL_KEY;
       }
     },
 
