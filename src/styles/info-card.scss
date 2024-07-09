@@ -132,13 +132,7 @@
 }
 
 .info-card__link {
-  color: #242424;
-  text-decoration: none;
-
-  &:hover {
-    color: #242424;
-    text-decoration: none;
-  }
+  @extend %link-default;
 }
 
 .info-card__toggler {

@@ -1,10 +1,6 @@
 .map-sidebar {
   @extend %d-flex-column;
   @include fw(496px);
-  /*
-  bottom: 0;
-  width: 496px;
-  */
   gap: 20px 0;
   padding: 24px 0 0;
   background-color: #f7f7f7;
@@ -15,7 +11,6 @@
     max-width: 100%;
     gap: 0;
     padding: 0;
-    //bottom: auto;
     z-index: 1060;
     background-color: rgba(0,0,0,0);
   }
@@ -78,4 +73,62 @@
   @media (max-width: 991px) {
     padding: 0 16px 16px;
   }
+}
+
+.map-sidebar__section {
+  padding: 0 24px;
+
+  @media (max-width:991px) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 44px;
+    display: none;
+    padding: 0 16px;
+  }
+
+  &.is-active {
+    @media (max-width:991px) {
+      display: block;
+    }
+  }
+}
+
+.map-sidebar__info {
+  @extend %d-flex-ai-center;
+  gap: 0 20px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #BADEF8;
+  background-color: #E3F2FC;
+
+  @media (max-width:991px) {
+    gap: 0 4px;
+    padding: 16px 20px;
+    align-items: flex-start;
+  }
+}
+
+.map-sidebar__qr {
+  @include desktopOnly(block);
+}
+
+.map-sidebar__info-close {
+  @extend %btn-default;
+  @extend %d-flex-column;
+  @extend %d-flex-centered;
+  @include wh(12px);
+  @include fw(12px);
+  @include mobileOnly(flex);
+}
+
+.map-sidebar__desc {
+  @media (max-width:991px) {
+    @include fs-lh(18px,22px);
+  }
+}
+
+.map-sidebar__link {
+  @extend %link-default;
+  text-decoration: underline;
 }

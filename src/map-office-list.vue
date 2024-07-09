@@ -23,6 +23,15 @@
           placeholder="Город, район, улица..."
         />
       </div>
+      <div :class="['map-sidebar__section', { 'is-active': isAdsPanelVisible }]" v-if="isPointsListVisible">
+        <div class="map-sidebar__info">
+          <img class="map-sidebar__qr" src="./assets/qr.png" alt="" />
+          <div class="map-sidebar__desc">
+            Внести платеж или погасить кредит можно за пару кликов <nobr>в <a class="map-sidebar__link" href="#">нашем приложении</a></nobr>
+          </div>
+          <button class="map-sidebar__info-close" type="button" @click="setAdsPanelVisible(false)"><CloseIcon /></button>
+        </div>
+      </div>
       <div
         :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
       >
@@ -81,6 +90,7 @@
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
   import InfoCard from './modules/info-card.vue';
+  import CloseIcon from './assets/icons/close-icon.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import LoaderIcon from './assets/icons/loader-icon.vue';
   import MapFilter from './modules/map-filter.vue';
@@ -96,6 +106,7 @@
 
     components: {
       InfoCard,
+      CloseIcon,
       LocationIcon,
       LoaderIcon,
       MapFilter,
@@ -110,7 +121,8 @@
     data() {
       return {
         isMapVisible: true,
-        isFilterVisible: false
+        isFilterVisible: false,
+        isAdsPanelVisible: true
       };
     },
 
@@ -177,6 +189,10 @@
 
       setFilterVisible(value) {
         this.isFilterVisible = value;
+      },
+
+      setAdsPanelVisible(value) {
+        this.isAdsPanelVisible = value;
       }
     },
 
