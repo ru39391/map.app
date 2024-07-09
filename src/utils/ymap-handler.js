@@ -20,6 +20,7 @@ class YMapHandler {
     this.mapId = MAP_ID;
     this.zoomInBtnSel = '.js-zoom-in';
     this.zoomOutBtnSel = '.js-zoom-out';
+    this.setLocBtnSel = '.js-location';
     this.mapItem = null;
     this.iconsData = null;
     this.pinConfig = null;
@@ -29,6 +30,7 @@ class YMapHandler {
     this.mapWrapper = document.querySelector(`#${this.mapId}`);
     this.zoomInBtn = this.mapWrapper.querySelector(this.zoomInBtnSel);
     this.zoomOutBtn = this.mapWrapper.querySelector(this.zoomOutBtnSel);
+    this.setLocBtn = this.mapWrapper.querySelector(this.setLocBtnSel);
   }
 
   setCardData(data) {
@@ -158,6 +160,22 @@ class YMapHandler {
     return data;
   }
 
+  async setGeolocation({ ymaps, map }) {
+    try {
+      const result = await ymaps.geolocation.get();
+
+      if(result && result.geoObjects.getLength() > 0) {
+        const { geoObjects } = result;
+        map.geoObjects.add(geoObjects);
+
+        const coords = geoObjects.get(0).geometry.getCoordinates();
+        map.panTo(coords);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async renderYMap(data) {
     const placemarks = [];
     const { arr, config, icons } = data;
@@ -166,7 +184,7 @@ class YMapHandler {
       const { properties } = event.get('target');
       const card = document.querySelector(`#card-${properties._data.id}`);
 
-      if(!properties.get('geoObjects')) {
+      if(card) {// !properties.get('geoObjects')
         card.scrollIntoView({ behavior: 'smooth' });
         this.setCardData({ ...properties._data });
       } else {
@@ -179,7 +197,7 @@ class YMapHandler {
       const { id, key, isClosed } = properties._data;
       const card = document.querySelector(`#card-${id}`);
 
-      if(!properties.get('geoObjects')) {
+      if(card) {// !properties.get('geoObjects')
         card.classList.add('is-active');
         this.hoverPlacemark(options, key, isClosed, true);
       }
@@ -190,7 +208,7 @@ class YMapHandler {
       const { id, key, isClosed } = properties._data;
       const card = document.querySelector(`#card-${id}`);
 
-      if(!properties.get('geoObjects')) {
+      if(card) {// !properties.get('geoObjects')
         card.classList.remove('is-active');
         this.leavePlacemark(options, key, isClosed);
       }
@@ -281,6 +299,7 @@ class YMapHandler {
 
         this.zoomInBtn.addEventListener('click', () => zoomMap(map));
         this.zoomOutBtn.addEventListener('click', () => zoomMap(map, false));
+        this.setLocBtn.addEventListener('click', () => this.setGeolocation({ ymaps: yMaps, map }));
 
         this.iconsData = icons;
         this.pinConfig = config;
