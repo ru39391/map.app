@@ -1,3 +1,11 @@
+.map-search-holder {
+  &.is-hidden {
+    @media (min-width: 992px) {
+      display: none;
+    }
+  }
+}
+
 .map-search {
   @extend %d-flex-ai-center;
   @include zi(1);

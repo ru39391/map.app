@@ -2,6 +2,7 @@
     @include fs-lh(20px,24px);
     font-family: "Golos Text", sans-serif;
     color: #242424;
+    overflow: hidden;
     height: 100vh;
     display: flex;
     flex-direction: row-reverse;

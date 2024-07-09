@@ -5,7 +5,8 @@
       :class="[
         'map-sidebar',
         { 'is-active': !isMapVisible && !isFilterVisible },
-        { 'is-fixed': !isMapVisible && isFilterVisible }
+        { 'is-fixed': !isMapVisible && isFilterVisible },
+        { 'map-sidebar_type_filter': isPointsListVisible && isFilterVisible }
       ]"
     >
       <div class="map-sidebar__header">
@@ -13,12 +14,13 @@
           <LocationIcon />
           <span class="map-location-toggler__caption">{{ currLocationCaption }}</span>
         </button>
-        <div class="map-filter-holder">
+        <div :class="['map-filter-holder', { 'is-active': isPointsListVisible && isFilterVisible }]">
           <MapSelecter />
           <MapFilter @handleFilterVisibility="setFilterVisible" />
         </div>
         <MapSearch
           :arr="currentItemsList"
+          :class="[{ 'is-hidden': isPointsListVisible && isFilterVisible }]"
           param="address"
           placeholder="Город, район, улица..."
         />

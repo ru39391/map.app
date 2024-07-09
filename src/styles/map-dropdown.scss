@@ -63,9 +63,20 @@
 
   &.map-dropdown_type_panel {
     &.is-active {
+      @media (min-width:992px) {
+        top: 72px;
+        bottom: 0;
+      }
+
       @media (max-width:991px) {
         top: 40px;
         margin-top: 0;
+      }
+
+      .map-dropdown__wrapper {
+        @media (min-width:992px) {
+          max-height: unset;
+        }
       }
     }
 

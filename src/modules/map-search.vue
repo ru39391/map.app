@@ -1,38 +1,40 @@
 <template>
-  <form
-    :class="['map-search', { 'is-active': isSearchInputFocused }]"
-    @submit.prevent
-  >
-    <button class="map-search__btn map-search__btn_pe_none" type="button"><SearchIcon /></button>
-    <input
-      class="map-search__field"
-      type="text"
-      :placeholder="placeholder"
-      v-model="searchValue"
-      @focus="setSearchInputFocused(true)"
-      @blur="setSearchInputFocused(false)"
-    />
-    <div class="map-dropdown map-dropdown_type_search" v-if="isResultListOpen">
-      <div
-        :class="[
-          'map-dropdown__wrapper',
-          { 'map-dropdown__wrapper_height_min is-active': isResultListOpen }
-        ]"
-      >
-        <button
-          v-for="(resultItem, index) in resultList"
-          :key="index"
-          class="map-dropdown__item"
-          type="button"
-          @click="resetResultList(resultItem)"
+  <div class="map-search-holder">
+    <form
+      :class="['map-search', { 'is-active': isSearchInputFocused }]"
+      @submit.prevent
+    >
+      <button class="map-search__btn map-search__btn_pe_none" type="button"><SearchIcon /></button>
+      <input
+        class="map-search__field"
+        type="text"
+        :placeholder="placeholder"
+        v-model="searchValue"
+        @focus="setSearchInputFocused(true)"
+        @blur="setSearchInputFocused(false)"
+      />
+      <div class="map-dropdown map-dropdown_type_search" v-if="isResultListOpen">
+        <div
+          :class="[
+            'map-dropdown__wrapper',
+            { 'map-dropdown__wrapper_height_min is-active': isResultListOpen }
+          ]"
         >
-          <PinIcon class="map-dropdown__icon" />
-          <span class="map-dropdown__caption">{{ resultItem[param] }}</span>
-        </button>
+          <button
+            v-for="(resultItem, index) in resultList"
+            :key="index"
+            class="map-dropdown__item"
+            type="button"
+            @click="resetResultList(resultItem)"
+          >
+            <PinIcon class="map-dropdown__icon" />
+            <span class="map-dropdown__caption">{{ resultItem[param] }}</span>
+          </button>
+        </div>
       </div>
-    </div>
-  </form>
-  <template v-if="searchValue && !resultList.length">{{ noResultMess }}</template>
+    </form>
+    <template v-if="searchValue && !resultList.length">{{ noResultMess }}</template>
+  </div>
 </template>
 
 <script>

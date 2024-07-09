@@ -9,10 +9,17 @@
     margin: 0 0 8px;
     border-radius: 12px;
   }
+
+  &.is-active {
+    @media (min-width: 992px) {
+      flex-grow: 1;
+    }
+  }
 }
 
 .map-filter {
   @include fw(68px);
+  @include wh(68px);
   @extend %d-flex-column;
 
   @media (max-width: 991px) {
