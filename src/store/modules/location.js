@@ -28,7 +28,7 @@ const useLocationStore = defineStore({
       try {
         const data = await fetchFilterData();
         //const { data } = await axios.get(`${API_URL}${FILTER_KEY}/`);
-        console.log({data});
+        //console.log({data});
 
         if(data) {
           categoryStore.categoryFilterData = data;

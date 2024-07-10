@@ -19,7 +19,7 @@
           <MapFilter @handleFilterVisibility="setFilterVisible" />
         </div>
         <MapSearch
-          :arr="currentItemsList"
+          :arr="itemsList"
           :class="[{ 'is-hidden': isPointsListVisible && isFilterVisible }]"
           param="address"
           placeholder="Город, район, улица..."
@@ -38,8 +38,17 @@
         :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
       >
         <div class="map-sidebar__list">
+          <button
+            v-if="clusterItemsList.length"
+            class="map-sidebar__link map-sidebar__link_type_btn"
+            type="button"
+            @click="setClusterItemsList()"
+          >
+            <ChevronRightIcon />
+            {{ itemsListCounter }}
+          </button>
           <InfoCard
-            v-for="item in currentItemsList"
+            v-for="item in itemsList"
             :key="item.id"
             :ref="`card-${item.id}`"
             :id="`card-${item.id}`"
@@ -87,14 +96,15 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE } from './utils/constants';
+  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, FILIAL_KEY, ATM_KEY, TERMINAL_KEY } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
-  import InfoCard from './modules/info-card.vue';
+  import ChevronRightIcon from './assets/icons/chevron-right-icon.vue';
   import CloseIcon from './assets/icons/close-icon.vue';
   import LocationIcon from './assets/icons/location-icon.vue';
   import LoaderIcon from './assets/icons/loader-icon.vue';
+  import InfoCard from './modules/info-card.vue';
   import MapFilter from './modules/map-filter.vue';
   import MapModal from './modules/map-modal.vue';
   import MapPanel from './modules/map-panel.vue';
@@ -107,10 +117,11 @@
     name: 'map-office-list',
 
     components: {
-      InfoCard,
+      ChevronRightIcon,
       CloseIcon,
       LocationIcon,
       LoaderIcon,
+      InfoCard,
       MapFilter,
       MapModal,
       MapPanel,
@@ -133,8 +144,8 @@
         useCategoryStore,
         [
           'isCategoryListLoading',
-          'itemsList',
           'currentItemsList',
+          'clusterItemsList',
           'categoryList',
           'currentCategory'
         ]
@@ -159,6 +170,20 @@
 
       isPointsListVisible() {
         return this.currentCategory && this.currentCategory.type === POINT_KEY;
+      },
+
+      itemsList() {
+        return this.clusterItemsList.length ? [...this.clusterItemsList] : [...this.currentItemsList];
+      },
+
+      itemsListCounter() {
+        const data = {
+          [FILIAL_KEY]: 'отделения',
+          [ATM_KEY]: 'банкомата',
+          [TERMINAL_KEY]: 'терминала'
+        };
+
+        return `${this.clusterItemsList.length} ${data[this.currentCategoryKey]} по этому адресу:`;
       }
     },
 
@@ -168,6 +193,7 @@
         [
           'fetchCategoryData',
           'setCurrentItemsList',
+          'setClusterItemsList',
           'setCurrentCategory'
         ]
       ),
@@ -201,6 +227,7 @@
     watch: {
       currentCategory(data) {
         console.log('Категория обновлена', data);
+        this.setClusterItemsList();
       },
 
       locationList(arr) {
@@ -209,6 +236,7 @@
       },
 
       currentLocation(data) {
+        this.setClusterItemsList();
         this.fetchCategoryData({
           type: this.currentCategoryKey,
           [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
@@ -217,6 +245,11 @@
 
       currentItemsList(arr) {
         console.log('Cписок карточек обновлён', arr);
+        this.setClusterItemsList();
+      },
+
+      clusterItemsList(arr) {
+        console.log('Получены данные кластеров', arr);
       },
 
       isPointsListVisible(value) {

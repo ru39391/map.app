@@ -1,8 +1,25 @@
 .map-search-holder {
+  @extend %d-flex-column;
+  gap: 36px 0;
+
+  @media (max-width: 991px) {
+    gap: 20px 0;
+  }
+
   &.is-hidden {
     @media (min-width: 992px) {
       display: none;
     }
+  }
+}
+
+.map-search-holder__desc {
+  @include fs-lh(24px,28px);
+  font-weight: 500;
+
+  @media (max-width: 991px) {
+    line-height: 26px;
+    letter-spacing: -0.5px;
   }
 }
 

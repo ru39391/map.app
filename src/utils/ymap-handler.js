@@ -39,6 +39,12 @@ class YMapHandler {
     categoryStore.setCurrentItem(item ? { ...item, coords: data.coords } : null);
   }
 
+  setClustersList(arr) {
+    const clusterIds = arr ? arr.map(({ properties }) => properties._data.id) : [];
+
+    categoryStore.setClusterItemsList(clusterIds);
+  }
+
   hoverPlacemark(options, key, isClosed, isSelected = false) {
     const data = key
       ? {
@@ -188,7 +194,7 @@ class YMapHandler {
         card.scrollIntoView({ behavior: 'smooth' });
         this.setCardData({ ...properties._data });
       } else {
-        console.log(properties.get('geoObjects'));
+        this.setClustersList(properties.get('geoObjects'));
       }
     };
 
@@ -222,7 +228,7 @@ class YMapHandler {
         const { properties: clusterProps, options } = item;
         const isClosed = clusterProps.get('geoObjects').reduce((acc, { properties }) => acc || properties._data.isClosed, false);
 
-        console.log(clusterProps.get('geoObjects').map(({ properties }) => properties._data.isClosed));
+        //console.log(clusterProps.get('geoObjects').map(({ properties }) => properties._data));
         if(isClosed) {
           options.set(
             'clusterIcons',
@@ -276,7 +282,7 @@ class YMapHandler {
               key,
               coords,
               isClosed: !key && !isWork,
-              clusterMod: !key && !isWork ? 'map-cluster__closed' : ''
+              clusterMod: !key && isWork ? 'map-cluster__open' : ''
             },
             {
               ...config,
@@ -284,8 +290,8 @@ class YMapHandler {
               ...(!key && !isWork && { ...icons[CLOSED_KEY] } )
             }
           );
-          //clusterer.add(placemark);
-          collection.add(placemark);
+          clusterer.add(placemark);
+          //collection.add(placemark);
           placemarks.push(placemark);
         });
 
@@ -294,8 +300,8 @@ class YMapHandler {
         map.geoObjects.events.add('click', scrollToCard);
         clusterer.events.add('mapchange', handleClusters);
 
-        //map.geoObjects.add(clusterer);
-        map.geoObjects.add(collection);
+        map.geoObjects.add(clusterer);
+        //map.geoObjects.add(collection);
 
         this.zoomInBtn.addEventListener('click', () => zoomMap(map));
         this.zoomOutBtn.addEventListener('click', () => zoomMap(map, false));

@@ -17,6 +17,7 @@ const useCategoryStore = defineStore({
   state: () => ({
     isCategoryListLoading: false,
     currentItemsList: [],
+    clusterItemsList: [],
     categoryList: [
       {type: FILIAL_KEY, caption: 'Отделения', category: 'Филиал'},
       {type: ATM_KEY, caption: 'Банкоматы', category: 'Банкомат'},
@@ -94,7 +95,7 @@ const useCategoryStore = defineStore({
           paramsArr.map(({ key, request, boundedBy }) => handlePointsData({ key, request, boundedBy }))
         );
 
-        this.currentItemsList =  resultArr.reduce((acc, item) => Object.values(item)[0] ? [...acc, ...Object.values(item)[1]] : acc, []);
+        this.currentItemsList = resultArr.reduce((acc, item) => Object.values(item)[0] ? [...acc, ...Object.values(item)[1]] : acc, []);
       } catch (error) {
         console.error(error);
       } finally {
@@ -112,6 +113,14 @@ const useCategoryStore = defineStore({
       const currentItemsArr = handleLocationList(arr, 'id').filter(item => item[LOCATION_KEY] === data[LOCATION_KEY]);
 
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
+    },
+    setClusterItemsList(arr = []) {
+      if(!arr.length) {
+        this.clusterItemsList = [];
+        return;
+      }
+
+      this.clusterItemsList = arr.map(item => this.currentItemsList.find(({ id }) => id == item));
     },
     setCurrentItem(data) {
       this.currentItem = data;

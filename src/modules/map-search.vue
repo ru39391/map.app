@@ -33,7 +33,7 @@
         </div>
       </div>
     </form>
-    <template v-if="searchValue && !resultList.length">{{ noResultMess }}</template>
+    <div class="map-search-holder__desc" v-if="noResultMess && searchValue && !resultList.length">{{ noResultMess }}</div>
   </div>
 </template>
 
