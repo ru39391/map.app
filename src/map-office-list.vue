@@ -29,7 +29,7 @@
         <div class="map-sidebar__info">
           <img class="map-sidebar__qr" src="./assets/qr.png" alt="" />
           <div class="map-sidebar__desc">
-            Внести платеж или погасить кредит можно за пару кликов <nobr>в <a class="map-sidebar__link" href="#">нашем приложении</a></nobr>
+            Внести платеж или погасить кредит можно за пару кликов <nobr>в <a class="map-sidebar__link" href="https://redirect.appmetrica.yandex.com/serve/605327523684878235" target="_blank">нашем приложении</a></nobr>
           </div>
           <button class="map-sidebar__info-close" type="button" @click="setAdsPanelVisible(false)"><CloseIcon /></button>
         </div>

@@ -133,6 +133,7 @@
 }
 
 .map-sidebar__qr {
+  @include fw(66px);
   @include desktopOnly(block);
 }
 

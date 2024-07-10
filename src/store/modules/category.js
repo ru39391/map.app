@@ -10,6 +10,7 @@ import {
 } from '../../utils/constants';
 
 import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
+//import axios from 'axios';
 
 const useCategoryStore = defineStore({
   id: 'category',

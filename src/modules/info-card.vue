@@ -1,7 +1,7 @@
 <template>
   <div class="info-card">
     <div class="info-card__header">
-      <div class="info-card__category" v-if="currentCategory">{{ currentCategory.category }}</div>
+      <div class="info-card__category" v-if="currentCategory">{{ isDept ? item.subname.toLowerCase() : currentCategory.category }}</div>
       <div class="info-card__caption">
         <template v-if="isAtm">ОТП Банк</template><template v-else>{{ item.name }}</template>
 
