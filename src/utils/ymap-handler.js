@@ -42,7 +42,7 @@ class YMapHandler {
   setClustersList(arr) {
     const clusterIds = arr ? arr.map(({ properties }) => properties._data.id) : [];
 
-    categoryStore.setClusterItemsList(clusterIds);
+    categoryStore.setSelectedItemsList(clusterIds);
   }
 
   hoverPlacemark(options, key, isClosed, isSelected = false) {
@@ -186,38 +186,51 @@ class YMapHandler {
     const placemarks = [];
     const { arr, config, icons } = data;
 
-    const scrollToCard = (event) => {
+    const handlePlacemarkData = (event) => {
       const { properties } = event.get('target');
+
+      if(properties.get('geoObjects')) {
+        this.setClustersList(properties.get('geoObjects'));
+      } else {
+        categoryStore.setSelectedItemsList([properties._data.id]);
+        this.setCardData({ ...properties._data });
+      }
+
+      /*
       const card = document.querySelector(`#card-${properties._data.id}`);
 
-      if(card) {// !properties.get('geoObjects')
+      if(card) {
         card.scrollIntoView({ behavior: 'smooth' });
-        this.setCardData({ ...properties._data });
-      } else {
-        this.setClustersList(properties.get('geoObjects'));
       }
+      */
     };
 
     const hoverPin = (event) => {
       const { properties, options } = event.get('target');
       const { id, key, isClosed } = properties._data;
-      const card = document.querySelector(`#card-${id}`);
 
-      if(card) {// !properties.get('geoObjects')
-        card.classList.add('is-active');
+      if(!properties.get('geoObjects')) {
         this.hoverPlacemark(options, key, isClosed, true);
       }
+      /*
+      const card = document.querySelector(`#card-${id}`);
+
+      if(card) card.classList.add('is-active');
+      */
     };
 
     const leavePin = (event) => {
       const { properties, options } = event.get('target');
       const { id, key, isClosed } = properties._data;
-      const card = document.querySelector(`#card-${id}`);
 
-      if(card) {// !properties.get('geoObjects')
-        card.classList.remove('is-active');
+      if(!properties.get('geoObjects')) {
         this.leavePlacemark(options, key, isClosed);
       }
+      /*
+      const card = document.querySelector(`#card-${id}`);
+
+      if(card) card.classList.remove('is-active');
+      */
     };
 
     const handleClusters = (event) => {
@@ -297,7 +310,7 @@ class YMapHandler {
 
         map.geoObjects.events.add('mouseenter', hoverPin);
         map.geoObjects.events.add('mouseleave', leavePin);
-        map.geoObjects.events.add('click', scrollToCard);
+        map.geoObjects.events.add('click', handlePlacemarkData);
         clusterer.events.add('mapchange', handleClusters);
 
         map.geoObjects.add(clusterer);

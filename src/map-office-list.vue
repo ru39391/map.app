@@ -39,13 +39,14 @@
       >
         <div class="map-sidebar__list">
           <button
-            v-if="clusterItemsList.length"
+            v-if="selectedItemsList.length"
             class="map-sidebar__link map-sidebar__link_type_btn"
             type="button"
-            @click="setClusterItemsList()"
+            @click="setSelectedItemsList()"
           >
             <ChevronRightIcon />
-            {{ itemsListCounter }}
+            <template v-if="selectedItemsList.length === 1">{{ itemsListCaption }}</template>
+            <template v-else>{{ itemsListCounter }}</template>
           </button>
           <InfoCard
             v-for="item in itemsList"
@@ -145,7 +146,7 @@
         [
           'isCategoryListLoading',
           'currentItemsList',
-          'clusterItemsList',
+          'selectedItemsList',
           'categoryList',
           'currentCategory'
         ]
@@ -173,7 +174,18 @@
       },
 
       itemsList() {
-        return this.clusterItemsList.length ? [...this.clusterItemsList] : [...this.currentItemsList];
+        return this.selectedItemsList.length ? [...this.selectedItemsList] : [...this.currentItemsList];
+      },
+
+      itemsListCaption() {
+        const data = {
+          [FILIAL_KEY]: 'отделений',
+          [ATM_KEY]: 'банкоматов',
+          [POINT_KEY]: 'точек погашения кредита',
+          [TERMINAL_KEY]: 'терминалов'
+        };
+
+        return `К списку ${data[this.currentCategoryKey]}`;
       },
 
       itemsListCounter() {
@@ -183,7 +195,7 @@
           [TERMINAL_KEY]: 'терминала'
         };
 
-        return `${this.clusterItemsList.length} ${data[this.currentCategoryKey]} по этому адресу:`;
+        return `${this.selectedItemsList.length} ${data[this.currentCategoryKey]} по этому адресу:`;
       }
     },
 
@@ -193,7 +205,7 @@
         [
           'fetchCategoryData',
           'setCurrentItemsList',
-          'setClusterItemsList',
+          'setSelectedItemsList',
           'setCurrentCategory'
         ]
       ),
@@ -227,7 +239,7 @@
     watch: {
       currentCategory(data) {
         console.log('Категория обновлена', data);
-        this.setClusterItemsList();
+        this.setSelectedItemsList();
       },
 
       locationList(arr) {
@@ -236,7 +248,7 @@
       },
 
       currentLocation(data) {
-        this.setClusterItemsList();
+        this.setSelectedItemsList();
         this.fetchCategoryData({
           type: this.currentCategoryKey,
           [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
@@ -245,11 +257,11 @@
 
       currentItemsList(arr) {
         console.log('Cписок карточек обновлён', arr);
-        this.setClusterItemsList();
+        this.setSelectedItemsList();
       },
 
-      clusterItemsList(arr) {
-        console.log('Получены данные кластеров', arr);
+      selectedItemsList(arr) {
+        console.log('Получены данные выбранных точек', arr);
       },
 
       isPointsListVisible(value) {

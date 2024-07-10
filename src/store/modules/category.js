@@ -17,7 +17,7 @@ const useCategoryStore = defineStore({
   state: () => ({
     isCategoryListLoading: false,
     currentItemsList: [],
-    clusterItemsList: [],
+    selectedItemsList: [],
     categoryList: [
       {type: FILIAL_KEY, caption: 'Отделения', category: 'Филиал'},
       {type: ATM_KEY, caption: 'Банкоматы', category: 'Банкомат'},
@@ -114,13 +114,13 @@ const useCategoryStore = defineStore({
 
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
     },
-    setClusterItemsList(arr = []) {
+    setSelectedItemsList(arr = []) {
       if(!arr.length) {
-        this.clusterItemsList = [];
+        this.selectedItemsList = [];
         return;
       }
 
-      this.clusterItemsList = arr.map(item => this.currentItemsList.find(({ id }) => id == item));
+      this.selectedItemsList = arr.map(item => this.currentItemsList.find(({ id }) => id == item));
     },
     setCurrentItem(data) {
       this.currentItem = data;
