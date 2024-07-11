@@ -185,6 +185,10 @@
         return this.currentCategory && this.currentCategory.type === POINT_KEY;
       },
 
+      itemsList() {
+        return this.selectedItemsList.length ? [...this.selectedItemsList] : [...this.currentItemsList];
+      },
+
       itemsListCaption() {
         const data = {
           [FILIAL_KEY]: 'отделений',
