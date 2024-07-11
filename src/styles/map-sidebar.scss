@@ -66,6 +66,7 @@
 .map-sidebar__wrapper {
   @include zi(1);
   flex-grow: 1;
+  overflow: hidden;
   transform: translate3d(0, 0, 0);
   transition: all 0.3s ease;
 
@@ -91,9 +92,22 @@
   gap: 16px 0;
   padding: 0 24px 24px;
   overflow-y: scroll;
+  animation: show 0.5s;
 
   @media (max-width: 991px) {
     padding: 0 16px 16px;
+  }
+
+  &.is-hidden {
+    @media (min-width: 992px) {
+      display: none;
+    }
+  }
+
+  &:last-child {
+    @media (max-width: 991px) {
+      display: none;
+    }
   }
 }
 

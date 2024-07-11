@@ -24,7 +24,6 @@ const useCategoryStore = defineStore({
       {type: POINT_KEY, caption: 'Точки погашения кредита', category: 'Точка погашения кредита'},
       {type: TERMINAL_KEY, caption: 'Терминалы', category: 'Терминал'}
     ],
-    currentItem: null,
     currentCategory: null,
     categoryFilterData: null,
   }),
@@ -51,26 +50,26 @@ const useCategoryStore = defineStore({
             const {
               name,
               address,
-              category,
-              content,
+              lon,
+              lat,
               workMode,
               workTime
             } = {
               name: data.name,
               address: data.address,
-              category: data.category,
-              content: data.content,
+              lon: data.lon,
+              lat: data.lat,
               workMode: data.work_mode,
               workTime: data.work_time
             };
             const workModeArr = workMode.split('<br/><b>');
-            const about = [];
 
             return {
               ...data,
               name: name.replace(/&quot;/g, ''),
               address: address.replace(/&quot;/g, ''),
               workMode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item),
+              ...(lon && lat && { coords: [lon, lat].map(value => Number(value)) }),
               ...(workTime && { workingStatus: { isWork: workTime.color === 'blue', time: workTime.title } }),
             };
           });
@@ -115,15 +114,13 @@ const useCategoryStore = defineStore({
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
     },
     setSelectedItemsList(arr = []) {
+      console.log(arr);
       if(!arr.length) {
         this.selectedItemsList = [];
         return;
       }
 
       this.selectedItemsList = arr.map(item => this.currentItemsList.find(({ id }) => id == item));
-    },
-    setCurrentItem(data) {
-      this.currentItem = data;
     },
     setCurrentCategory(data) {
       this.currentCategory = data;

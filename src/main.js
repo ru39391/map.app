@@ -4,9 +4,9 @@ import { piniaStore } from './store';
 import './style.css'
 import './styles/_import.scss'
 
-import MapOfficeList from './map-office-list.vue'
+import OfficeListMap from './office-list-map.vue'
 
-const app = createApp(MapOfficeList);
+const app = createApp(OfficeListMap);
 
 app.use(piniaStore);
 app.mount('#map-office-list')

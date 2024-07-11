@@ -123,7 +123,12 @@
       setMapMarkersList(arr) {
         this.mapMarkersList = this.isPointsListVisible
           ? arr
-          : arr.map(({ id, lon, lat, workingStatus }) => ({ id, coords: [Number(lon), Number(lat)], isWork: workingStatus.isWork }));
+          : arr.map(({ id, coords, lon, lat, workingStatus }) => ({
+            id,
+            coords,
+            isWork: workingStatus.isWork,
+            ...(!coords && { coords: [lon, lat].map(value => Number(value)) })
+          }));
       },
     },
 

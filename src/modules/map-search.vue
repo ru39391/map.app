@@ -93,7 +93,7 @@
     },
 
     methods: {
-      ...mapActions(useCategoryStore, ['setCurrentItem']),
+      ...mapActions(useCategoryStore, ['setSelectedItemsList']),
 
       ...mapActions(useLocationStore, ['setCurrentLocation']),
 
@@ -118,10 +118,7 @@
 
         if(data.id) {
           item.scrollIntoView({ behavior: 'smooth' });
-          this.setCurrentItem({
-            ...data,
-            ...(!data.coords && { coords: [Number(data.lon), Number(data.lat)] })
-          });
+          this.setSelectedItemsList([data.id]);
         } else {
           this.setModalOpen(false);
 

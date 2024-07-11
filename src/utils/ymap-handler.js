@@ -33,12 +33,6 @@ class YMapHandler {
     this.setLocBtn = this.mapWrapper.querySelector(this.setLocBtnSel);
   }
 
-  setCardData(data) {
-    const item = categoryStore.currentItemsList.find(({ id }) => id === data.id);
-
-    categoryStore.setCurrentItem(item ? { ...item, coords: data.coords } : null);
-  }
-
   handleSelectedItems(arr, isIconHandlerDisabled = false) {
     const idsArr = arr ? arr.map(({ properties }) => properties._data.id) : [];
     const config = {
@@ -226,9 +220,6 @@ class YMapHandler {
         this.handleSelectedItems(properties.get('geoObjects'));
       } else {
         this.handleSelectedItems([{ properties, options }], Boolean(key));
-        //this.hoverPlacemark(options, key, isClosed, true);
-        //this.setCardData({ ...properties._data });
-        //categoryStore.setSelectedItemsList([properties._data.id]);
       }
 
       /*

@@ -35,11 +35,23 @@
         </div>
       </div>
       <div
-        :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
+        :class="[
+          'map-sidebar__wrapper',
+          { 'is-hidden': isMapVisible }
+        ]"
       >
-        <div class="map-sidebar__list">
+        <div :class="['map-sidebar__list', { 'is-hidden': selectedItemsList.length }]">
+          <InfoCard
+            v-for="item in currentItemsList"
+            :key="item.id"
+            :ref="`card-${item.id}`"
+            :id="`card-${item.id}`"
+            :item="item"
+            :currentCategory="currentCategory"
+          />
+        </div>
+        <div :class="['map-sidebar__list', { 'is-hidden': !selectedItemsList.length }]">
           <button
-            v-if="selectedItemsList.length"
             class="map-sidebar__link map-sidebar__link_type_btn"
             type="button"
             @click="setSelectedItemsList()"
@@ -49,7 +61,7 @@
             <template v-else>{{ itemsListCounter }}</template>
           </button>
           <InfoCard
-            v-for="item in itemsList"
+            v-for="item in selectedItemsList"
             :key="item.id"
             :ref="`card-${item.id}`"
             :id="`card-${item.id}`"
@@ -115,7 +127,7 @@
   import MapSwitcher from './modules/map-switcher.vue';
 
   export default {
-    name: 'map-office-list',
+    name: 'office-list-map',
 
     components: {
       ChevronRightIcon,
@@ -171,10 +183,6 @@
 
       isPointsListVisible() {
         return this.currentCategory && this.currentCategory.type === POINT_KEY;
-      },
-
-      itemsList() {
-        return this.selectedItemsList.length ? [...this.selectedItemsList] : [...this.currentItemsList];
       },
 
       itemsListCaption() {

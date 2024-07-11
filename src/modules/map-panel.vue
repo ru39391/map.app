@@ -1,21 +1,27 @@
 <template>
   <div
     class="map-overlay map-overlay_type_holder map-overlay_type_panel is-mobile-only"
-    v-if="currentItem"
-    @click.self="setCurrentItem(null)"
-    @touchstart="handleTouchStart"
-    @touchmove="handleTouchMove"
+    v-if="selectedItemsList.length"
+    @click.self="setSelectedItemsList([])"
   >
-    <div :class="['map-modal', { 'is-active': isModalHeightMax }, { 'is-hidden': !currentItem }]">
+    <div
+      :class="[
+        'map-modal map-modal_type_panel',
+        { 'is-active': isModalHeightMax },
+        { 'is-hidden': !selectedItemsList.length }
+      ]"
+      @touchstart.self="handleTouchStart"
+      @touchmove.self="handleTouchMove"
+    >
       <div class="map-modal__header">
-        <button class="map-modal__close map-modal__close_mb_none" type="button" @click="setCurrentItem(null)"><CloseIcon /></button>
+        <button class="map-modal__close map-modal__close_mb_none" type="button" @click="setSelectedItemsList([])"><CloseIcon /></button>
       </div>
-      <div class="map-modal__wrapper">
+      <div class="map-modal__wrapper map-modal__wrapper_type_column">
         <InfoCard
-          v-if="currentItem"
-          :item="currentItem"
+          v-for="item in selectedItemsList"
+          :key="item.id"
+          :item="item"
           :currentCategory="currentCategory"
-          :isPointsListVisible="false"
           :isCardFooterVisible="true"
         />
       </div>
@@ -45,11 +51,11 @@
     },
 
     computed: {
-      ...mapState(useCategoryStore, ['currentItem', 'currentCategory'])
+      ...mapState(useCategoryStore, ['selectedItemsList', 'currentCategory'])
     },
 
     methods: {
-      ...mapActions(useCategoryStore, ['setCurrentItem']),
+      ...mapActions(useCategoryStore, ['setSelectedItemsList']),
 
       setModalHeightMax(value) {
         this.isModalHeightMax = value;
@@ -62,14 +68,14 @@
       handleTouchMove(event) {
         const currentY = event.touches[0].clientY;
 
-        this.setModalHeightMax(this.startY - currentY > 50);
+        this.setModalHeightMax(this.startY - currentY > 20);
       }
     },
 
     watch: {
-      currentItem(data) {
-        console.log('Подробные данные обновлены', data);
-        if(!data) this.setModalHeightMax(Boolean(data));
+      selectedItemsList(arr) {
+        console.log('Подробные данные обновлены', arr);
+        if(!arr.length) this.setModalHeightMax(Boolean(arr.length));
       }
     }
   };

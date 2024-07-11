@@ -1,11 +1,12 @@
 <template>
   <div class="info-card">
     <div class="info-card__header">
-      <div class="info-card__category" v-if="currentCategory">{{ isDept ? item.subname.toLowerCase() : currentCategory.category }}</div>
+      <div class="info-card__category" v-if="currentCategory">{{ isDept ? item.subname : currentCategory.category }}</div>
       <div class="info-card__caption">
         <template v-if="isAtm">ОТП Банк</template><template v-else>{{ item.name }}</template>
-
+        <!--
         <template v-if="isDept && item.subname"> ({{ item.subname.toLowerCase() }})</template>
+        -->
       </div>
     </div>
     <div
@@ -49,10 +50,10 @@
       </div>
     </div>
     <button
+      v-if="!isCardFooterVisible"
       class="info-card__toggler"
       type="button"
-        v-if="!isCardFooterVisible"
-       @click="setCurrentItem({ ...item, ...(!item.coords && { coords: [Number(item.lon), Number(item.lat)] }) })"
+      @click="setSelectedItemsList([item.id])"
     >
     </button>
     <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
@@ -191,7 +192,7 @@
     },
 
     methods: {
-      ...mapActions(useCategoryStore, ['setCurrentItem']),
+      ...mapActions(useCategoryStore, ['setSelectedItemsList']),
 
       async copyItemAddress(value) {
         try {

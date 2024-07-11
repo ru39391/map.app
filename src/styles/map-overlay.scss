@@ -81,6 +81,18 @@
     padding: 18px 16px 20px;
   }
 
+  &.map-modal_type_panel {
+    @include before;
+
+    &:before {
+      @include pos(6px,50%);
+      @include wh(48px,4px);
+      transform: translateX(-50%);
+      border-radius: 16px;
+      background-color: darken(#f7f7f7, 15%);
+    }
+  }
+
   &.is-active {
     @extend %d-flex-column;
   }
@@ -136,6 +148,11 @@
 
 .map-modal__wrapper {
   width: 100%;
+
+  &.map-modal__wrapper_type_column {
+    @extend %d-flex-column;
+    gap: 20px 0;
+  }
 }
 
 .map-preloader {
