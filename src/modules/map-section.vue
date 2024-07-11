@@ -93,6 +93,7 @@
         useCategoryStore,
         [
           'currentItemsList',
+          'selectedItemsList',
           'currentCategory'
         ]
       ),
@@ -138,8 +139,12 @@
 
       mapMarkersList(arr) {
         console.log('Список объектов карты обновлён', arr);
-        console.log({ ...this.currLocationData, config: this.markerOptions, icons: this.markerIcons });
+        //console.log({ ...this.currLocationData, config: this.markerOptions, icons: this.markerIcons });
         yMapHandler.renderYMap({ arr, ...this.currLocationData, config: this.markerOptions, icons: this.markerIcons });
+      },
+
+      selectedItemsList(arr) {
+        yMapHandler.resetPlacemarks(arr);
       },
 
       currentLocation(data) {
