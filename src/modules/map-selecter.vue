@@ -1,8 +1,15 @@
 <template>
   <div class="map-selecter" ref="mapSelecter">
-    <button class="map-selecter__placeholder" type="button" @click="setCategoryDropdownOpen(!isCategoryDropdownOpen)">
+    <button
+      :class="[
+        'map-selecter__placeholder',
+        { 'is-active': isCategoryDropdownOpen }
+      ]"
+      type="button"
+      @click="setCategoryDropdownOpen(!isCategoryDropdownOpen)"
+    >
       <span class="map-selecter__caption">{{ selecterCaption }}</span>
-      <ExpendMoreIcon />
+      <ExpendMoreIcon class="map-selecter__arrow" />
     </button>
     <div class="map-dropdown" v-if="isCategoryDropdownOpen">
       <div :class="['map-dropdown__wrapper', { 'is-active': isCategoryDropdownOpen }]">

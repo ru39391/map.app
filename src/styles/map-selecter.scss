@@ -19,6 +19,16 @@
     padding: 5px 16px;
     border-radius: 12px;
   }
+
+  &.is-active {
+    .map-selecter__arrow {
+      transform: rotateX(180deg);
+    }
+  }
+}
+
+.map-selecter__arrow {
+  transition: all 0.3s ease;
 }
 
 .map-selecter__dropdown {

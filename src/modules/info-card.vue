@@ -39,7 +39,7 @@
       </div>
       <div
         v-if="Array.isArray(item.workMode) && item.workMode.length && !isPointsListVisible"
-        class="info-card__item"
+        class="info-card__item info-card__item_fs_sm"
       >
         <template
           v-for="(value, index) in item.workMode"
@@ -57,15 +57,19 @@
     >
     </button>
     <a class="info-card__readmore" :href="`/retail/branches/detail.php?ID=${item.id}`" v-if="!isPointsListVisible">Подробнее</a>
-    <div class="info-card__footer" v-if="isCardFooterVisible && !isPointsListVisible">
-      <a
-        class="map-filter-btn"
-        v-if="isDept && item.coords && item.coords.length"
-        :href="`https://yandex.ru/maps/?rtext=~${item.coords[0].toString()},${item.coords[1].toString()}`"
-        target="_blank"
-      >
-        маршрут от меня
-      </a>
+    <button
+      v-if="isDept && isCardFooterVisible && !isPointsListVisible"
+      :class="[
+        'info-card__link info-card__link_type_btn',
+        { 'is-active': !isCardFooterHidden }
+      ]"
+      type="button"
+      @click="setCardFooterHidden"
+    >
+      <template v-if="isCardFooterHidden">Показать</template><template v-else>Скрыть</template>
+      <ExpendMoreIcon class="info-card__link-arrow" />
+    </button>
+    <div :class="['info-card__footer', { 'is-hidden': isCardFooterHidden }]" v-if="isCardFooterVisible && !isPointsListVisible">
       <div class="info-card__section">
         <div class="info-card__item info-card__item_type_title" v-if="isDept">
           <template v-if="item.subname === 'Дополнительный офис'">О дополнительном офисе</template>
@@ -126,6 +130,14 @@
         </template>
       </div>
     </div>
+    <a
+      class="map-filter-btn"
+      v-if="isCardFooterVisible && isDept && item.coords && item.coords.length"
+      :href="`https://yandex.ru/maps/?rtext=~${item.coords[0].toString()},${item.coords[1].toString()}`"
+      target="_blank"
+    >
+      маршрут от меня
+    </a>
   </div>
 </template>
 
@@ -134,16 +146,19 @@
   import { useCategoryStore } from '../store/modules/category';
   import { FILIAL_KEY, ATM_KEY, POINT_KEY, TERMINAL_KEY } from '../utils/constants';
   import CopyIcon from '../assets/icons/copy-icon.vue';
+  import ExpendMoreIcon from '../assets/icons/expend-more-icon.vue';
 
   export default {
     name: 'info-card',
 
     components: {
-      CopyIcon
+      CopyIcon,
+      ExpendMoreIcon
     },
 
     data() {
       return {
+        isCardFooterHidden: true,
         servicesDataList: [
           {key: 'sb', caption: 'Обслуживание малого и среднего бизнеса'},
           {key: 'crp', caption: 'Обслуживание корпоративных клиентов'},
@@ -193,6 +208,10 @@
 
     methods: {
       ...mapActions(useCategoryStore, ['setSelectedItemsList']),
+
+      setCardFooterHidden() {
+        this.isCardFooterHidden = !this.isCardFooterHidden;
+      },
 
       async copyItemAddress(value) {
         try {
