@@ -1,13 +1,8 @@
 <template>
   <div class="info-card">
     <div class="info-card__header">
-      <div class="info-card__category" v-if="currentCategory">{{ isDept ? item.subname : currentCategory.category }}</div>
-      <div class="info-card__caption">
-        <template v-if="isAtm">ОТП Банк</template><template v-else>{{ item.name }}</template>
-        <!--
-        <template v-if="isDept && item.subname"> ({{ item.subname.toLowerCase() }})</template>
-        -->
-      </div>
+      <div class="info-card__category" v-if="currentCategory">{{ isPointsListVisible ? currentCategory.category : item.subname }}</div>
+      <div class="info-card__caption">{{ item.name }}</div>
     </div>
     <div
       :class="[

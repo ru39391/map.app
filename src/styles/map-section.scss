@@ -11,7 +11,7 @@
 .map-cluster {
   @extend %d-flex-column;
   @extend %d-flex-centered;
-  @include wh(54px);
+  @include wh(50px);
   @include fs-lh(20px,24px);
   font-weight: 400;
   cursor: pointer;

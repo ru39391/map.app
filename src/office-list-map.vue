@@ -272,10 +272,6 @@
         this.setSelectedItemsList();
       },
 
-      selectedItemsList(arr) {
-        console.log('Получены данные выбранных точек', arr);
-      },
-
       isPointsListVisible(value) {
         if(value) this.isMapVisible = value;
       }

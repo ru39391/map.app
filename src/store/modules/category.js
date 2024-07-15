@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import {
+  PARTNER_NAME,
   FILIAL_KEY,
   ATM_KEY,
   POINT_KEY,
@@ -68,6 +69,7 @@ const useCategoryStore = defineStore({
               ...data,
               name: name.replace(/&quot;/g, ''),
               address: address.replace(/&quot;/g, ''),
+              isPartner: name === PARTNER_NAME,
               workMode: workModeArr.map(item => item.replace(/<[^>]*>/g, '')).filter(item => item),
               ...(lon && lat && { coords: [lon, lat].map(value => Number(value)) }),
               ...(workTime && { workingStatus: { isWork: workTime.color === 'blue', time: workTime.title } }),
@@ -114,7 +116,6 @@ const useCategoryStore = defineStore({
       this.currentItemsList = arr.reduce((acc, item) => currentItemsArr.find(({ id }) => id === item.id) ? [...acc, item] : acc, []);
     },
     setSelectedItemsList(arr = []) {
-      console.log(arr);
       if(!arr.length) {
         this.selectedItemsList = [];
         return;

@@ -14,6 +14,8 @@ const SELECTED_KEY = 'selected';
 const SELECTED_CLOSED_KEY = 'selected_closed';
 const CLUSTER_KEY = 'cluster';
 const CLUSTER_CLOSED_KEY = 'cluster_closed';
+const PARTNER_KEY = 'partner';
+const PARTNER_CLOSED_KEY = 'partner';
 const BEELINE_KEY = 'beeline';
 const MTS_KEY = 'mts';
 const KH_KEY = 'kh';
@@ -29,6 +31,8 @@ const DEFAULT_BOUNDS = [[55.491126,37.32624],[55.957565,37.967682]];
 const MAP_ID = 'map';
 const API_URL = '/api/branches/';
 const ICONS_URL = './src/assets/map-icons';
+
+const PARTNER_NAME = 'Газпромбанк';
 
 const MAP_PINS = {
   [DEFAULT_KEY]: `${ICONS_URL}/pin-icon.svg`,
@@ -46,6 +50,7 @@ const MAP_PINS = {
 };
 
 export {
+  PARTNER_NAME,
   FILIAL_KEY,
   ATM_KEY,
   POINT_KEY,
@@ -60,6 +65,8 @@ export {
   SELECTED_CLOSED_KEY,
   CLUSTER_KEY,
   CLUSTER_CLOSED_KEY,
+  PARTNER_KEY,
+  PARTNER_CLOSED_KEY,
   BEELINE_KEY,
   MTS_KEY,
   KH_KEY,
