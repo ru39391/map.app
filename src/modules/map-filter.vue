@@ -129,19 +129,19 @@
         pointsFilterList: [{
           title: 'Золотая корона',
           params: [{
-            key: [BEELINE_KEY],
+            key: BEELINE_KEY,
             caption: 'Билайн',
             request: 'Салон Билайн'
           }, {
-            key: [MTS_KEY],
+            key: MTS_KEY,
             caption: 'МТС',
             request: 'Салон МТС'
           }, {
-            key: [KH_KEY],
+            key: KH_KEY,
             caption: 'Ноу-Хау',
             request: 'Магазин ИОН'
           }, {
-            key: [KARI_KEY],
+            key: KARI_KEY,
             caption: 'Kari Россия',
             request: 'Kari Россия'
           }],
@@ -161,7 +161,7 @@
         }, {
           title: 'Другие способы',
           params: [{
-            key: [LXNET_KEY],
+            key: LXNET_KEY,
             caption: 'Элекснет',
             request: 'Элекснет'
           }],
@@ -181,7 +181,7 @@
         }, {
           title: '',
           params: [{
-            key: [RUPOST_KEY],
+            key: RUPOST_KEY,
             caption: 'Почта России',
             request: 'Почта России'
           }],

@@ -7,6 +7,8 @@ import {
   SELECTED_CLOSED_KEY,
   CLUSTER_KEY,
   CLUSTER_CLOSED_KEY,
+  PARTNER_KEY,
+  PARTNER_SELECTED_KEY,
   MAP_PINS,
   MAP_ID
 } from './constants';
@@ -46,7 +48,12 @@ class YMapHandler {
       arr.forEach(({ properties, options }) => {
         Object.keys(config).forEach((item, index) => {
           options.set(item, Object.values(config)[index]);
-          options.set('iconImageHref', this.iconsData[properties._data.isClosed ? SELECTED_CLOSED_KEY : SELECTED_KEY]['iconImageHref']);
+          options.set(
+            'iconImageHref',
+            properties._data.isPartner
+              ? this.iconsData[PARTNER_SELECTED_KEY]['iconImageHref']
+              : this.iconsData[properties._data.isClosed ? SELECTED_CLOSED_KEY : SELECTED_KEY]['iconImageHref']
+          );
         });
       });
     }
@@ -67,12 +74,14 @@ class YMapHandler {
     });
   }
 
-  leavePlacemark({ id, key, isClosed, options}) {
+  leavePlacemark({ id, key, isClosed, isPartner, options}) {
     if(categoryStore.selectedItemsList.find(item => item.id === id)) {
       return;
     }
 
-    const config = key ? { ...this.pinConfig, ...this.iconsData[key] } : { ...this.pinConfig, ...(isClosed && { ...this.iconsData[CLOSED_KEY] }) };
+    const config = key
+      ? { ...this.pinConfig, ...this.iconsData[key] }
+      : { ...this.pinConfig, ...(isClosed && { ...this.iconsData[CLOSED_KEY] }), ...(isPartner && { ...this.iconsData[PARTNER_KEY] }) };
 
     Object.keys(config).forEach((item, index) => {
       options.set(item, Object.values(config)[index]);
@@ -90,7 +99,9 @@ class YMapHandler {
     this.mapItem.geoObjects.each(item => {
       geoObjects = [...Object.values(item._objects).map(({ geoObject }) => ({
         id: geoObject.properties._data.id,
+        key: geoObject.properties._data.key,
         isClosed: geoObject.properties._data.isClosed,
+        isPartner: geoObject.properties._data.isPartner,
         options: geoObject.options
       }))];
     });
@@ -214,7 +225,7 @@ class YMapHandler {
 
     const handlePlacemarkData = (event) => {
       const { properties, options } = event.get('target');
-      const { id, key, isClosed } = properties._data;
+      const { key } = properties._data;
 
       if(properties.get('geoObjects')) {
         this.handleSelectedItems(properties.get('geoObjects'));
@@ -246,10 +257,10 @@ class YMapHandler {
 
     const leavePin = (event) => {
       const { properties, options } = event.get('target');
-      const { id, key, isClosed } = properties._data;
+      const { id, key, isClosed, isPartner } = properties._data;
 
       if(!properties.get('geoObjects')) {
-        this.leavePlacemark({ id, key, isClosed, options});
+        this.leavePlacemark({ id, key, isClosed, isPartner, options});
       }
 
       /*
@@ -311,7 +322,7 @@ class YMapHandler {
           clusterOpenBalloonOnClick: false,
         });
 
-        arr.forEach(({ id, coords, key, isWork }, index) => {
+        arr.forEach(({ id, coords, key, isWork, isPartner }, index) => {
           const placemark = new yMaps.Placemark(
             coords,
             {
@@ -319,13 +330,15 @@ class YMapHandler {
               idx: index,
               key,
               coords,
-              isClosed: !key && !isWork,
+              isClosed: !key && !isWork && !isPartner,
+              isPartner,
               clusterMod: !key && isWork ? 'map-cluster__open' : ''
             },
             {
               ...config,
               ...(key && { ...icons[key] }),
-              ...(!key && !isWork && { ...icons[CLOSED_KEY] } )
+              ...(!key && !isWork && !isPartner && { ...icons[CLOSED_KEY] } ),
+              ...(isPartner && { ...icons[PARTNER_KEY] } )
             }
           );
           clusterer.add(placemark);

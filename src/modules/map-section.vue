@@ -16,6 +16,8 @@
     CLOSED_KEY,
     SELECTED_KEY,
     SELECTED_CLOSED_KEY,
+    PARTNER_KEY,
+    PARTNER_SELECTED_KEY,
     BEELINE_KEY,
     MTS_KEY,
     KH_KEY,
@@ -65,6 +67,16 @@
           },
           [SELECTED_CLOSED_KEY]: {
             iconImageHref: MAP_PINS[SELECTED_CLOSED_KEY],
+          },
+          [PARTNER_KEY]: {
+            iconImageHref: MAP_PINS[PARTNER_KEY],
+            iconImageSize: [50, 72],
+            iconImageOffset: [-25, -72]
+          },
+          [PARTNER_SELECTED_KEY]: {
+            iconImageHref: MAP_PINS[PARTNER_SELECTED_KEY],
+            iconImageSize: [50, 72],
+            iconImageOffset: [-25, -72]
           },
           [BEELINE_KEY]: {
             iconImageHref: MAP_PINS[BEELINE_KEY],
@@ -123,9 +135,10 @@
       setMapMarkersList(arr) {
         this.mapMarkersList = this.isPointsListVisible
           ? arr
-          : arr.map(({ id, coords, lon, lat, workingStatus }) => ({
+          : arr.map(({ id, coords, isPartner, lon, lat, workingStatus }) => ({
             id,
             coords,
+            isPartner,
             isWork: workingStatus.isWork,
             ...(!coords && { coords: [lon, lat].map(value => Number(value)) })
           }));

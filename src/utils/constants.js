@@ -15,7 +15,7 @@ const SELECTED_CLOSED_KEY = 'selected_closed';
 const CLUSTER_KEY = 'cluster';
 const CLUSTER_CLOSED_KEY = 'cluster_closed';
 const PARTNER_KEY = 'partner';
-const PARTNER_CLOSED_KEY = 'partner';
+const PARTNER_SELECTED_KEY = 'partner_selected';
 const BEELINE_KEY = 'beeline';
 const MTS_KEY = 'mts';
 const KH_KEY = 'kh';
@@ -41,6 +41,8 @@ const MAP_PINS = {
   [SELECTED_CLOSED_KEY]: `${ICONS_URL}/pin-selected-closed-icon.svg`,
   [CLUSTER_KEY]: `${ICONS_URL}/cluster-icon.svg`,
   [CLUSTER_CLOSED_KEY]: `${ICONS_URL}/cluster-closed-icon.svg`,
+  [PARTNER_KEY]: `${ICONS_URL}/pin-partner-icon.svg`,
+  [PARTNER_SELECTED_KEY]: `${ICONS_URL}/pin-selected-partner-icon.svg`,
   [BEELINE_KEY]: `${ICONS_URL}/beeline-icon.png`,
   [MTS_KEY]: `${ICONS_URL}/mts-icon.png`,
   [KH_KEY]: `${ICONS_URL}/kh-icon.png`,
@@ -66,7 +68,7 @@ export {
   CLUSTER_KEY,
   CLUSTER_CLOSED_KEY,
   PARTNER_KEY,
-  PARTNER_CLOSED_KEY,
+  PARTNER_SELECTED_KEY,
   BEELINE_KEY,
   MTS_KEY,
   KH_KEY,
