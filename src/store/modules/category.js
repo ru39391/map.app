@@ -7,10 +7,16 @@ import {
   TERMINAL_KEY,
   LOCATION_KEY,
   LOCATION_CODE_KEY,
-  API_URL
+  API_URL,
+  FILTER_KEY
 } from '../../utils/constants';
 
-import { fetchersData, handleLocationList, handlePointsData } from '../../utils';
+import {
+  fetchersData,
+  handleLocationList,
+  handlePointsData,
+  setFilterParams
+} from '../../utils';
 //import axios from 'axios';
 
 const useCategoryStore = defineStore({
@@ -27,6 +33,7 @@ const useCategoryStore = defineStore({
     ],
     currentCategory: null,
     categoryFilterData: null,
+    currentFilterData: null
   }),
   actions: {
     async fetchCategoryData(data, params = '') {
@@ -41,9 +48,16 @@ const useCategoryStore = defineStore({
       const requestUrl = `${API_URL}${data.type}${params ? `${params}&HL_CITY=${data[LOCATION_CODE_KEY]}` : `?HL_CITY=${data[LOCATION_CODE_KEY]}`}`
 
       try {
-        const {data: itemsData, success} = await fetchersData[data.type]();
+        const [
+          {data: itemsData, success},
+          {isSucceed, data: filterData}
+        ] = await Promise.all([
+          fetchersData[data.type](),
+          setFilterParams({...data, params: params})
+        ]);
         //const { data: itemsData } = await axios.get(requestUrl);
         //console.log({itemsData});
+        console.log({filterData});
 
         if(success) {
         //if (itemsData.success) {
@@ -87,6 +101,7 @@ const useCategoryStore = defineStore({
     },
     async fetchPointsData(data) {
       const paramsArr = Object.values(data).filter(({ checked }) => checked);
+      console.log({paramsArr});
 
       this.currentItemsList = [];
       this.isCategoryListLoading = true;
@@ -125,6 +140,23 @@ const useCategoryStore = defineStore({
     },
     setCurrentCategory(data) {
       this.currentCategory = data;
+    },
+    setCurrentFilterData(payload) {
+      if(!payload) {
+        return;
+      }
+
+      const {type, params} = payload;
+      const data = params.replace('?', '').split('&').reduce((acc, item) => {
+        const [key, value] = item.split('=');
+
+        return {...acc, [key]: Number(value)};
+      }, {});
+
+      this.setCurrentCategory(
+        this.categoryList.find(item => item.type === type)
+      );
+      this.currentFilterData = params ? {...data} : null;
     }
   },
 });

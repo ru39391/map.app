@@ -1,4 +1,5 @@
 import {
+  FILTER_KEY,
   FILIAL_KEY,
   ATM_KEY,
   POINT_KEY,
@@ -103,6 +104,31 @@ const setLocation = async (values) => {
   });
 }
 
+const setFilterParams = async (values) => {
+  let data = {isSucceed: false, data: null};
+
+  const isFilterDataSet = (key) => sessionStorage.getItem(key) !== null;
+  const setFilterDataData = (key, data) => sessionStorage.setItem(key, JSON.stringify(data));
+
+  if(isFilterDataSet(FILTER_KEY)) {
+    sessionStorage.removeItem(FILTER_KEY);
+    setFilterDataData(FILTER_KEY, values);
+  } else {
+    setFilterDataData(FILTER_KEY, values);
+  }
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      isFilterDataSet(FILTER_KEY)
+        ? resolve({
+            isSucceed: isFilterDataSet(FILTER_KEY),
+            data: JSON.parse(sessionStorage.getItem(FILTER_KEY))
+          })
+        : reject({ ...data });
+    }, 200);
+  });
+}
+
 const handleLocationList = (arr, key = '') => arr.reduce(
   (acc, item) => {
     const data = {};
@@ -123,4 +149,5 @@ export {
   setLocation,
   handleLocationList,
   handlePointsData,
+  setFilterParams
 };

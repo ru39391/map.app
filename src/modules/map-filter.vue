@@ -208,7 +208,8 @@
         [
           'categoryFilterData',
           'currentCategory',
-          'categoryList'
+          'categoryList',
+          'currentFilterData'
         ]
       ),
 
@@ -326,13 +327,18 @@
         this.$emit('handleFilterVisibility', value);
       },
 
+      currentFilterData(data) {
+        console.log('Параметры фильтра установлены', data);
+        this.filterData = data !== null ? {...data} : data;
+      },
+
       filterData(data) {
         console.log('Список параметров фильтра обновлён', data);
       },
 
       pointsFilterData(data) {
         console.log('Список параметров фильтра точек погашения обновлён', data);
-      },
+      }
     },
 
     mounted() {

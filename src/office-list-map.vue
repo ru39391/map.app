@@ -109,7 +109,7 @@
 
 <script>
   import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, FILIAL_KEY, ATM_KEY, TERMINAL_KEY } from './utils/constants';
+  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, FILIAL_KEY, ATM_KEY, TERMINAL_KEY, FILTER_KEY } from './utils/constants';
   import { useCategoryStore } from './store/modules/category';
   import { useLocationStore } from './store/modules/location';
   import { useModalStore } from './store/modules/modal';
@@ -218,7 +218,8 @@
           'fetchCategoryData',
           'setCurrentItemsList',
           'setSelectedItemsList',
-          'setCurrentCategory'
+          'setCurrentCategory',
+          'setCurrentFilterData'
         ]
       ),
 
@@ -245,6 +246,19 @@
 
       setAdsPanelVisible(value) {
         this.isAdsPanelVisible = value;
+      },
+
+      fetchFilterData(data) {
+        const filterData = sessionStorage.getItem(FILTER_KEY);
+        const payload = filterData
+          ? {...JSON.parse(filterData)}
+          : {
+              type: this.currentCategoryKey,
+              [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
+            };
+
+        this.setCurrentFilterData(payload ? payload : null);
+        this.fetchCategoryData(payload, payload.params);
       }
     },
 
@@ -261,10 +275,7 @@
 
       currentLocation(data) {
         this.setSelectedItemsList();
-        this.fetchCategoryData({
-          type: this.currentCategoryKey,
-          [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
-        });
+        this.fetchFilterData(data);
       },
 
       currentItemsList(arr) {
