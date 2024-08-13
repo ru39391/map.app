@@ -54,19 +54,15 @@ export default {
     return {
       mapMarkersList: [],
       markerIconSizes: {
-        iconImageSize: [36, 36],
-        iconImageOffset: [-18, -36],
+        iconImageSize: [52, 52],
+        iconImageOffset: [-26, -52],
       },
       markerIcons: {
         [DEFAULT_KEY]: {
           iconImageHref: MAP_PINS[DEFAULT_KEY],
-          iconImageSize: [52, 52],
-          iconImageOffset: [-26, -26],
         },
         [CLOSED_KEY]: {
           iconImageHref: MAP_PINS[CLOSED_KEY],
-          iconImageSize: [52, 52],
-          iconImageOffset: [-26, -26],
         },
         [SELECTED_KEY]: {
           iconImageHref: MAP_PINS[SELECTED_KEY],
@@ -76,13 +72,9 @@ export default {
         },
         [PARTNER_KEY]: {
           iconImageHref: MAP_PINS[PARTNER_KEY],
-          iconImageSize: [52, 52],
-          iconImageOffset: [-26, -26],
         },
         [PARTNER_SELECTED_KEY]: {
           iconImageHref: MAP_PINS[PARTNER_SELECTED_KEY],
-          iconImageSize: [52, 52],
-          iconImageOffset: [-26, -26],
         },
         [BEELINE_KEY]: {
           iconImageHref: MAP_PINS[BEELINE_KEY],
@@ -133,9 +125,8 @@ export default {
     markerOptions() {
       return {
         iconLayout: "default#image",
-        ...(this.isPointsListVisible
-          ? { ...this.markerIconSizes }
-          : { ...this.markerIcons.default }),
+        ...this.markerIconSizes,
+        ...( this.isPointsListVisible && { ...this.markerIcons.default } ),
       };
     },
   },

@@ -11,6 +11,7 @@ import {
   PARTNER_SELECTED_KEY,
   MAP_PINS,
   MAP_ID,
+  DEFAULT_KEY,
 } from "./constants";
 
 setActivePinia(piniaStore);
@@ -38,9 +39,9 @@ class YMapHandler {
   handleSelectedItems(arr, isIconHandlerDisabled = false) {
     const idsArr = arr ? arr.map(({ properties }) => properties._data.id) : [];
     const config = {
-      iconImageSize: [52, 52],
-      iconImageOffset: [-26, -26],
+      ...this.iconsData[DEFAULT_KEY]
     };
+    console.log(config);
 
     categoryStore.setSelectedItemsList(idsArr);
 
@@ -48,6 +49,7 @@ class YMapHandler {
       arr.forEach(({ properties, options }) => {
         Object.keys(config).forEach((item, index) => {
           options.set(item, Object.values(config)[index]);
+          /*
           options.set(
             "iconImageHref",
             properties._data.isPartner
@@ -56,20 +58,23 @@ class YMapHandler {
                   properties._data.isClosed ? SELECTED_CLOSED_KEY : SELECTED_KEY
                 ]["iconImageHref"]
           );
+          */
         });
       });
     }
   }
 
   hoverPlacemark({ id, key, isClosed, options }) {
-    console.log("hoverPlacemark");
+    console.log({ id, key, isClosed, options });
+    //console.log({ hoverPlacemark: categoryStore.selectedItemsList.find((item) => item.id === id) });
     if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
-      return;
+      //return;
     }
 
     const config = {
-      iconImageSize: key ? [56, 56] : [56, 56],
-      iconImageOffset: key ? [-28, -28] : [-28, -28],
+      ...( !key && { ...this.iconsData[SELECTED_KEY] }),
+      iconImageSize: [86, 108],
+      iconImageOffset: [-43, -108],
     };
 
     Object.keys(config).forEach((item, index) => {
@@ -79,7 +84,7 @@ class YMapHandler {
 
   leavePlacemark({ id, key, isClosed, isPartner, options }) {
     if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
-      return;
+      //return;
     }
 
     const config = key
@@ -244,6 +249,8 @@ class YMapHandler {
   async renderYMap(data) {
     const placemarks = [];
     const { arr, config, icons } = data;
+    console.log({config});
+    console.log({icons});
 
     const handlePlacemarkData = (event) => {
       const { properties, options } = event.get("target");
