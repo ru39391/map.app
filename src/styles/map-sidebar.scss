@@ -1,18 +1,20 @@
+$map-scrollbar-offset: 8px;
+
 .map-sidebar {
   @extend %d-flex-column;
-  @include fw(496px);
+  @include fw(367px);
   gap: 20px 0;
-  padding: 24px 0 0;
+  padding: 20px 0 0;
   background-color: #f7f7f7;
 
   @media (max-width: 991px) {
     @include pos(0, 0, fixed);
-    width: 100%;
+    width: 100vw;
     max-width: 100%;
     gap: 0;
     padding: 0;
     z-index: 1060;
-    background-color: rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
   }
 
   &.map-sidebar_type_filter {
@@ -46,7 +48,6 @@
   &.is-active {
     @media (max-width: 991px) {
       bottom: 0;
-      z-index: unset;
     }
   }
 }
@@ -66,9 +67,21 @@
 .map-sidebar__wrapper {
   @include zi(1);
   flex-grow: 1;
-  overflow: hidden;
+  overflow-x: visible;
   transform: translate3d(0, 0, 0);
   transition: all 0.3s ease;
+  margin-right: 8px;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f7f7f7;
+    width: calc(100% + $map-scrollbar-offset);
+  }
 
   @media (max-width: 991px) {
     background-color: #f7f7f7;
@@ -90,12 +103,13 @@
   @include wh(100%);
   @include pos(0, 0);
   gap: 16px 0;
-  padding: 0 24px 24px;
+  padding: 0 $map-scrollbar-offset 24px 24px;
   overflow-y: scroll;
   animation: show 0.5s;
 
   @media (max-width: 991px) {
     padding: 0 16px 16px;
+    margin-top: 16px;
   }
 
   &.is-hidden {
@@ -114,7 +128,7 @@
 .map-sidebar__section {
   padding: 0 24px;
 
-  @media (max-width:991px) {
+  @media (max-width: 991px) {
     position: fixed;
     left: 0;
     right: 0;
@@ -124,7 +138,7 @@
   }
 
   &.is-active {
-    @media (max-width:991px) {
+    @media (max-width: 991px) {
       display: block;
     }
   }
@@ -132,13 +146,13 @@
 
 .map-sidebar__info {
   @extend %d-flex-ai-center;
-  gap: 0 20px;
-  padding: 20px;
+  gap: 0 14px;
+  padding: 15px 12px;
   border-radius: 16px;
-  border: 1px solid #BADEF8;
-  background-color: #E3F2FC;
+  border: 1px solid #badef8;
+  background-color: #e3f2fc;
 
-  @media (max-width:991px) {
+  @media (max-width: 991px) {
     gap: 0 4px;
     padding: 16px 20px;
     align-items: flex-start;
@@ -147,7 +161,7 @@
 }
 
 .map-sidebar__qr {
-  @include fw(66px);
+  @include fw(88px);
   @include desktopOnly(block);
 }
 
@@ -161,8 +175,11 @@
 }
 
 .map-sidebar__desc {
-  @media (max-width:991px) {
-    @include fs-lh(18px,22px);
+  @include fs-lh(20px, 24px);
+  letter-spacing: -1px;
+
+  @media (max-width: 991px) {
+    @include fs-lh(18px, 22px);
   }
 }
 
@@ -173,10 +190,26 @@
   &.map-sidebar__link_type_btn {
     @extend %btn-default;
     @extend %d-flex-ai-center;
-    @include fs-lh(20px,24px);
+    @include fs-lh(20px, 24px);
     gap: 0 24px;
     padding: 0 0 0 8px;
     justify-content: flex-start;
     text-decoration: none;
+  }
+}
+
+.map__custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    padding: 0 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #8bc8f3;
+    border-radius: 8px;
   }
 }

@@ -14,7 +14,7 @@
 }
 
 .map-search-holder__desc {
-  @include fs-lh(24px,28px);
+  @include fs-lh(24px, 28px);
   font-weight: 500;
 
   @media (max-width: 991px) {
@@ -52,7 +52,7 @@
   background-color: rgba(0, 0, 0, 0);
 
   @media (max-width: 991px) {
-    @include fs-lh(18px,22px);
+    @include fs-lh(18px, 22px);
     padding: 16px 16px 16px 0;
   }
 }

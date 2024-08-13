@@ -48,7 +48,7 @@
 
     .map-modal__header {
       @media (max-width: 991px) {
-        @include offset(0 0 9px,0 16px);
+        @include offset(0 0 9px, 0 16px);
         display: flex;
         align-items: flex-end;
       }
@@ -85,8 +85,8 @@
     @include before;
 
     &:before {
-      @include pos(6px,50%);
-      @include wh(48px,4px);
+      @include pos(6px, 50%);
+      @include wh(48px, 4px);
       transform: translateX(-50%);
       border-radius: 16px;
       background-color: darken(#f7f7f7, 15%);
@@ -106,7 +106,7 @@
   @media (max-width: 991px) {
     @include wh(12px);
     @include fw(12px);
-    color: #8C8C8C;
+    color: #8c8c8c;
     margin: 0 0 18px;
   }
 
