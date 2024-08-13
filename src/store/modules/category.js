@@ -40,7 +40,6 @@ const useCategoryStore = defineStore({
   }),
   actions: {
     async fetchCategoryData(data, params = "") {
-      console.log(data, params, "fetchCategoryData");
       this.currentItemsList = [];
       this.isCategoryListLoading = true;
 

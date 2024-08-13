@@ -317,8 +317,9 @@ export default {
               ? data[LOCATION_CODE_KEY]
               : DEFAULT_LOC_CODE,
           };
+
       console.log("payload", payload);
-      this.setCurrentFilterData(payload || null);
+      this.setCurrentFilterData(filterData ? payload : null);
       this.fetchCategoryData(payload, payload.params);
     },
   },

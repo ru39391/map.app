@@ -13,9 +13,12 @@ import {
   DEFAULT_BOUNDS,
   API_URL,
 } from "../../utils/constants";
-import axios from "axios";
+
+import { fetchFilterData } from '../../utils/fetchFilterData';
+//import axios from "axios";
 
 setActivePinia(piniaStore);
+
 const categoryStore = useCategoryStore();
 
 const useLocationStore = defineStore({
@@ -34,7 +37,8 @@ const useLocationStore = defineStore({
       }
 
       try {
-        const { data } = await axios.get(`${API_URL}${FILTER_KEY}/`);
+        const data = await fetchFilterData();
+        //const { data } = await axios.get(`${API_URL}${FILTER_KEY}/`);
         console.log({ data });
 
         if (data) {
