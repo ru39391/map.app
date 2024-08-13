@@ -1,14 +1,15 @@
 import { defineStore } from "pinia";
 import {
+  DEFAULT_LOC_CODE,
   PARTNER_NAME,
   FILIAL_KEY,
   ATM_KEY,
   POINT_KEY,
   TERMINAL_KEY,
+  FILTER_KEY,
   LOCATION_KEY,
   LOCATION_CODE_KEY,
   API_URL,
-  FILTER_KEY,
 } from "../../utils/constants";
 
 import {
@@ -54,6 +55,7 @@ const useCategoryStore = defineStore({
           ? `/${params}&HL_CITY=${data[LOCATION_CODE_KEY]}`
           : `/?HL_CITY=${data[LOCATION_CODE_KEY]}`
       }`;
+      console.log({requestUrl});
 
       try {
         /*
@@ -167,7 +169,6 @@ const useCategoryStore = defineStore({
       this.currentCategory = data;
     },
     saveSessionCategory(data) {
-      return;
       const savedString = JSON.stringify(data);
       window.sessionStorage.setItem("currentMapCategory", savedString);
     },
@@ -182,29 +183,39 @@ const useCategoryStore = defineStore({
     },
     async setCurrentFilterData(payload = null) {
       const { type, data } = {
-        type: payload ? payload.type : '',
+        ...( payload && !payload.data && { data: null } ),
+        type: payload ? payload.type : this.categoryList[0].type,
         data: payload ? payload.data : null
       };
       const filterData = sessionStorage.getItem(FILTER_KEY);
-      const currentFilterData = filterData
-        ? JSON.parse(filterData)
-        : null;
-      const filterItemData = type
-        ? { type, data }
-        : { type: this.categoryList[0].type, data: null };
+      const locationData = localStorage.getItem(LOCATION_KEY);
+      const currentFilterData = filterData ? JSON.parse(filterData) : { type, data };
+      const currentLocationData = locationData ? JSON.parse(locationData) : { [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE };
 
-      if (!type && filterData) {
-        this.currentFilterData = currentFilterData;
+      const setCurrentData = (values) => {
+        this.currentFilterData = values;
+        this.setCurrentCategory(this.categoryList.find(({ type }) => type === values.type));
+      }
+
+      if (!payload && filterData) {
+        setCurrentData({
+          ...currentFilterData,
+          [LOCATION_CODE_KEY]: currentLocationData[LOCATION_CODE_KEY]
+        });
         return;
       }
 
       try {
-        const { isSucceed, data } = await setFilterData(filterItemData);
+        const { isSucceed, data: filterData } = await setFilterData({
+          type,
+          data,
+          [LOCATION_CODE_KEY]: currentLocationData[LOCATION_CODE_KEY]
+        });
 
-        console.log({ isSucceed, data });
+        console.log({ isSucceed, filterData });
 
         if (isSucceed) {
-          this.currentFilterData = data;
+          setCurrentData(filterData);
         }
       } catch (error) {
         console.log(error);

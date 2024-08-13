@@ -295,7 +295,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, ["fetchCategoryData", "fetchPointsData"]),
+    ...mapActions(useCategoryStore, ["fetchCategoryData", "fetchPointsData", "setCurrentFilterData"]),
 
     setFilterDropdownOpen(value) {
       this.isFilterDropdownOpen = value;
@@ -329,8 +329,11 @@ export default {
         ""
       );
       */
-      console.log({paramsData: stringifyFilterData(paramsData)});
 
+      this.setCurrentFilterData({
+        type: this.currentCategoryData.type,
+        data: paramsData
+      });
       this.fetchCategoryData({ ...this.currentCategoryData }, stringifyFilterData(paramsData));
     },
 
@@ -378,9 +381,16 @@ export default {
       }
     },
 
-    resetFilter() {
-      this.filterData = null;
+    resetFilter(data = null) {
       this.pointsFilterData = null;
+
+      if(data) {
+        this.filterData = data[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]
+          ? { ...( this.currentFilterData && this.currentFilterData.data && { ...this.currentFilterData.data } ) }
+          : null;
+      } else {
+        this.filterData = null;
+      }
     },
   },
 
@@ -394,7 +404,7 @@ export default {
     },
 
     currentLocation(data) {
-      this.resetFilter();
+      this.resetFilter(data);
       /*
         if(this.isPointsListVisible) {
           this.updatePointsList(data);
@@ -411,7 +421,6 @@ export default {
 
     currentFilterData(data) {
       console.log("Параметры фильтра установлены", data);
-      this.filterData = data !== null ? { ...data } : data;
     },
 
     filterData(data) {

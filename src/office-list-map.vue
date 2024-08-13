@@ -317,13 +317,20 @@ export default {
       this.isAdsPanelVisible = value;
     },
 
-    fetchFilterData(data = null) {
+    fetchItems({ data, key }) {
+      const isLocationKey = key === LOCATION_KEY;
+
+      if(isLocationKey && data[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]) {
+        return;
+      }
+
       const payload = {
-        type: data ? data.type : this.currentCategoryKey,
-        ...( data && { data } ),
-        ...this.currentLocationData
+        ...( data && { ...data } ),
+        type: isLocationKey ? this.currentCategoryKey : data.type,
+        [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
       };
 
+      console.log({ payload });
       this.fetchCategoryData(payload, payload.params || '');
     },
   },
@@ -341,12 +348,12 @@ export default {
 
     currentLocation(data) {
       this.setSelectedItemsList();
-      this.fetchFilterData();
+      this.fetchItems({ data, key: LOCATION_KEY });
     },
 
     categoryFilterData(data) {
       console.log("Список параметров фильтра обновлён", data);
-      this.setCurrentFilterData();
+      //this.setCurrentFilterData();
     },
 
     currentItemsList(arr) {
@@ -356,7 +363,7 @@ export default {
 
     currentFilterData(data) {
       console.log('Параметры фильтра обновлены', data);
-      this.fetchFilterData(data);
+      this.fetchItems({ data, key: FILTER_KEY });
     },
 
     isPointsListVisible(value) {
@@ -365,7 +372,8 @@ export default {
   },
 
   beforeMount() {
-    this.setCurrentCategory(this.categoryList[0]);
+    //this.setCurrentCategory(this.categoryList[0]);
+    this.setCurrentFilterData();
     this.setLocationList(this.currentCategoryKey);
   },
 };

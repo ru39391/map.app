@@ -79,6 +79,7 @@ export default {
       "setCurrentCategory",
       "saveSessionCategory",
       "setSessionCategory",
+      "setCurrentFilterData"
     ]),
 
     setCategoryDropdownOpen(value) {
@@ -92,8 +93,11 @@ export default {
         return;
       }
 
+      this.setCurrentFilterData({ type });
+      /*
       this.setCurrentCategory({ type, caption, category });
       this.saveSessionCategory({ type, caption, category });
+      */
 
       this.fetchCategoryData({
         type,
@@ -109,7 +113,7 @@ export default {
   },
 
   created() {
-    this.setSessionCategory();
+    //this.setSessionCategory();
   },
 
   mounted() {
