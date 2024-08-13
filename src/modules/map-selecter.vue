@@ -56,7 +56,7 @@ export default {
   },
 
   computed: {
-    ...mapState(useCategoryStore, ["categoryList", "currentCategory"]),
+    ...mapState(useCategoryStore, ["categoryList", "currentCategory", "currentFilterData"]),
 
     ...mapState(useLocationStore, ["currentLocation"]),
 
@@ -93,7 +93,11 @@ export default {
         return;
       }
 
-      this.setCurrentFilterData({ type });
+      this.setCurrentFilterData({
+        ...this.currentFilterData,
+        type,
+        data: null
+      });
       /*
       this.setCurrentCategory({ type, caption, category });
       this.saveSessionCategory({ type, caption, category });

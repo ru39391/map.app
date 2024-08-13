@@ -271,6 +271,7 @@ export default {
       const data = {
         [FILIAL_KEY]: "отделения",
         [ATM_KEY]: "банкомата",
+        [POINT_KEY]: "точек погашения кредита",
         [TERMINAL_KEY]: "терминала",
       };
 
@@ -300,6 +301,10 @@ export default {
         this.currentLocation &&
         value[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
       ) {
+        this.setCurrentFilterData({
+          ...this.currentFilterData,
+          [LOCATION_CODE_KEY]: value[LOCATION_CODE_KEY]
+        });
         this.setCurrentLocation(this.locationList, value[LOCATION_CODE_KEY]);
       }
     },

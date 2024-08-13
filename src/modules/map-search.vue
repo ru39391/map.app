@@ -90,6 +90,8 @@ export default {
   },
 
   computed: {
+    ...mapState(useCategoryStore, ["currentFilterData"]),
+
     ...mapState(useLocationStore, ["locationList", "currentLocation"]),
 
     ...mapState(useModalStore, ["isModalOpen"]),
@@ -100,7 +102,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, ["setSelectedItemsList"]),
+    ...mapActions(useCategoryStore, ["setSelectedItemsList", "setCurrentFilterData"]),
 
     ...mapActions(useLocationStore, ["setCurrentLocation"]),
 
@@ -133,6 +135,10 @@ export default {
           this.currentLocation &&
           data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
         ) {
+          this.setCurrentFilterData({
+            ...this.currentFilterData,
+            [LOCATION_CODE_KEY]: data[LOCATION_CODE_KEY]
+          });
           this.setCurrentLocation(this.locationList, data[LOCATION_CODE_KEY]);
         }
       }

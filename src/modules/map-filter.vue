@@ -331,7 +331,7 @@ export default {
       */
 
       this.setCurrentFilterData({
-        type: this.currentCategoryData.type,
+        ...this.currentFilterData,
         data: paramsData
       });
       this.fetchCategoryData({ ...this.currentCategoryData }, stringifyFilterData(paramsData));
@@ -383,14 +383,9 @@ export default {
 
     resetFilter(data = null) {
       this.pointsFilterData = null;
-
-      if(data) {
-        this.filterData = data[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]
-          ? { ...( this.currentFilterData && this.currentFilterData.data && { ...this.currentFilterData.data } ) }
-          : null;
-      } else {
-        this.filterData = null;
-      }
+      this.filterData = data
+        ? { ...( this.currentFilterData && this.currentFilterData.data && { ...this.currentFilterData.data } ) }
+        : null;
     },
   },
 

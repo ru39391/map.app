@@ -182,6 +182,11 @@ const useCategoryStore = defineStore({
       }
     },
     async setCurrentFilterData(payload = null) {
+      if (payload && payload.type === POINT_KEY) {
+        this.setCurrentCategory(this.categoryList.find(({ type }) => type === POINT_KEY));
+        return;
+      }
+
       const { type, data } = {
         ...( payload && !payload.data && { data: null } ),
         type: payload ? payload.type : this.categoryList[0].type,
