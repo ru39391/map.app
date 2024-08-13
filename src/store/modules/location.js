@@ -39,11 +39,14 @@ const useLocationStore = defineStore({
       try {
         const data = await fetchFilterData();
         //const { data } = await axios.get(`${API_URL}${FILTER_KEY}/`);
-        console.log({ data });
+        //console.log({ data });
 
         if (data) {
-          categoryStore.categoryFilterData = data;
+          const filterKeys = categoryStore.categoryList.map(({ type }) => type);
 
+          categoryStore.categoryFilterData = filterKeys.reduce(
+            (acc, key) => data[key] ? ({ ...acc, [key]: data[key] }) : acc, {}
+          );
           this.locationList = data.cities.map(
             ({
               UF_NAME,

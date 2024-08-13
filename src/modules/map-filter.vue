@@ -134,6 +134,7 @@ import {
   LOCATION_CODE_KEY,
   DEFAULT_LOC_CODE,
 } from "../utils/constants";
+import { stringifyFilterData } from "../utils";
 import { useCategoryStore } from "../store/modules/category";
 import { useLocationStore } from "../store/modules/location";
 import CheckedIcon from "../assets/icons/checked-icon.vue";
@@ -318,6 +319,7 @@ export default {
           item ? { ...acc, [Object.keys(data)[index]]: item } : acc,
         {}
       );
+      /*
       const params = Object.keys(paramsData).reduce(
         (acc, item, index) =>
           acc +
@@ -326,8 +328,10 @@ export default {
           }`,
         ""
       );
+      */
+      console.log({paramsData: stringifyFilterData(paramsData)});
 
-      this.fetchCategoryData({ ...this.currentCategoryData }, params);
+      this.fetchCategoryData({ ...this.currentCategoryData }, stringifyFilterData(paramsData));
     },
 
     updatePointsFilterData(boundedBy) {

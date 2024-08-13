@@ -8,13 +8,14 @@ import {
   LOCATION_KEY,
   LOCATION_CODE_KEY,
   API_URL,
+  FILTER_KEY,
 } from "../../utils/constants";
 
 import {
   fetchersData,
   handleLocationList,
   handlePointsData,
-  setFilterParams,
+  setFilterData,
 } from "../../utils";
 //import axios from 'axios';
 
@@ -55,14 +56,17 @@ const useCategoryStore = defineStore({
       }`;
 
       try {
+        /*
         const [{ data: itemsData, success }, { isSucceed, data: filterData }] =
           await Promise.all([
             fetchersData[data.type](),
-            setFilterParams({ ...data, params }),
+            setFilterData({ ...data, params }),
           ]);
+        */
         //axios.get(requestUrl),
         //console.log({itemsData});
-        console.log({ filterData });
+        //console.log({ filterData });
+        const { data: itemsData, success } = await fetchersData[data.type]();
 
         if (success) {
           //if (itemsData.success) {
@@ -176,25 +180,35 @@ const useCategoryStore = defineStore({
         this.currentCategory = categoryData;
       }
     },
-    setCurrentFilterData(payload) {
-      if (!payload) {
+    async setCurrentFilterData(payload = null) {
+      const { type, data } = {
+        type: payload ? payload.type : '',
+        data: payload ? payload.data : null
+      };
+      const filterData = sessionStorage.getItem(FILTER_KEY);
+      const currentFilterData = filterData
+        ? JSON.parse(filterData)
+        : null;
+      const filterItemData = type
+        ? { type, data }
+        : { type: this.categoryList[0].type, data: null };
+
+      if (!type && filterData) {
+        this.currentFilterData = currentFilterData;
         return;
       }
 
-      const { type, params } = payload;
-      const data = params
-        .replace("?", "")
-        .split("&")
-        .reduce((acc, item) => {
-          const [key, value] = item.split("=");
+      try {
+        const { isSucceed, data } = await setFilterData(filterItemData);
 
-          return { ...acc, [key]: Number(value) };
-        }, {});
+        console.log({ isSucceed, data });
 
-      this.setCurrentCategory(
-        this.categoryList.find((item) => item.type === type)
-      );
-      this.currentFilterData = params ? { ...data } : null;
+        if (isSucceed) {
+          this.currentFilterData = data;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 });

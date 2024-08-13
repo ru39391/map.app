@@ -21,6 +21,15 @@ const fetchersData = {
   [TERMINAL_KEY]: async () => await fetchTerminalData(),
 };
 
+const stringifyFilterData = (data) => Object.keys(data).reduce(
+  (acc, item, index) =>
+    acc +
+    `${index === 0 ? "?" : "&"}${item}=${
+      Object.values(data)[index]
+    }`,
+  ""
+);
+
 const handlePointsData = async ({ key, request, boundedBy }) => {
   let data = { isSucceed: false, data: null };
 
@@ -108,18 +117,20 @@ const setLocation = async (values) => {
   });
 };
 
-const setFilterParams = async (values) => {
+const setFilterData = async (values) => {
   let data = { isSucceed: false, data: null };
 
   const isFilterDataSet = (key) => sessionStorage.getItem(key) !== null;
-  const setFilterDataData = (key, data) =>
-    sessionStorage.setItem(key, JSON.stringify(data));
+  const setFilterParams = (key, payload) => sessionStorage.setItem(key, JSON.stringify({
+    ...payload,
+    ...( payload.data && { params: stringifyFilterData(payload.data) } )
+  }));
 
   if (isFilterDataSet(FILTER_KEY)) {
     sessionStorage.removeItem(FILTER_KEY);
-    setFilterDataData(FILTER_KEY, values);
+    setFilterParams(FILTER_KEY, values);
   } else {
-    setFilterDataData(FILTER_KEY, values);
+    setFilterParams(FILTER_KEY, values);
   }
 
   return new Promise((resolve, reject) => {
@@ -158,7 +169,8 @@ const handleLocationList = (arr, key = "") =>
 export {
   fetchersData,
   setLocation,
+  setFilterData,
   handleLocationList,
   handlePointsData,
-  setFilterParams,
+  stringifyFilterData
 };

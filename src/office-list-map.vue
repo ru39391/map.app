@@ -212,6 +212,8 @@ export default {
       "selectedItemsList",
       "categoryList",
       "currentCategory",
+      "categoryFilterData",
+      "currentFilterData"
     ]),
 
     ...mapState(useLocationStore, ["locationList", "currentLocation"]),
@@ -230,6 +232,14 @@ export default {
       return this.currentCategory
         ? this.currentCategory.type
         : this.categoryList[0].type;
+    },
+
+    currentLocationData() {
+      return {
+        [LOCATION_CODE_KEY]: this.currentLocation
+          ? this.currentLocation[LOCATION_CODE_KEY]
+          : DEFAULT_LOC_CODE,
+      };
     },
 
     isPointsListVisible() {
@@ -307,20 +317,14 @@ export default {
       this.isAdsPanelVisible = value;
     },
 
-    fetchFilterData(data) {
-      const filterData = sessionStorage.getItem(FILTER_KEY);
-      const payload = filterData
-        ? { ...JSON.parse(filterData) }
-        : {
-            type: this.currentCategoryKey,
-            [LOCATION_CODE_KEY]: data
-              ? data[LOCATION_CODE_KEY]
-              : DEFAULT_LOC_CODE,
-          };
+    fetchFilterData(data = null) {
+      const payload = {
+        type: data ? data.type : this.currentCategoryKey,
+        ...( data && { data } ),
+        ...this.currentLocationData
+      };
 
-      console.log("payload", payload);
-      this.setCurrentFilterData(filterData ? payload : null);
-      this.fetchCategoryData(payload, payload.params);
+      this.fetchCategoryData(payload, payload.params || '');
     },
   },
 
@@ -337,12 +341,22 @@ export default {
 
     currentLocation(data) {
       this.setSelectedItemsList();
-      this.fetchFilterData(data);
+      this.fetchFilterData();
+    },
+
+    categoryFilterData(data) {
+      console.log("Список параметров фильтра обновлён", data);
+      this.setCurrentFilterData();
     },
 
     currentItemsList(arr) {
       console.log("Cписок карточек обновлён", arr);
       this.setSelectedItemsList();
+    },
+
+    currentFilterData(data) {
+      console.log('Параметры фильтра обновлены', data);
+      this.fetchFilterData(data);
     },
 
     isPointsListVisible(value) {
