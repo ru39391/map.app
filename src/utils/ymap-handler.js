@@ -1,6 +1,6 @@
-import { setActivePinia } from 'pinia';
-import { piniaStore } from '../store';
-import { useCategoryStore } from '../store/modules/category';
+import { setActivePinia } from "pinia";
+import { piniaStore } from "../store";
+import { useCategoryStore } from "../store/modules/category";
 import {
   CLOSED_KEY,
   SELECTED_KEY,
@@ -10,8 +10,8 @@ import {
   PARTNER_KEY,
   PARTNER_SELECTED_KEY,
   MAP_PINS,
-  MAP_ID
-} from './constants';
+  MAP_ID,
+} from "./constants";
 
 setActivePinia(piniaStore);
 
@@ -20,9 +20,9 @@ const categoryStore = useCategoryStore();
 class YMapHandler {
   constructor() {
     this.mapId = MAP_ID;
-    this.zoomInBtnSel = '.js-zoom-in';
-    this.zoomOutBtnSel = '.js-zoom-out';
-    this.setLocBtnSel = '.js-location';
+    this.zoomInBtnSel = ".js-zoom-in";
+    this.zoomOutBtnSel = ".js-zoom-out";
+    this.setLocBtnSel = ".js-location";
     this.mapItem = null;
     this.iconsData = null;
     this.pinConfig = null;
@@ -38,35 +38,38 @@ class YMapHandler {
   handleSelectedItems(arr, isIconHandlerDisabled = false) {
     const idsArr = arr ? arr.map(({ properties }) => properties._data.id) : [];
     const config = {
-      iconImageSize: [66, 94],
-      iconImageOffset: [-33, -94]
+      iconImageSize: [52, 52],
+      iconImageOffset: [-26, -26],
     };
 
     categoryStore.setSelectedItemsList(idsArr);
 
-    if(!isIconHandlerDisabled) {
+    if (!isIconHandlerDisabled) {
       arr.forEach(({ properties, options }) => {
         Object.keys(config).forEach((item, index) => {
           options.set(item, Object.values(config)[index]);
           options.set(
-            'iconImageHref',
+            "iconImageHref",
             properties._data.isPartner
-              ? this.iconsData[PARTNER_SELECTED_KEY]['iconImageHref']
-              : this.iconsData[properties._data.isClosed ? SELECTED_CLOSED_KEY : SELECTED_KEY]['iconImageHref']
+              ? this.iconsData[PARTNER_SELECTED_KEY]["iconImageHref"]
+              : this.iconsData[
+                  properties._data.isClosed ? SELECTED_CLOSED_KEY : SELECTED_KEY
+                ]["iconImageHref"]
           );
         });
       });
     }
   }
 
-  hoverPlacemark({ id, key, isClosed, options}) {
-    if(categoryStore.selectedItemsList.find(item => item.id === id)) {
+  hoverPlacemark({ id, key, isClosed, options }) {
+    console.log("hoverPlacemark");
+    if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
 
     const config = {
-      iconImageSize: key ? [48, 48] : [66, 94],
-      iconImageOffset: key ? [-24, -48] : [-33, -94]
+      iconImageSize: key ? [56, 56] : [56, 56],
+      iconImageOffset: key ? [-28, -28] : [-28, -28],
     };
 
     Object.keys(config).forEach((item, index) => {
@@ -74,14 +77,18 @@ class YMapHandler {
     });
   }
 
-  leavePlacemark({ id, key, isClosed, isPartner, options}) {
-    if(categoryStore.selectedItemsList.find(item => item.id === id)) {
+  leavePlacemark({ id, key, isClosed, isPartner, options }) {
+    if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
 
     const config = key
       ? { ...this.pinConfig, ...this.iconsData[key] }
-      : { ...this.pinConfig, ...(isClosed && { ...this.iconsData[CLOSED_KEY] }), ...(isPartner && { ...this.iconsData[PARTNER_KEY] }) };
+      : {
+          ...this.pinConfig,
+          ...(isClosed && { ...this.iconsData[CLOSED_KEY] }),
+          ...(isPartner && { ...this.iconsData[PARTNER_KEY] }),
+        };
 
     Object.keys(config).forEach((item, index) => {
       options.set(item, Object.values(config)[index]);
@@ -89,52 +96,56 @@ class YMapHandler {
   }
 
   resetPlacemarks(arr) {
-    if(!this.mapItem) {
+    if (!this.mapItem) {
       return;
     }
 
     let geoObjects = [];
     const idsArr = arr.map(({ id }) => id);
 
-    this.mapItem.geoObjects.each(item => {
-      geoObjects = [...Object.values(item._objects).map(({ geoObject }) => ({
-        id: geoObject.properties._data.id,
-        key: geoObject.properties._data.key,
-        isClosed: geoObject.properties._data.isClosed,
-        isPartner: geoObject.properties._data.isPartner,
-        options: geoObject.options
-      }))];
+    this.mapItem.geoObjects.each((item) => {
+      geoObjects = [
+        ...Object.values(item._objects).map(({ geoObject }) => ({
+          id: geoObject.properties._data.id,
+          key: geoObject.properties._data.key,
+          isClosed: geoObject.properties._data.isClosed,
+          isPartner: geoObject.properties._data.isPartner,
+          options: geoObject.options,
+        })),
+      ];
     });
 
     const placemarks = geoObjects.filter(({ id }) => !idsArr.includes(id));
 
-    placemarks.forEach(data => this.leavePlacemark(data));
+    placemarks.forEach((data) => this.leavePlacemark(data));
   }
 
   hoverCard(arr, placemarks) {
-    const cards = arr.map(({ id }) => ({ id, card: document.querySelector(`#card-${id}`) }));
-    const targets = placemarks.map(
-      ({ properties, options }) => ({
-        id: properties._data.id,
-        key: properties._data.key,
-        isClosed: properties._data.isClosed,
-        options
-      })
-    );
+    const cards = arr.map(({ id }) => ({
+      id,
+      card: document.querySelector(`#card-${id}`),
+    }));
+    const targets = placemarks.map(({ properties, options }) => ({
+      id: properties._data.id,
+      key: properties._data.key,
+      isClosed: properties._data.isClosed,
+      isPartner: properties._data.isPartner,
+      options,
+    }));
 
     cards.forEach(({ id, card }) => {
-      card.addEventListener('mouseenter', () => {
-        const target = targets.find(item => item.id === id);
+      card.addEventListener("mouseenter", () => {
+        const target = targets.find((item) => item.id === id);
 
         this.hoverPlacemark(target);
       });
 
-      card.addEventListener('mouseleave', () => {
-        const target = targets.find(item => item.id === id);
+      card.addEventListener("mouseleave", () => {
+        const target = targets.find((item) => item.id === id);
 
         this.leavePlacemark(target);
       });
-    })
+    });
   }
 
   isMapItemExist() {
@@ -142,7 +153,7 @@ class YMapHandler {
   }
 
   destroyYMap() {
-    if(this.isMapItemExist()) {
+    if (this.isMapItemExist()) {
       this.mapItem.destroy();
       this.mapItem = null;
       this.iconsData = null;
@@ -153,13 +164,13 @@ class YMapHandler {
       setTimeout(() => {
         !this.isMapItemExist()
           ? resolve({
-            isSucceed: true,
-            message: 'Карта удалена'
-          })
+              isSucceed: true,
+              message: "Карта удалена",
+            })
           : reject({
-            isSucceed: false,
-            message: 'Не удалось удалить карту'
-          })
+              isSucceed: false,
+              message: "Не удалось удалить карту",
+            });
       }, 200);
     });
   }
@@ -185,15 +196,26 @@ class YMapHandler {
     try {
       const res = await Promise.all([this.loadYMap(), this.destroyYMap()]);
 
-      if(res.reduce((acc, { isSucceed }) => acc && isSucceed, true)) {
+      if (res.reduce((acc, { isSucceed }) => acc && isSucceed, true)) {
         const { yMaps } = res.reduce((acc, item) => {
-          const key = Object.keys(item).find(key => key !== 'isSucceed');
+          const key = Object.keys(item).find((key) => key !== "isSucceed");
 
           return { ...acc, [key]: item[key] };
         }, {});
 
         this.initControllers();
-        this.mapItem = new yMaps.Map(this.mapId, { coords, bounds, zoom: 12, controls: [] });
+
+        const isBounds =
+          bounds[0].filter(Boolean).length && bounds[1].filter(Boolean).length;
+        let mapState = null;
+
+        if (isBounds) {
+          mapState = { coords, bounds, zoom: 12, controls: [] };
+        } else {
+          mapState = { center: coords, zoom: 12, controls: [] };
+        }
+
+        this.mapItem = new yMaps.Map(this.mapId, mapState);
         data = { isSucceed: true, map: this.mapItem, yMaps };
       }
     } catch (error) {
@@ -207,7 +229,7 @@ class YMapHandler {
     try {
       const result = await ymaps.geolocation.get();
 
-      if(result && result.geoObjects.getLength() > 0) {
+      if (result && result.geoObjects.getLength() > 0) {
         const { geoObjects } = result;
         map.geoObjects.add(geoObjects);
 
@@ -224,11 +246,11 @@ class YMapHandler {
     const { arr, config, icons } = data;
 
     const handlePlacemarkData = (event) => {
-      const { properties, options } = event.get('target');
+      const { properties, options } = event.get("target");
       const { key } = properties._data;
 
-      if(properties.get('geoObjects')) {
-        this.handleSelectedItems(properties.get('geoObjects'));
+      if (properties.get("geoObjects")) {
+        this.handleSelectedItems(properties.get("geoObjects"));
       } else {
         this.handleSelectedItems([{ properties, options }], Boolean(key));
       }
@@ -242,11 +264,11 @@ class YMapHandler {
     };
 
     const hoverPin = (event) => {
-      const { properties, options } = event.get('target');
+      const { properties, options } = event.get("target");
       const { id, key, isClosed } = properties._data;
 
-      if(!properties.get('geoObjects')) {
-        this.hoverPlacemark({ id, key, isClosed, options});
+      if (!properties.get("geoObjects")) {
+        this.hoverPlacemark({ id, key, isClosed, options });
       }
 
       /*
@@ -256,11 +278,11 @@ class YMapHandler {
     };
 
     const leavePin = (event) => {
-      const { properties, options } = event.get('target');
+      const { properties, options } = event.get("target");
       const { id, key, isClosed, isPartner } = properties._data;
 
-      if(!properties.get('geoObjects')) {
-        this.leavePlacemark({ id, key, isClosed, isPartner, options});
+      if (!properties.get("geoObjects")) {
+        this.leavePlacemark({ id, key, isClosed, isPartner, options });
       }
 
       /*
@@ -270,26 +292,30 @@ class YMapHandler {
     };
 
     const handleClusters = (event) => {
-      const currentMap = event.get('target');
+      const currentMap = event.get("target");
       const clusters = currentMap.getClusters();
 
-      clusters.forEach(item => {
+      clusters.forEach((item) => {
         const { properties: clusterProps, options } = item;
-        const isClosed = clusterProps.get('geoObjects').reduce((acc, { properties }) => acc || properties._data.isClosed, false);
+        const isClosed = clusterProps
+          .get("geoObjects")
+          .reduce(
+            (acc, { properties }) => acc || properties._data.isClosed,
+            false
+          );
 
         //console.log(clusterProps.get('geoObjects').map(({ properties }) => properties._data));
-        if(isClosed) {
-          options.set(
-            'clusterIcons',
-            [{
+        if (isClosed) {
+          options.set("clusterIcons", [
+            {
               href: MAP_PINS[CLUSTER_CLOSED_KEY],
-              size: [48, 48],
-              offset: [-24, -24]
-            }]
-          );
+              size: [52, 52],
+              offset: [-26, -26],
+            },
+          ]);
         }
-      })
-    }
+      });
+    };
 
     const zoomMap = (map, isZoomIn = true) => {
       const currZoomValue = map.getZoom();
@@ -299,26 +325,31 @@ class YMapHandler {
       this.zoomOutBtn.disabled = currZoomValue === 0;
 
       map.setZoom(currZoomValue + zoomValue, { duration: 300 });
-    }
+    };
 
     try {
       const { isSucceed, map, yMaps } = await this.setMapItem(data);
 
-      if(isSucceed) {
-        const collection = new yMaps.GeoObjectCollection(null, { preset: 'islands#blackDotIcon' });
-        const clusterIconContentLayout = yMaps.templateLayoutFactory.createClass(
-          `<div class="map-cluster {% for item in properties.geoObjects %} {{ item.properties._data.clusterMod}}{% endfor %}">{{ properties.geoObjects.length }}</div>`
-        );
+      if (isSucceed) {
+        const collection = new yMaps.GeoObjectCollection(null, {
+          preset: "islands#blackDotIcon",
+        });
+        const clusterIconContentLayout =
+          yMaps.templateLayoutFactory.createClass(
+            `<div class="map-cluster {% for item in properties.geoObjects %} {{ item.properties._data.clusterMod}}{% endfor %}">{{ properties.geoObjects.length }}</div>`
+          );
         const clusterer = new yMaps.Clusterer({
-          preset: 'islands#blueClusterIcons',
+          preset: "islands#blueClusterIcons",
           clusterIconContentLayout,
-          clusterIcons: [{
-            href: MAP_PINS[CLUSTER_KEY],
-            size: [48, 48],
-            offset: [-24, -24]
-          }],
-          groupByCoordinates: true,
-          clusterDisableClickZoom: true,
+          clusterIcons: [
+            {
+              href: MAP_PINS[CLUSTER_KEY],
+              size: [52, 52],
+              offset: [-26, -26],
+            },
+          ],
+          groupByCoordinates: false,
+          clusterDisableClickZoom: false,
           clusterOpenBalloonOnClick: false,
         });
 
@@ -332,13 +363,13 @@ class YMapHandler {
               coords,
               isClosed: !key && !isWork && !isPartner,
               isPartner,
-              clusterMod: !key && isWork ? 'map-cluster__open' : ''
+              clusterMod: !key && isWork ? "map-cluster__open" : "",
             },
             {
               ...config,
               ...(key && { ...icons[key] }),
-              ...(!key && !isWork && !isPartner && { ...icons[CLOSED_KEY] } ),
-              ...(isPartner && { ...icons[PARTNER_KEY] } )
+              ...(!key && !isWork && !isPartner && { ...icons[CLOSED_KEY] }),
+              ...(isPartner && { ...icons[PARTNER_KEY] }),
             }
           );
           clusterer.add(placemark);
@@ -346,22 +377,24 @@ class YMapHandler {
           placemarks.push(placemark);
         });
 
-        map.geoObjects.events.add('mouseenter', hoverPin);
-        map.geoObjects.events.add('mouseleave', leavePin);
-        map.geoObjects.events.add('click', handlePlacemarkData);
-        clusterer.events.add('mapchange', handleClusters);
+        map.geoObjects.events.add("mouseenter", hoverPin);
+        map.geoObjects.events.add("mouseleave", leavePin);
+        map.geoObjects.events.add("click", handlePlacemarkData);
+        clusterer.events.add("mapchange", handleClusters);
 
         map.geoObjects.add(clusterer);
         //map.geoObjects.add(collection);
 
-        this.zoomInBtn.addEventListener('click', () => zoomMap(map));
-        this.zoomOutBtn.addEventListener('click', () => zoomMap(map, false));
-        this.setLocBtn.addEventListener('click', () => this.setGeolocation({ ymaps: yMaps, map }));
+        this.zoomInBtn.addEventListener("click", () => zoomMap(map));
+        this.zoomOutBtn.addEventListener("click", () => zoomMap(map, false));
+        this.setLocBtn.addEventListener("click", () =>
+          this.setGeolocation({ ymaps: yMaps, map })
+        );
 
         this.iconsData = icons;
         this.pinConfig = config;
         this.hoverCard(arr, placemarks);
-      };
+      }
     } catch (error) {
       console.error(error);
     }

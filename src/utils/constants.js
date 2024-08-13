@@ -1,38 +1,43 @@
-const FILIAL_KEY = 'filial';
-const ATM_KEY = 'atm';
-const POINT_KEY = 'point';
-const TERMINAL_KEY = 'terminal';
-const FILTER_KEY = 'filter';
+const FILIAL_KEY = "filial";
+const ATM_KEY = "atm";
+const POINT_KEY = "point";
+const TERMINAL_KEY = "terminal";
+const FILTER_KEY = "filter";
 
-const ADDRESS_KEY = 'address';
-const LOCATION_KEY = 'location';
-const LOCATION_CODE_KEY = 'locationCode';
+const ADDRESS_KEY = "address";
+const LOCATION_KEY = "location";
+const LOCATION_CODE_KEY = "locationCode";
 
-const DEFAULT_KEY = 'default';
-const CLOSED_KEY = 'closed';
-const SELECTED_KEY = 'selected';
-const SELECTED_CLOSED_KEY = 'selected_closed';
-const CLUSTER_KEY = 'cluster';
-const CLUSTER_CLOSED_KEY = 'cluster_closed';
-const PARTNER_KEY = 'partner';
-const PARTNER_SELECTED_KEY = 'partner_selected';
-const BEELINE_KEY = 'beeline';
-const MTS_KEY = 'mts';
-const KH_KEY = 'kh';
-const KARI_KEY = 'kari';
-const LXNET_KEY = 'lxnet';
-const RUPOST_KEY = 'rupost';
+const DEFAULT_KEY = "default";
+const CLOSED_KEY = "closed";
+const SELECTED_KEY = "selected";
+const SELECTED_CLOSED_KEY = "selected_closed";
+const CLUSTER_KEY = "cluster";
+const CLUSTER_CLOSED_KEY = "cluster_closed";
+const PARTNER_KEY = "partner";
+const PARTNER_SELECTED_KEY = "partner_selected";
+const BEELINE_KEY = "beeline";
+const MTS_KEY = "mts";
+const KH_KEY = "kh";
+const KARI_KEY = "kari";
+const LXNET_KEY = "lxnet";
+const RUPOST_KEY = "rupost";
 
-const DEFAULT_LOC = 'Москва';
-const DEFAULT_LOC_CODE = 'MOSKVA';
-const DEFAULT_COORDS = [55.755773,37.617815];
-const DEFAULT_BOUNDS = [[55.491126,37.32624],[55.957565,37.967682]];
+const DEFAULT_LOC = "Москва";
+const DEFAULT_LOC_CODE = "MOSKVA";
+const DEFAULT_COORDS = [55.755773, 37.617815];
+const DEFAULT_BOUNDS = [
+  [55.491126, 37.32624],
+  [55.957565, 37.967682],
+];
 
-const MAP_ID = 'map';
-const API_URL = '/api/branches/';
-const ICONS_URL = './src/assets/map-icons';
+const MAP_ID = "map";
+const API_URL = "/api/branches/";
+const ASSETS_URL = "/local/js/otp/src/assets/images/map";
+//const ICONS_URL = `${ASSETS_URL}/icons`;
+const ICONS_URL = "./src/assets/map-icons";
 
-const PARTNER_NAME = 'Газпромбанк';
+const PARTNER_NAME = "Газпромбанк";
 
 const MAP_PINS = {
   [DEFAULT_KEY]: `${ICONS_URL}/pin-icon.svg`,
@@ -81,5 +86,6 @@ export {
   DEFAULT_BOUNDS,
   MAP_PINS,
   MAP_ID,
-  API_URL
+  API_URL,
+  ASSETS_URL,
 };
