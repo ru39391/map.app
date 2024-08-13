@@ -163,10 +163,12 @@ const useCategoryStore = defineStore({
       this.currentCategory = data;
     },
     saveSessionCategory(data) {
+      return;
       const savedString = JSON.stringify(data);
       window.sessionStorage.setItem("currentMapCategory", savedString);
     },
     setSessionCategory() {
+      return;
       const savedString = window.sessionStorage.getItem("currentMapCategory");
 
       if (savedString) {
