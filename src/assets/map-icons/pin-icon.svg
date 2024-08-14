@@ -1,6 +1,29 @@
-<svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="26" cy="26" r="25" fill="#96D100" stroke="white" stroke-width="2"/>
-  <path d="M13 25.9979C13 18.8254 18.811 13.0085 25.9821 13V17.6968C21.4024 17.7032 17.6956 21.4178 17.6956 25.9979C17.6956 30.578 21.4129 34.3032 26.0011 34.3032C30.5892 34.3032 34.3022 30.6204 34.3022 25.9682L39 25.9724C39 33.1789 33.1826 39 26.0011 39C18.8195 39 13 33.1767 13 25.9979Z" fill="white"/>
-  <path d="M20.2617 25.9984C20.2617 22.8142 22.8467 20.2324 26.0285 20.2324C29.2102 20.2324 31.7974 22.8142 31.7974 25.9984C31.7974 29.1827 29.2123 31.7644 26.0285 31.7644C22.8446 31.7644 20.2617 29.1848 20.2617 25.9984Z" fill="white"/>
-  <path d="M30.0254 18.6919C30.0254 16.8653 31.5056 15.3867 33.3294 15.3867C35.1533 15.3867 36.6356 16.8653 36.6356 18.6919C36.6356 20.5184 35.1554 21.9992 33.3294 21.9992C31.5035 21.9992 30.0254 20.5163 30.0254 18.6919Z" fill="white"/>
+<svg width="86" height="86" viewBox="0 0 86 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g filter="url(#filter0_d_8256_14158)">
+    <ellipse cx="47.0004" cy="31" rx="5.77778" ry="4" fill="#46A7EC" />
+    <circle cx="47" cy="39" r="25" fill="#96D100" stroke="white" stroke-width="2" />
+    <path
+      d="M34 38.9979C34 31.8254 39.811 26.0085 46.9821 26V30.6968C42.4024 30.7032 38.6956 34.4178 38.6956 38.9979C38.6956 43.578 42.4129 47.3032 47.0011 47.3032C51.5892 47.3032 55.3022 43.6204 55.3022 38.9682L60 38.9724C60 46.1789 54.1826 52 47.0011 52C39.8195 52 34 46.1767 34 38.9979Z"
+      fill="white" />
+    <path
+      d="M41.2617 38.9984C41.2617 35.8142 43.8467 33.2324 47.0285 33.2324C50.2102 33.2324 52.7974 35.8142 52.7974 38.9984C52.7974 42.1827 50.2123 44.7644 47.0285 44.7644C43.8446 44.7644 41.2617 42.1848 41.2617 38.9984Z"
+      fill="white" />
+    <path
+      d="M51.0254 31.6919C51.0254 29.8653 52.5056 28.3867 54.3294 28.3867C56.1533 28.3867 57.6356 29.8653 57.6356 31.6919C57.6356 33.5184 56.1554 34.9992 54.3294 34.9992C52.5035 34.9992 51.0254 33.5163 51.0254 31.6919Z"
+      fill="white" />
+  </g>
+  <defs>
+    <filter id="filter0_d_8256_14158" x="0.1" y="0.1" width="85.8" height="85.8"
+      filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+      <feColorMatrix in="SourceAlpha" type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+      <feOffset dx="-4" dy="4" />
+      <feGaussianBlur stdDeviation="8.45" />
+      <feComposite in2="hardAlpha" operator="out" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_8256_14158" />
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_8256_14158" result="shape" />
+    </filter>
+  </defs>
 </svg>

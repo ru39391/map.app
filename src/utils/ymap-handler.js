@@ -39,9 +39,8 @@ class YMapHandler {
   handleSelectedItems(arr, isIconHandlerDisabled = false) {
     const idsArr = arr ? arr.map(({ properties }) => properties._data.id) : [];
     const config = {
-      ...this.iconsData[DEFAULT_KEY]
+      ...this.iconsData[SELECTED_KEY]
     };
-    console.log(config);
 
     categoryStore.setSelectedItemsList(idsArr);
 
@@ -64,15 +63,17 @@ class YMapHandler {
     }
   }
 
-  hoverPlacemark({ id, key, isClosed, options }) {
-    console.log({ id, key, isClosed, options });
-    //console.log({ hoverPlacemark: categoryStore.selectedItemsList.find((item) => item.id === id) });
+  hoverPlacemark({ id, key, isClosed, isPartner, options }) {
+    //console.log({ id, key, isClosed, options });
+    /*
     if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
-      //return;
+      return;
     }
+    */
 
     const config = {
       ...( !key && { ...this.iconsData[SELECTED_KEY] }),
+      ...(isPartner && { ...this.iconsData[PARTNER_SELECTED_KEY] }),
       iconImageSize: [86, 108],
       iconImageOffset: [-43, -108],
     };
@@ -83,15 +84,19 @@ class YMapHandler {
   }
 
   leavePlacemark({ id, key, isClosed, isPartner, options }) {
+    /*
     if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
-      //return;
+      return;
     }
+    */
 
     const config = key
-      ? { ...this.pinConfig, ...this.iconsData[key] }
+      ? {
+          ...this.pinConfig,
+          ...this.iconsData[key]
+        }
       : {
           ...this.pinConfig,
-          ...(isClosed && { ...this.iconsData[CLOSED_KEY] }),
           ...(isPartner && { ...this.iconsData[PARTNER_KEY] }),
         };
 
@@ -272,10 +277,10 @@ class YMapHandler {
 
     const hoverPin = (event) => {
       const { properties, options } = event.get("target");
-      const { id, key, isClosed } = properties._data;
+      const { id, key, isClosed, isPartner } = properties._data;
 
       if (!properties.get("geoObjects")) {
-        this.hoverPlacemark({ id, key, isClosed, options });
+        this.hoverPlacemark({ id, key, isClosed, isPartner, options });
       }
 
       /*
@@ -317,7 +322,7 @@ class YMapHandler {
             {
               href: MAP_PINS[CLUSTER_CLOSED_KEY],
               size: [52, 52],
-              offset: [-26, -26],
+              offset: [-26, -52],
             },
           ]);
         }
@@ -352,7 +357,7 @@ class YMapHandler {
             {
               href: MAP_PINS[CLUSTER_KEY],
               size: [52, 52],
-              offset: [-26, -26],
+              offset: [-26, -52],
             },
           ],
           groupByCoordinates: false,
@@ -375,7 +380,6 @@ class YMapHandler {
             {
               ...config,
               ...(key && { ...icons[key] }),
-              ...(!key && !isWork && !isPartner && { ...icons[CLOSED_KEY] }),
               ...(isPartner && { ...icons[PARTNER_KEY] }),
             }
           );

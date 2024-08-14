@@ -54,8 +54,8 @@ export default {
     return {
       mapMarkersList: [],
       markerIconSizes: {
-        iconImageSize: [52, 52],
-        iconImageOffset: [-26, -52],
+        iconImageSize: [86, 86],
+        iconImageOffset: [-43, -86],
       },
       markerIcons: {
         [DEFAULT_KEY]: {
@@ -126,7 +126,7 @@ export default {
       return {
         iconLayout: "default#image",
         ...this.markerIconSizes,
-        ...( this.isPointsListVisible && { ...this.markerIcons.default } ),
+        ...( !this.isPointsListVisible && { ...this.markerIcons.default } ),
       };
     },
   },
