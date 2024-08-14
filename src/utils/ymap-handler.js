@@ -152,6 +152,7 @@ class YMapHandler {
   }
 
   destroyYMap() {
+    console.log({ mapItem: this.mapItem });
     if (this.isMapItemExist()) {
       this.mapItem.destroy();
       this.mapItem = null;

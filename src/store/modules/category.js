@@ -74,9 +74,10 @@ const useCategoryStore = defineStore({
           //if (itemsData.success) {
           //const items = itemsData.data.map((data) => {
           const items = itemsData.map((data) => {
-            const { name, address, lon, lat, workMode, workTime } = {
+            const { name, address, category, lon, lat, workMode, workTime } = {
               name: data.name,
               address: data.address,
+              category: data.category,
               lon: data.lon,
               lat: data.lat,
               workMode: data.work_mode,
@@ -89,9 +90,9 @@ const useCategoryStore = defineStore({
               name: name.replace(/&quot;/g, ""),
               address: address.replace(/&quot;/g, ""),
               isPartner: name === PARTNER_NAME,
-              workMode: workModeArr
-                .map((item) => item.replace(/<[^>]*>/g, ""))
-                .filter((item) => item),
+              workMode: category === TERMINAL_KEY
+                ? (workTime && workTime.title) || ''
+                : workModeArr.map((item) => item.replace(/<[^>]*>/g, "")).filter((item) => item),
               ...(lon &&
                 lat && { coords: [lon, lat].map((value) => Number(value)) }),
               ...(workTime && {
@@ -196,6 +197,11 @@ const useCategoryStore = defineStore({
       const locationData = localStorage.getItem(LOCATION_KEY);
       const currentFilterData = filterData ? JSON.parse(filterData) : { type, data };
       const currentLocationData = locationData ? JSON.parse(locationData) : { [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE };
+      const filterLocationData = {
+        [LOCATION_CODE_KEY]: payload && payload[LOCATION_CODE_KEY]
+          ? payload[LOCATION_CODE_KEY]
+          : currentLocationData[LOCATION_CODE_KEY]
+      };
 
       const setCurrentData = (values) => {
         this.currentFilterData = values;
@@ -205,22 +211,22 @@ const useCategoryStore = defineStore({
       if (!payload && filterData) {
         setCurrentData({
           ...currentFilterData,
-          [LOCATION_CODE_KEY]: currentLocationData[LOCATION_CODE_KEY]
+          ...filterLocationData
         });
         return;
       }
 
       try {
-        const { isSucceed, data: filterData } = await setFilterData({
+        const { isSucceed, data: updatedData } = await setFilterData({
           type,
           data,
-          [LOCATION_CODE_KEY]: currentLocationData[LOCATION_CODE_KEY]
+          ...filterLocationData
         });
 
-        console.log({ isSucceed, filterData });
+        console.log({ isSucceed, updatedData });
 
         if (isSucceed) {
-          setCurrentData(filterData);
+          setCurrentData(updatedData);
         }
       } catch (error) {
         console.log(error);

@@ -67,6 +67,10 @@
         >
       </div>
       <div
+        v-if="isTerminal && item.workMode"
+        class="info-card__item info-card__item_fs_xs info-card__times"
+      >{{ item.workMode }}</div>
+      <div
         v-if="isTerminal || isAtm"
         class="info-card__content"
         v-html="item.content"
