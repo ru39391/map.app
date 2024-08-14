@@ -2,13 +2,10 @@ import { setActivePinia } from "pinia";
 import { piniaStore } from "../store";
 import { useCategoryStore } from "../store/modules/category";
 import {
-  CLOSED_KEY,
   SELECTED_KEY,
-  SELECTED_CLOSED_KEY,
   CLUSTER_KEY,
   CLUSTER_CLOSED_KEY,
   PARTNER_KEY,
-  PARTNER_SELECTED_KEY,
   MAP_PINS,
   MAP_ID,
   DEFAULT_KEY,
@@ -38,9 +35,7 @@ class YMapHandler {
 
   handleSelectedItems(arr, isIconHandlerDisabled = false) {
     const idsArr = arr ? arr.map(({ properties }) => properties._data.id) : [];
-    const config = {
-      ...this.iconsData[SELECTED_KEY]
-    };
+    const config = {};
 
     categoryStore.setSelectedItemsList(idsArr);
 
@@ -48,16 +43,10 @@ class YMapHandler {
       arr.forEach(({ properties, options }) => {
         Object.keys(config).forEach((item, index) => {
           options.set(item, Object.values(config)[index]);
-          /*
           options.set(
             "iconImageHref",
-            properties._data.isPartner
-              ? this.iconsData[PARTNER_SELECTED_KEY]["iconImageHref"]
-              : this.iconsData[
-                  properties._data.isClosed ? SELECTED_CLOSED_KEY : SELECTED_KEY
-                ]["iconImageHref"]
+            this.iconsData[SELECTED_KEY][properties._data.isPartner ? PARTNER_KEY : DEFAULT_KEY]["iconImageHref"]
           );
-          */
         });
       });
     }
@@ -65,15 +54,14 @@ class YMapHandler {
 
   hoverPlacemark({ id, key, isClosed, isPartner, options }) {
     //console.log({ id, key, isClosed, options });
-    /*
     if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
-    */
 
     const config = {
-      ...( !key && { ...this.iconsData[SELECTED_KEY] }),
-      ...(isPartner && { ...this.iconsData[PARTNER_SELECTED_KEY] }),
+      ...this.iconsData[SELECTED_KEY][key || DEFAULT_KEY],
+      //...( !key && { ...this.iconsData[SELECTED_KEY][key] }),
+      ...(isPartner && { ...this.iconsData[SELECTED_KEY][PARTNER_KEY] }),
       iconImageSize: [86, 108],
       iconImageOffset: [-43, -108],
     };
@@ -84,20 +72,18 @@ class YMapHandler {
   }
 
   leavePlacemark({ id, key, isClosed, isPartner, options }) {
-    /*
     if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
-    */
 
     const config = key
       ? {
           ...this.pinConfig,
-          ...this.iconsData[key]
+          ...this.iconsData[DEFAULT_KEY][key]
         }
       : {
           ...this.pinConfig,
-          ...(isPartner && { ...this.iconsData[PARTNER_KEY] }),
+          ...(isPartner && { ...this.iconsData[DEFAULT_KEY][PARTNER_KEY] }),
         };
 
     Object.keys(config).forEach((item, index) => {
@@ -379,8 +365,8 @@ class YMapHandler {
             },
             {
               ...config,
-              ...(key && { ...icons[key] }),
-              ...(isPartner && { ...icons[PARTNER_KEY] }),
+              ...(key && { ...icons[DEFAULT_KEY][key] }),
+              ...(isPartner && { ...icons[DEFAULT_KEY][PARTNER_KEY] }),
             }
           );
           clusterer.add(placemark);

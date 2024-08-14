@@ -42,7 +42,7 @@
         }}</template>
       </div>
       <div
-        class="info-card__item info-card__item_fw_bold info-card__item_type_row info-card__address"
+        class="info-card__item info-card__item_type_row info-card__address"
         :class="{ 'info-card__address--mt-16': isTerminal }"
       >
         {{ item.address }}
