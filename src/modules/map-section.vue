@@ -17,19 +17,25 @@
 <script>
 import { mapState } from "pinia";
 import {
-  POINT_KEY,
   DEFAULT_KEY,
-  CLOSED_KEY,
   SELECTED_KEY,
-  SELECTED_CLOSED_KEY,
   PARTNER_KEY,
   PARTNER_SELECTED_KEY,
   BEELINE_KEY,
-  MTS_KEY,
-  KH_KEY,
-  KARI_KEY,
+  BEELINE_SELECTED_KEY,
   LXNET_KEY,
+  LXNET_SELECTED_KEY,
+  MTS_KEY,
+  MTS_SELECTED_KEY,
+  KARI_KEY,
+  KARI_SELECTED_KEY,
   RUPOST_KEY,
+  RUPOST_SELECTED_KEY,
+  KH_KEY,
+  KH_SELECTED_KEY,
+  POINT_KEY,
+  CLOSED_KEY,
+  SELECTED_CLOSED_KEY,
   DEFAULT_COORDS,
   DEFAULT_BOUNDS,
   MAP_PINS,
@@ -65,6 +71,24 @@ export default {
           [PARTNER_KEY]: {
             iconImageHref: MAP_PINS[PARTNER_KEY],
           },
+          [BEELINE_KEY]: {
+            iconImageHref: MAP_PINS[BEELINE_KEY],
+          },
+          [LXNET_KEY]: {
+            iconImageHref: MAP_PINS[LXNET_KEY],
+          },
+          [MTS_KEY]: {
+            iconImageHref: MAP_PINS[MTS_KEY],
+          },
+          [KARI_KEY]: {
+            iconImageHref: MAP_PINS[KARI_KEY],
+          },
+          [RUPOST_KEY]: {
+            iconImageHref: MAP_PINS[RUPOST_KEY],
+          },
+          [KH_KEY]: {
+            iconImageHref: MAP_PINS[KH_KEY],
+          },
         },
         [SELECTED_KEY]: {
           [DEFAULT_KEY]: {
@@ -73,45 +97,25 @@ export default {
           [PARTNER_KEY]: {
             iconImageHref: MAP_PINS[PARTNER_SELECTED_KEY],
           },
+          [BEELINE_KEY]: {
+            iconImageHref: MAP_PINS[BEELINE_SELECTED_KEY],
+          },
+          [LXNET_KEY]: {
+            iconImageHref: MAP_PINS[LXNET_SELECTED_KEY],
+          },
+          [MTS_KEY]: {
+            iconImageHref: MAP_PINS[MTS_SELECTED_KEY],
+          },
+          [KARI_KEY]: {
+            iconImageHref: MAP_PINS[KARI_SELECTED_KEY],
+          },
+          [RUPOST_KEY]: {
+            iconImageHref: MAP_PINS[RUPOST_SELECTED_KEY],
+          },
+          [KH_KEY]: {
+            iconImageHref: MAP_PINS[KH_SELECTED_KEY],
+          },
         },
-        /*
-        [DEFAULT_KEY]: {
-          iconImageHref: MAP_PINS[DEFAULT_KEY],
-        },
-        [CLOSED_KEY]: {
-          iconImageHref: MAP_PINS[CLOSED_KEY],
-        },
-        [SELECTED_KEY]: {
-          iconImageHref: MAP_PINS[SELECTED_KEY],
-        },
-        [SELECTED_CLOSED_KEY]: {
-          iconImageHref: MAP_PINS[SELECTED_CLOSED_KEY],
-        },
-        [PARTNER_KEY]: {
-          iconImageHref: MAP_PINS[PARTNER_KEY],
-        },
-        [PARTNER_SELECTED_KEY]: {
-          iconImageHref: MAP_PINS[PARTNER_SELECTED_KEY],
-        },
-        [BEELINE_KEY]: {
-          iconImageHref: MAP_PINS[BEELINE_KEY],
-        },
-        [MTS_KEY]: {
-          iconImageHref: MAP_PINS[MTS_KEY],
-        },
-        [KH_KEY]: {
-          iconImageHref: MAP_PINS[KH_KEY],
-        },
-        [KARI_KEY]: {
-          iconImageHref: MAP_PINS[KARI_KEY],
-        },
-        [LXNET_KEY]: {
-          iconImageHref: MAP_PINS[LXNET_KEY],
-        },
-        [RUPOST_KEY]: {
-          iconImageHref: MAP_PINS[RUPOST_KEY],
-        },
-        */
       },
     };
   },

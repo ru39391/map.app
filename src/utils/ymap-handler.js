@@ -54,13 +54,14 @@ class YMapHandler {
 
   hoverPlacemark({ id, key, isClosed, isPartner, options }) {
     //console.log({ id, key, isClosed, options });
-    if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
+    const isItemSelected = categoryStore.selectedItemsList.length === 1;
+
+    if (isItemSelected && categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
 
     const config = {
       ...this.iconsData[SELECTED_KEY][key || DEFAULT_KEY],
-      //...( !key && { ...this.iconsData[SELECTED_KEY][key] }),
       ...(isPartner && { ...this.iconsData[SELECTED_KEY][PARTNER_KEY] }),
       iconImageSize: [86, 108],
       iconImageOffset: [-43, -108],
@@ -72,7 +73,9 @@ class YMapHandler {
   }
 
   leavePlacemark({ id, key, isClosed, isPartner, options }) {
-    if (categoryStore.selectedItemsList.find((item) => item.id === id)) {
+    const isItemSelected = categoryStore.selectedItemsList.length === 1;
+
+    if (isItemSelected && categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
 
@@ -361,7 +364,7 @@ class YMapHandler {
               coords,
               isClosed: !key && !isWork && !isPartner,
               isPartner,
-              clusterMod: !key && isWork ? "map-cluster__open" : "",
+              clusterMod: key ? "map-cluster_type_point" : "",
             },
             {
               ...config,
