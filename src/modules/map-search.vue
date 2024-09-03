@@ -33,7 +33,7 @@
             @click="resetResultList(resultItem)"
           >
             <PinIcon class="map-dropdown__icon" />
-            <span class="map-dropdown__caption">{{ resultItem[param] }}</span>
+            <span class="map-dropdown__caption" v-html="resultItem[param]"></span>
           </button>
         </div>
       </div>
@@ -115,11 +115,20 @@ export default {
     handleChange(value) {
       const currValue = value.toLowerCase();
 
-      this.resultList = this.arr.filter((item) => {
+      this.resultList = this.arr.reduce((acc, item) => {
+        const regex = new RegExp(value, 'gi');
         const itemValue = item[this.param].toLowerCase();
 
-        return itemValue.includes(currValue);
-      });
+        return itemValue.includes(currValue)
+          ? [
+              ...acc,
+              {
+                ...item,
+                [this.param]: item[this.param].replace(regex, (match, p1) => `<span class="map-dropdown__highlight">${match}</span>`)
+              }
+            ]
+          : acc;
+      }, []);
     },
 
     handleResultItem(data) {
