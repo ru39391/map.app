@@ -165,6 +165,7 @@ import {
 } from "./utils/constants";
 import { useCategoryStore } from "./store/modules/category";
 import { useLocationStore } from "./store/modules/location";
+import { useFilterStore } from "./store/modules/filter";
 import { useModalStore } from "./store/modules/modal";
 import ChevronRightIcon from "./assets/icons/chevron-right-icon.vue";
 import CloseIcon from "./assets/icons/close-icon.vue";
@@ -213,10 +214,12 @@ export default {
       "categoryList",
       "currentCategory",
       "categoryFilterData",
-      "currentFilterData"
+      /// "currentFilterData"
     ]),
 
     ...mapState(useLocationStore, ["locationList", "currentLocation"]),
+
+    ...mapState(useFilterStore, ["currentFilterData"]),
 
     currLocationCaption() {
       return this.currentLocation
@@ -287,10 +290,12 @@ export default {
       "setCurrentItemsList",
       "setSelectedItemsList",
       "setCurrentCategory",
-      "setCurrentFilterData",
+      "setCurrentFilterData"
     ]),
 
     ...mapActions(useLocationStore, ["setLocationList", "setCurrentLocation"]),
+
+    ...mapActions(useFilterStore, ["initFilter"]),
 
     ...mapActions(useModalStore, ["setModalOpen"]),
 
@@ -314,7 +319,6 @@ export default {
     },
 
     setFilterVisible(value) {
-      console.log("setFilterVisible");
       this.isFilterVisible = value;
     },
 
@@ -323,6 +327,7 @@ export default {
     },
 
     fetchItems({ data, key }) {
+      /*
       const isLocationKey = key === LOCATION_KEY;
 
       if(isLocationKey && data[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]) {
@@ -336,19 +341,22 @@ export default {
       };
 
       console.log({ payload });
-      this.fetchCategoryData(payload, payload.params || '');
+      */
+      this.fetchCategoryData(data, data.params || '');
     },
   },
 
   watch: {
     currentCategory(data) {
-      console.log("Категория обновлена", data);
+      /// console.log("Категория обновлена", data);
       this.setSelectedItemsList();
     },
 
     locationList(arr) {
-      console.log("Список геолокаций обновлён", arr);
+      /// console.log("Список геолокаций обновлён", arr);
+      /*
       this.setCurrentLocation(arr);
+      */
     },
 
     currentLocation(data) {
@@ -357,17 +365,18 @@ export default {
     },
 
     categoryFilterData(data) {
-      console.log("Список параметров фильтра обновлён", data);
+      /// console.log("Список параметров фильтра обновлён", data);
       //this.setCurrentFilterData();
     },
 
     currentItemsList(arr) {
       console.log("Cписок карточек обновлён", arr);
-      this.setSelectedItemsList();
+      /// this.setSelectedItemsList();
     },
 
     currentFilterData(data) {
-      console.log('Параметры фильтра обновлены', data);
+      console.log('currentFilterData', data);
+      /// console.log('Параметры фильтра обновлены', data);
       this.fetchItems({ data, key: FILTER_KEY });
     },
 
@@ -377,9 +386,12 @@ export default {
   },
 
   beforeMount() {
+    this.initFilter();
     //this.setCurrentCategory(this.categoryList[0]);
+    /*
     this.setCurrentFilterData();
     this.setLocationList(this.currentCategoryKey);
+    */
   },
 };
 </script>

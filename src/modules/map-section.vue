@@ -175,12 +175,12 @@ export default {
     },
 
     currentCategory(data) {
-      console.log("Категория обновлена, map", data);
+      /// console.log("Категория обновлена, map", data);
       this.mapMarkersList = [];
     },
 
     mapMarkersList(arr) {
-      console.log("Список объектов карты обновлён", arr);
+      /// console.log("Список объектов карты обновлён", arr);
       yMapHandler.renderYMap({
         arr,
         ...this.currLocationData,
@@ -194,7 +194,7 @@ export default {
     },
 
     currentLocation(data) {
-      console.log("Геопозиция обновлена, map", data);
+      /// console.log("Геопозиция обновлена, map", data);
     },
   },
 };

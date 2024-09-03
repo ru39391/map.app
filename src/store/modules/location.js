@@ -109,7 +109,7 @@ const useLocationStore = defineStore({
       } catch (error) {
         console.log(error);
       }
-    },
+    }
   },
 });
 

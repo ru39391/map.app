@@ -945,7 +945,7 @@ const fetchFilterData = () => new Promise((resolve) => {
           ],
           "region": []
         });
-    }, 500);
+    }, 1500);
 });
 
 export {

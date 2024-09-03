@@ -79,7 +79,7 @@ export default {
 
   watch: {
     selectedItemsList(arr) {
-      console.log("Подробные данные обновлены", arr);
+      /// console.log("Подробные данные обновлены", arr);
       if (!arr.length) this.setModalHeightMax(Boolean(arr.length));
     },
   },

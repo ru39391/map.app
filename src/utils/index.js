@@ -60,7 +60,7 @@ const handlePointsData = async ({ key, request, boundedBy }) => {
     console.error(error);
   }
 
-  console.log("handlePointsData: ", data);
+  /// console.log("handlePointsData: ", data);
 
   return data;
 };
@@ -86,7 +86,7 @@ const handleLocationData = async ({ value, code }) => {
     console.error(error);
   }
 
-  console.log("handleLocationData: ", data);
+  /// console.log("handleLocationData: ", data);
 
   return data;
 };
