@@ -147,11 +147,7 @@ export default {
           this.currentLocation &&
           data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
         ) {
-          this.setCurrentFilterData({
-            ...this.currentFilterData,
-            [LOCATION_CODE_KEY]: data[LOCATION_CODE_KEY]
-          });
-          this.setCurrentLocation(this.locationList, data[LOCATION_CODE_KEY]);
+          this.setCurrentLocation(data[LOCATION_CODE_KEY]);
         }
       }
 

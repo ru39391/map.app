@@ -286,7 +286,11 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, ["fetchCategoryData", "setSelectedItemsList"]),
+    ...mapActions(useCategoryStore, [
+      "fetchCategoryData",
+      "fetchPointsData",
+      "setSelectedItemsList"
+    ]),
 
     ...mapActions(useFilterStore, [
         "initFilter",
@@ -335,7 +339,11 @@ export default {
 
     currentFilterData(data) {
       console.log('Параметры фильтра обновлены', data);
-      this.fetchCategoryData(data, data.params || '');
+      if(data && data.type === POINT_KEY) {
+        this.fetchPointsData(data.data || {});
+      } else {
+        this.fetchCategoryData(data, data.params || '');
+      }
     },
 
     isPointsListVisible(value) {

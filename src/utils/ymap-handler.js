@@ -244,8 +244,10 @@ class YMapHandler {
   async renderYMap(data) {
     const placemarks = [];
     const { arr, config, icons } = data;
+    /*
     console.log({config});
     console.log({icons});
+    */
 
     const handlePlacemarkData = (event) => {
       const { properties, options } = event.get("target");

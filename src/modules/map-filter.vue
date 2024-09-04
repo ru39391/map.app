@@ -85,7 +85,7 @@
             class="map-filter-btn"
             type="submit"
             :disabled="!pointsFilterData"
-            @click="fetchPointsData(pointsFilterData)"
+            @click="submitFilter({ data: pointsFilterData, type: currentCategory.type })"
           >
             Применить
           </button>
@@ -111,7 +111,7 @@
             class="map-filter-btn"
             type="submit"
             :disabled="!filterData"
-            @click="submitFilter(filterData)"
+            @click="submitFilter({ data: filterData })"
           >
             Применить
           </button>
@@ -310,7 +310,7 @@ export default {
         : { [id]: Number(checked) };
     },
 
-    submitFilter(data) {
+    submitFilter({ data, type }) {
       if (!data) {
         return;
       }
@@ -320,6 +320,13 @@ export default {
           item ? { ...acc, [Object.keys(data)[index]]: item } : acc,
         {}
       );
+
+      const pointsParamsData = Object.values(data).reduce(
+        (acc, item, index) =>
+          item.checked ? { ...acc, [Object.keys(data)[index]]: item } : acc,
+        {}
+      );
+
       /*
       const params = Object.keys(paramsData).reduce(
         (acc, item, index) =>
@@ -333,8 +340,9 @@ export default {
 
       this.setCurrentFilterData({
         ...this.currentFilterData,
-        data: paramsData
+        data: type === POINT_KEY ? pointsParamsData : paramsData
       });
+
       /*
       this.fetchCategoryData({ ...this.currentCategoryData }, stringifyFilterData(paramsData));
       */
@@ -346,11 +354,7 @@ export default {
       }
 
       return Object.values(this.pointsFilterData).reduce(
-        (acc, item, index) => ({
-          ...acc,
-          [Object.keys(this.pointsFilterData)[index]]: { ...item, boundedBy },
-        }),
-        {}
+        (acc, item, index) => item.checked ? { ...acc, [Object.keys(this.pointsFilterData)[index]]: { ...item, boundedBy } } : acc, {}
       );
     },
 
@@ -385,7 +389,9 @@ export default {
     },
 
     resetFilter(payload = null) {
-      this.pointsFilterData = null;
+      this.pointsFilterData = payload
+        ? { ...( payload && payload.data && { ...payload.data } ) }
+        : null;
       this.filterData = payload
         ? { ...( payload && payload.data && { ...payload.data } ) }
         : null;
