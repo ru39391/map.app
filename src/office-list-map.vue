@@ -311,6 +311,21 @@ export default {
       }
     },
 
+    handlePointsData(arr) {
+      const data = this.currentFilterData ? this.currentFilterData.data : null;
+
+      if(!arr.length || !data) {
+        return;
+      }
+
+      const locationData = arr.find(item => item[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]);
+      const pointsData = Object.values(data).reduce(
+        (acc, item, index) => ({ ...acc, [Object.keys(data)[index]]: { ...item, boundedBy: locationData.boundedBy } }), {}
+      );
+
+      this.fetchPointsData(locationData ? pointsData : data);
+    },
+
     setMapVisible() {
       this.isMapVisible = !this.isMapVisible;
     },
@@ -340,9 +355,15 @@ export default {
     currentFilterData(data) {
       console.log('Параметры фильтра обновлены', data);
       if(data && data.type === POINT_KEY) {
-        this.fetchPointsData(data.data || {});
+        this.handlePointsData(this.locationList);
       } else {
         this.fetchCategoryData(data, data.params || '');
+      }
+    },
+
+    locationList(arr) {
+      if(this.currentFilterData && this.currentFilterData.type === POINT_KEY) {
+        this.handlePointsData(arr);
       }
     },
 
