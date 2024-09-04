@@ -1,5 +1,6 @@
 import { defineStore, setActivePinia } from "pinia";
 import { piniaStore } from "../index";
+import { useFilterStore } from "./filter";
 import { useCategoryStore } from "./category";
 import { setLocation } from "../../utils";
 import {
@@ -14,27 +15,29 @@ import {
   API_URL,
 } from "../../utils/constants";
 
-import { fetchFilterData } from '../../utils/fetchFilterData';
+import { fetchFilterData } from "../../utils/fetchFilterData";
 //import axios from "axios";
 
 setActivePinia(piniaStore);
 
+const filterStore = useFilterStore();
 const categoryStore = useCategoryStore();
 
 const useLocationStore = defineStore({
   id: "location",
   state: () => ({
     locationList: [],
-    currentLocation: null,
   }),
   actions: {
     async setLocationList(category) {
       categoryStore.isCategoryListLoading = true;
 
+      /*
       if (category === POINT_KEY) {
         categoryStore.isCategoryListLoading = false;
         return;
       }
+      */
 
       try {
         const data = await fetchFilterData();
@@ -42,10 +45,11 @@ const useLocationStore = defineStore({
         //console.log({ data });
 
         if (data) {
-          const filterKeys = categoryStore.categoryList.map(({ type }) => type);
+          const filterKeys = filterStore.categoryList.map(({ type }) => type);
 
-          categoryStore.categoryFilterData = filterKeys.reduce(
-            (acc, key) => data[key] ? ({ ...acc, [key]: data[key] }) : acc, {}
+          filterStore.categoryFilterData = filterKeys.reduce(
+            (acc, key) => (data[key] ? { ...acc, [key]: data[key] } : acc),
+            {}
           );
           this.locationList = data.cities.map(
             ({
@@ -70,7 +74,8 @@ const useLocationStore = defineStore({
                 [LOCATION_CODE_KEY]: UF_XML_ID,
                 coords,
                 boundedBy: [leftBottom, rightTop],
-                isPopular: Boolean(UF_TOP),
+                isPopular:
+                  UF_TOP === null ? Boolean(UF_TOP) : Boolean(Number(UF_TOP)),
               };
             }
           );
@@ -81,6 +86,7 @@ const useLocationStore = defineStore({
         categoryStore.isCategoryListLoading = false;
       }
     },
+    /*
     async setCurrentLocation(arr, value = "") {
       const locationData = localStorage.getItem(LOCATION_KEY);
       const currentLocationData = locationData
@@ -110,6 +116,7 @@ const useLocationStore = defineStore({
         console.log(error);
       }
     }
+    */
   },
 });
 

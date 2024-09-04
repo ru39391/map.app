@@ -1,6 +1,6 @@
 import { defineStore, setActivePinia } from "pinia";
 import { piniaStore } from "../index";
-import { useCategoryStore } from "./category";
+import { useLocationStore } from "./location";
 import { setLocation, setFilterData } from "../../utils";
 import {
   FILIAL_KEY,
@@ -22,19 +22,20 @@ import { fetchFilterData } from '../../utils/fetchFilterData';
 
 setActivePinia(piniaStore);
 
-const categoryStore = useCategoryStore();
+const locationStore = useLocationStore();
 
 const useFilterStore = defineStore({
   id: "filter",
   state: () => ({
-    locationList: [],
+    currentLocation: null,
     categoryList: [
       { type: FILIAL_KEY, caption: "Отделения", category: "Филиал" },
       { type: ATM_KEY, caption: "Банкоматы", category: "Банкомат" },
       { type: POINT_KEY, caption: "Точки погашения", category: "Точка погашения" },
       { type: TERMINAL_KEY, caption: "Терминалы", category: "Терминал" },
     ],
-    currentLocation: null,
+    currentCategory: null,
+    categoryFilterData: null,
     currentFilterData: null,
   }),
   actions: {
@@ -56,6 +57,7 @@ const useFilterStore = defineStore({
     updateFilterData(locationData, filterData) {
       this.currentLocation = locationData;
       this.currentFilterData = filterData;
+      this.currentCategory = this.categoryList.find(({ type }) => type === filterData.type);
     },
     async initFilter() {
       const defaultLocationData = {
@@ -104,7 +106,7 @@ const useFilterStore = defineStore({
         return;
       }
 
-      const currentLocationData = this.locationList.find((data) => data[LOCATION_CODE_KEY] === value);
+      const currentLocationData = locationStore.locationList.find((data) => data[LOCATION_CODE_KEY] === value);
 
       try {
         const [

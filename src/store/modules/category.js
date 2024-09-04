@@ -26,6 +26,7 @@ const useCategoryStore = defineStore({
     isCategoryListLoading: false,
     currentItemsList: [],
     selectedItemsList: [],
+    /*
     categoryList: [
       { type: FILIAL_KEY, caption: "Отделения", category: "Филиал" },
       { type: ATM_KEY, caption: "Банкоматы", category: "Банкомат" },
@@ -39,6 +40,7 @@ const useCategoryStore = defineStore({
     currentCategory: null,
     categoryFilterData: null,
     currentFilterData: null,
+    */
   }),
   actions: {
     async fetchCategoryData(data, params = "") {
@@ -166,6 +168,7 @@ const useCategoryStore = defineStore({
         this.currentItemsList.find(({ id }) => id == item)
       );
     },
+    /*
     setCurrentCategory(data) {
       this.currentCategory = data;
     },
@@ -232,6 +235,7 @@ const useCategoryStore = defineStore({
         console.log(error);
       }
     },
+    */
   },
 });
 
