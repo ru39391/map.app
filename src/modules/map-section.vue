@@ -41,7 +41,7 @@ import {
   MAP_PINS,
 } from "../utils/constants";
 import { useCategoryStore } from "../store/modules/category";
-import { useLocationStore } from "../store/modules/location";
+import { useFilterStore } from '../store/modules/filter';
 import LocationIcon from "../assets/icons/location-icon.vue";
 import ZoomInIcon from "../assets/icons/zoom-in-icon.vue";
 import ZoomOutIcon from "../assets/icons/zoom-out-icon.vue";
@@ -121,13 +121,9 @@ export default {
   },
 
   computed: {
-    ...mapState(useCategoryStore, [
-      "currentItemsList",
-      "selectedItemsList",
-      "currentCategory",
-    ]),
+    ...mapState(useCategoryStore, ["currentItemsList", "selectedItemsList"]),
 
-    ...mapState(useLocationStore, ["currentLocation"]),
+    ...mapState(useFilterStore, ["currentCategory", "currentLocation"]),
 
     currLocationData() {
       return {

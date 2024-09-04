@@ -37,6 +37,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { useCategoryStore } from "../store/modules/category";
+import { useFilterStore } from '../store/modules/filter';
 import InfoCard from "./info-card.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 
@@ -56,7 +57,9 @@ export default {
   },
 
   computed: {
-    ...mapState(useCategoryStore, ["selectedItemsList", "currentCategory"]),
+    ...mapState(useCategoryStore, ["selectedItemsList"]),
+
+    ...mapState(useFilterStore, ["currentCategory"]),
   },
 
   methods: {

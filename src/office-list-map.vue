@@ -210,16 +210,18 @@ export default {
     ...mapState(useCategoryStore, [
       "isCategoryListLoading",
       "currentItemsList",
-      "selectedItemsList",
-      "categoryList",
-      "currentCategory",
-      "categoryFilterData",
-      /// "currentFilterData"
+      "selectedItemsList"
     ]),
 
-    ...mapState(useLocationStore, ["locationList", "currentLocation"]),
+    ...mapState(useFilterStore, [
+        "currentLocation",
+        "categoryList",
+        "currentCategory",
+        "categoryFilterData",
+        "currentFilterData"
+      ]),
 
-    ...mapState(useFilterStore, ["currentFilterData"]),
+    ...mapState(useLocationStore, ["locationList"]),
 
     currLocationCaption() {
       return this.currentLocation

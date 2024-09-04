@@ -39,7 +39,7 @@
 import { mapActions, mapState } from "pinia";
 import { LOCATION_CODE_KEY, DEFAULT_LOC_CODE } from "../utils/constants";
 import { useCategoryStore } from "../store/modules/category";
-import { useLocationStore } from "../store/modules/location";
+import { useFilterStore } from "../store/modules/filter";
 import ExpendMoreIcon from "../assets/icons/expend-more-icon.vue";
 
 export default {
@@ -56,9 +56,12 @@ export default {
   },
 
   computed: {
-    ...mapState(useCategoryStore, ["categoryList", "currentCategory", "currentFilterData"]),
-
-    ...mapState(useLocationStore, ["currentLocation"]),
+    ...mapState(useFilterStore, [
+      "currentLocation",
+      "categoryList",
+      "currentCategory",
+      "currentFilterData"
+    ]),
 
     selecterCaption() {
       return this.currentCategory ? this.currentCategory.caption : "";

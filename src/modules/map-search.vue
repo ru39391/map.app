@@ -50,6 +50,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { useCategoryStore } from "../store/modules/category";
+import { useFilterStore } from '../store/modules/filter';
 import { useLocationStore } from "../store/modules/location";
 import { useModalStore } from "../store/modules/modal";
 import { LOCATION_CODE_KEY } from "../utils/constants";
@@ -90,9 +91,9 @@ export default {
   },
 
   computed: {
-    ...mapState(useCategoryStore, ["currentFilterData"]),
+    ...mapState(useFilterStore, ["currentLocation", "currentFilterData"]),
 
-    ...mapState(useLocationStore, ["locationList", "currentLocation"]),
+    ...mapState(useLocationStore, ["locationList"]),
 
     ...mapState(useModalStore, ["isModalOpen"]),
 

@@ -136,7 +136,7 @@ import {
 } from "../utils/constants";
 import { stringifyFilterData } from "../utils";
 import { useCategoryStore } from "../store/modules/category";
-import { useLocationStore } from "../store/modules/location";
+import { useFilterStore } from "../store/modules/filter";
 import CheckedIcon from "../assets/icons/checked-icon.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 import FilterIcon from "../assets/icons/filter-icon.vue";
@@ -261,16 +261,15 @@ export default {
   },
 
   computed: {
-    ...mapState(useCategoryStore, [
-      "categoryFilterData",
-      "currentCategory",
-      "categoryList",
-      "currentFilterData",
-    ]),
-
     ...mapState(useCategoryStore, ["isCategoryListLoading"]),
 
-    ...mapState(useLocationStore, ["currentLocation"]),
+    ...mapState(useFilterStore, [
+        "currentLocation",
+        "categoryList",
+        "currentCategory",
+        "categoryFilterData",
+        "currentFilterData"
+      ]),
 
     isPointsListVisible() {
       return this.currentCategory && this.currentCategory.type === POINT_KEY;
