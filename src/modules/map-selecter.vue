@@ -97,11 +97,12 @@ export default {
         type,
         data: null
       });
-
+      /*
       this.fetchCategoryData({
         type,
         ...this.currentLocationData,
       });
+      */
     },
 
     closeDropdown({ target }) {

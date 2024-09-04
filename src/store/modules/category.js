@@ -138,6 +138,7 @@ const useCategoryStore = defineStore({
         this.isCategoryListLoading = false;
       }
     },
+    /*
     setCurrentItemsList(data) {
       const { arr, category } = data;
 
@@ -158,6 +159,7 @@ const useCategoryStore = defineStore({
         []
       );
     },
+    */
     setSelectedItemsList(arr = []) {
       if (!arr.length) {
         this.selectedItemsList = [];

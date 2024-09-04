@@ -1,6 +1,6 @@
 import { defineStore, setActivePinia } from "pinia";
 import { piniaStore } from "../index";
-import { useLocationStore } from "./location";
+import { useCategoryStore } from "./category";
 import { setLocation, setFilterData } from "../../utils";
 import {
   FILIAL_KEY,
@@ -22,11 +22,12 @@ import { fetchFilterData } from '../../utils/fetchFilterData';
 
 setActivePinia(piniaStore);
 
-const locationStore = useLocationStore();
+const categoryStore = useCategoryStore();
 
 const useFilterStore = defineStore({
   id: "filter",
   state: () => ({
+    locationList: [],
     currentLocation: null,
     categoryList: [
       { type: FILIAL_KEY, caption: "Отделения", category: "Филиал" },
@@ -101,12 +102,62 @@ const useFilterStore = defineStore({
         console.error(error);
       }
     },
+    async setLocationList() {
+      categoryStore.isCategoryListLoading = true;
+
+      try {
+        const data = await fetchFilterData();
+        //const { data } = await axios.get(`${API_URL}${FILTER_KEY}/`);
+        //console.log({ data });
+
+        if (data) {
+          const filterKeys = this.categoryList.map(({ type }) => type);
+
+          this.categoryFilterData = filterKeys.reduce(
+            (acc, key) => (data[key] ? { ...acc, [key]: data[key] } : acc),
+            {}
+          );
+          this.locationList = data.cities.map(
+            ({
+              UF_NAME,
+              UF_XML_ID,
+              UF_LATITUDE,
+              UF_LONGITUDE,
+              UF_RANGE_LOW_LAT,
+              UF_RANGE_LOW_LNG,
+              UF_RANGE_UP_LAT,
+              UF_RANGE_UP_LNG,
+              UF_TOP,
+            }) => {
+              const [coords, leftBottom, rightTop] = [
+                [UF_LATITUDE, UF_LONGITUDE],
+                [UF_RANGE_LOW_LAT, UF_RANGE_LOW_LNG],
+                [UF_RANGE_UP_LAT, UF_RANGE_UP_LNG],
+              ].map((item) => [Number(item[0]), Number(item[1])]);
+
+              return {
+                [LOCATION_KEY]: UF_NAME,
+                [LOCATION_CODE_KEY]: UF_XML_ID,
+                coords,
+                boundedBy: [leftBottom, rightTop],
+                isPopular:
+                  UF_TOP === null ? Boolean(UF_TOP) : Boolean(Number(UF_TOP)),
+              };
+            }
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        categoryStore.isCategoryListLoading = false;
+      }
+    },
     async setCurrentLocation(value) {
       if (this.currentLocation[LOCATION_CODE_KEY] === value) {
         return;
       }
 
-      const currentLocationData = locationStore.locationList.find((data) => data[LOCATION_CODE_KEY] === value);
+      const currentLocationData = this.locationList.find((data) => data[LOCATION_CODE_KEY] === value);
 
       try {
         const [

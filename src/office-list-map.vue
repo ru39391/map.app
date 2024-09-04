@@ -214,14 +214,12 @@ export default {
     ]),
 
     ...mapState(useFilterStore, [
+        "locationList",
         "currentLocation",
         "categoryList",
         "currentCategory",
-        "categoryFilterData",
         "currentFilterData"
       ]),
-
-    ...mapState(useLocationStore, ["locationList"]),
 
     currLocationCaption() {
       return this.currentLocation
@@ -238,7 +236,7 @@ export default {
         ? this.currentCategory.type
         : this.categoryList[0].type;
     },
-
+    /*
     currentLocationData() {
       return {
         [LOCATION_CODE_KEY]: this.currentLocation
@@ -246,6 +244,7 @@ export default {
           : DEFAULT_LOC_CODE,
       };
     },
+    */
 
     isPointsListVisible() {
       return this.currentCategory && this.currentCategory.type === POINT_KEY;
@@ -287,35 +286,24 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, [
-      "fetchCategoryData",
-      "setCurrentItemsList",
-      "setSelectedItemsList"
-    ]),
-
-    ...mapActions(useLocationStore, ["setLocationList"]),
+    ...mapActions(useCategoryStore, ["fetchCategoryData", "setSelectedItemsList"]),
 
     ...mapActions(useFilterStore, [
         "initFilter",
-        "setCurrentLocation",
-        "setCurrentCategory",
-        "setCurrentFilterData"
+        "setLocationList",
+        "setCurrentLocation"
       ]),
 
     ...mapActions(useModalStore, ["setModalOpen"]),
 
-    handleCurrLocation(value) {
+    handleCurrLocation(data) {
       this.setModalOpen(false);
 
       if (
         this.currentLocation &&
-        value[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
+        data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
       ) {
-        this.setCurrentFilterData({
-          ...this.currentFilterData,
-          [LOCATION_CODE_KEY]: value[LOCATION_CODE_KEY]
-        });
-        this.setCurrentLocation(this.locationList, value[LOCATION_CODE_KEY]);
+        this.setCurrentLocation(data[LOCATION_CODE_KEY]);
       }
     },
 
@@ -330,59 +318,24 @@ export default {
     setAdsPanelVisible(value) {
       this.isAdsPanelVisible = value;
     },
-
-    fetchItems({ data, key }) {
-      /*
-      const isLocationKey = key === LOCATION_KEY;
-
-      if(isLocationKey && data[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]) {
-        return;
-      }
-
-      const payload = {
-        ...( data && { ...data } ),
-        type: isLocationKey ? this.currentCategoryKey : data.type,
-        [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
-      };
-
-      console.log({ payload });
-      */
-      this.fetchCategoryData(data, data.params || '');
-    },
   },
 
   watch: {
+    /*
     currentCategory(data) {
-      /// console.log("Категория обновлена", data);
-      this.setSelectedItemsList();
+      console.log("Категория обновлена", data);
+      //this.setSelectedItemsList();
     },
-
-    locationList(arr) {
-      /// console.log("Список геолокаций обновлён", arr);
-      /*
-      this.setCurrentLocation(arr);
-      */
-    },
-
-    currentLocation(data) {
-      this.setSelectedItemsList();
-      this.fetchItems({ data, key: LOCATION_KEY });
-    },
-
-    categoryFilterData(data) {
-      /// console.log("Список параметров фильтра обновлён", data);
-      //this.setCurrentFilterData();
-    },
+    */
 
     currentItemsList(arr) {
       console.log("Cписок карточек обновлён", arr);
-      /// this.setSelectedItemsList();
+      this.setSelectedItemsList();
     },
 
     currentFilterData(data) {
-      console.log('currentFilterData', data);
-      /// console.log('Параметры фильтра обновлены', data);
-      this.fetchItems({ data, key: FILTER_KEY });
+      console.log('Параметры фильтра обновлены', data);
+      this.fetchCategoryData(data, data.params || '');
     },
 
     isPointsListVisible(value) {
@@ -392,11 +345,7 @@ export default {
 
   beforeMount() {
     this.initFilter();
-    //this.setCurrentCategory(this.categoryList[0]);
-    /*
-    this.setCurrentFilterData();
-    this.setLocationList(this.currentCategoryKey);
-    */
+    this.setLocationList();
   },
 };
 </script>

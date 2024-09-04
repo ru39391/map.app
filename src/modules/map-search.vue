@@ -91,9 +91,11 @@ export default {
   },
 
   computed: {
-    ...mapState(useFilterStore, ["currentLocation", "currentFilterData"]),
-
-    ...mapState(useLocationStore, ["locationList"]),
+    ...mapState(useFilterStore, [
+        "locationList",
+        "currentLocation",
+        "currentFilterData"
+      ]),
 
     ...mapState(useModalStore, ["isModalOpen"]),
 

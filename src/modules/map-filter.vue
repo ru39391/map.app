@@ -335,7 +335,9 @@ export default {
         ...this.currentFilterData,
         data: paramsData
       });
+      /*
       this.fetchCategoryData({ ...this.currentCategoryData }, stringifyFilterData(paramsData));
+      */
     },
 
     updatePointsFilterData(boundedBy) {
