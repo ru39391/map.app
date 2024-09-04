@@ -68,6 +68,7 @@ const useFilterStore = defineStore({
         boundedBy: DEFAULT_BOUNDS,
       };
       const defaultFilterData = {
+        [LOCATION_KEY]: DEFAULT_LOC,
         [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE,
         type: this.categoryList[0].type,
         data: null
@@ -152,12 +153,12 @@ const useFilterStore = defineStore({
         categoryStore.isCategoryListLoading = false;
       }
     },
-    async setCurrentLocation(value) {
-      if (this.currentLocation[LOCATION_CODE_KEY] === value) {
+    async setCurrentLocation(data) {
+      if (this.currentLocation[LOCATION_CODE_KEY] === data[LOCATION_CODE_KEY]) {
         return;
       }
 
-      const currentLocationData = this.locationList.find((data) => data[LOCATION_CODE_KEY] === value);
+      const currentLocationData = this.locationList.find((item) => item[LOCATION_CODE_KEY] === data[LOCATION_CODE_KEY]);
 
       try {
         const [
@@ -165,7 +166,11 @@ const useFilterStore = defineStore({
           { data: filterData }
         ] = await Promise.all([
           setLocation(currentLocationData),
-          setFilterData({ ...this.currentFilterData, [LOCATION_CODE_KEY]: value })
+          setFilterData({
+            ...this.currentFilterData,
+            [LOCATION_KEY]: data[LOCATION_KEY],
+            [LOCATION_CODE_KEY]: data[LOCATION_CODE_KEY]
+          })
         ]);
 
         if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
@@ -182,7 +187,11 @@ const useFilterStore = defineStore({
           { data: filterData }
         ] = await Promise.all([
           setLocation(this.currentLocation),
-          setFilterData({ ...data, [LOCATION_CODE_KEY]: this.currentLocation[LOCATION_CODE_KEY] })
+          setFilterData({
+            ...data,
+            [LOCATION_KEY]: this.currentLocation[LOCATION_KEY],
+            [LOCATION_CODE_KEY]: this.currentLocation[LOCATION_CODE_KEY]
+          })
         ]);
 
         if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {

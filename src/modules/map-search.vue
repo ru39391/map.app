@@ -53,7 +53,7 @@ import { useCategoryStore } from "../store/modules/category";
 import { useFilterStore } from '../store/modules/filter';
 import { useLocationStore } from "../store/modules/location";
 import { useModalStore } from "../store/modules/modal";
-import { LOCATION_CODE_KEY } from "../utils/constants";
+import { LOCATION_CODE_KEY, LOCATION_KEY } from "../utils/constants";
 import PinIcon from "../assets/icons/pin-icon.vue";
 import SearchIcon from "../assets/icons/search-icon.vue";
 
@@ -147,7 +147,7 @@ export default {
           this.currentLocation &&
           data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
         ) {
-          this.setCurrentLocation(data[LOCATION_CODE_KEY]);
+          this.setCurrentLocation({ ...data, [LOCATION_KEY]: data[LOCATION_KEY].replace(/[^А-Яа-яЁё]/g, '') });
         }
       }
 

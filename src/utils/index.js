@@ -170,6 +170,7 @@ export {
   fetchersData,
   setLocation,
   setFilterData,
+  handleLocationData,
   handleLocationList,
   handlePointsData,
   stringifyFilterData

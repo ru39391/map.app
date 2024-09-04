@@ -163,6 +163,7 @@ import {
   FILTER_KEY,
   ASSETS_URL,
 } from "./utils/constants";
+import { handleLocationData } from "./utils";
 import { useCategoryStore } from "./store/modules/category";
 import { useLocationStore } from "./store/modules/location";
 import { useFilterStore } from "./store/modules/filter";
@@ -307,23 +308,31 @@ export default {
         this.currentLocation &&
         data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
       ) {
-        this.setCurrentLocation(data[LOCATION_CODE_KEY]);
+        this.setCurrentLocation(data);
       }
     },
 
-    handlePointsData(arr) {
-      const data = this.currentFilterData ? this.currentFilterData.data : null;
+    async handlePointsData(payload) {
+      const { data } = payload;
 
-      if(!arr.length || !data) {
-        return;
+      try {
+        const { isSucceed, data: locationData } = await handleLocationData({
+          value: payload[LOCATION_KEY],
+          code: payload[LOCATION_CODE_KEY],
+        });
+
+        if(isSucceed && data) {
+          const pointsData = Object.values(data).reduce(
+            (acc, item, index) => ({ ...acc, [Object.keys(data)[index]]: { ...item, boundedBy: locationData.boundedBy } }), {}
+          );
+
+          this.fetchPointsData(pointsData);
+        } else {
+          this.fetchPointsData({});
+        }
+      } catch (error) {
+        console.log(error);
       }
-
-      const locationData = arr.find(item => item[LOCATION_CODE_KEY] === this.currentFilterData[LOCATION_CODE_KEY]);
-      const pointsData = Object.values(data).reduce(
-        (acc, item, index) => ({ ...acc, [Object.keys(data)[index]]: { ...item, boundedBy: locationData.boundedBy } }), {}
-      );
-
-      this.fetchPointsData(locationData ? pointsData : data);
     },
 
     setMapVisible() {
@@ -355,17 +364,19 @@ export default {
     currentFilterData(data) {
       console.log('Параметры фильтра обновлены', data);
       if(data && data.type === POINT_KEY) {
-        this.handlePointsData(this.locationList);
+        this.handlePointsData(data);
       } else {
         this.fetchCategoryData(data, data.params || '');
       }
     },
 
+    /*
     locationList(arr) {
       if(this.currentFilterData && this.currentFilterData.type === POINT_KEY) {
-        this.handlePointsData(arr);
+        //this.handlePointsData(arr);
       }
     },
+    */
 
     isPointsListVisible(value) {
       if (value) this.isMapVisible = value;
