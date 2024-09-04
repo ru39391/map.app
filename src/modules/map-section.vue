@@ -170,10 +170,12 @@ export default {
       this.setMapMarkersList(arr);
     },
 
+    /*
     currentCategory(data) {
       /// console.log("Категория обновлена, map", data);
-      this.mapMarkersList = [];
+      /// this.mapMarkersList = [];
     },
+    */
 
     mapMarkersList(arr) {
       /// console.log("Список объектов карты обновлён", arr);
@@ -189,9 +191,11 @@ export default {
       yMapHandler.resetPlacemarks(arr);
     },
 
+    /*
     currentLocation(data) {
       /// console.log("Геопозиция обновлена, map", data);
     },
+    */
   },
 };
 </script>

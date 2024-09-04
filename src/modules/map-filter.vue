@@ -384,25 +384,28 @@ export default {
       }
     },
 
-    resetFilter(data = null) {
+    resetFilter(payload = null) {
       this.pointsFilterData = null;
-      this.filterData = data
-        ? { ...( this.currentFilterData && this.currentFilterData.data && { ...this.currentFilterData.data } ) }
+      this.filterData = payload
+        ? { ...( payload && payload.data && { ...payload.data } ) }
         : null;
     },
   },
 
   watch: {
+    /*
     currentCategory() {
+      console.log('currentCategory');
       this.resetFilter();
     },
+    */
 
-    isCategoryListLoading(value) {
-      if (!value) this.setFilterDropdownOpen(false);
+    currentFilterData(data) {
+      this.resetFilter(data);
     },
 
-    currentLocation(data) {
-      this.resetFilter(data);
+    currentLocation() {
+      this.resetFilter(this.currentFilterData);
       /*
         if(this.isPointsListVisible) {
           this.updatePointsList(data);
@@ -413,10 +416,14 @@ export default {
         */
     },
 
+    isCategoryListLoading(value) {
+      if (!value) this.setFilterDropdownOpen(false);
+    },
+
     isFilterDropdownOpen(value) {
       this.$emit("handleFilterVisibility", value);
     },
-
+    /*
     currentFilterData(data) {
       /// console.log("Параметры фильтра установлены", data);
     },
@@ -428,6 +435,7 @@ export default {
     pointsFilterData(data) {
       /// console.log("Список параметров фильтра точек погашения обновлён", data);
     },
+    */
   },
 
   mounted() {

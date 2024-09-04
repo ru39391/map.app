@@ -85,7 +85,7 @@ export default {
       this.isCategoryDropdownOpen = value;
     },
 
-    handleCurrentCategory({ type, caption, category }) {
+    handleCurrentCategory({ type }) {
       this.setCategoryDropdownOpen(false);
 
       if (this.currentCategory && type === this.currentCategory.type) {

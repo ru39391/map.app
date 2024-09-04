@@ -123,7 +123,7 @@ const setFilterData = async (values) => {
   const isFilterDataSet = (key) => sessionStorage.getItem(key) !== null;
   const setFilterParams = (key, payload) => sessionStorage.setItem(key, JSON.stringify({
     ...payload,
-    ...( payload.data && { params: stringifyFilterData(payload.data) } )
+    params: payload.data ? stringifyFilterData(payload.data) : ''
   }));
 
   if (isFilterDataSet(FILTER_KEY)) {
