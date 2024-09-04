@@ -27,6 +27,7 @@ const categoryStore = useCategoryStore();
 const useFilterStore = defineStore({
   id: "filter",
   state: () => ({
+    locationList: [],
     categoryList: [
       { type: FILIAL_KEY, caption: "Отделения", category: "Филиал" },
       { type: ATM_KEY, caption: "Банкоматы", category: "Банкомат" },
@@ -52,6 +53,10 @@ const useFilterStore = defineStore({
         }, 200);
       });
     },
+    updateFilterData(locationData, filterData) {
+      this.currentLocation = locationData;
+      this.currentFilterData = filterData;
+    },
     async initFilter() {
       const defaultLocationData = {
         [LOCATION_KEY]: DEFAULT_LOC,
@@ -69,29 +74,71 @@ const useFilterStore = defineStore({
         const [
           { data: currentLocationData },
           { data: currentFilterData }
-        ] = await Promise.all([this.getStorageData(LOCATION_KEY), this.getStorageData(FILTER_KEY)]);
+        ] = await Promise.all([
+          this.getStorageData(LOCATION_KEY),
+          this.getStorageData(FILTER_KEY)
+        ]);
         const currentData = [currentLocationData, currentFilterData].filter(data => Boolean(data));
 
         if (currentData.length === 0) {
-          console.log(0);
           const [
             { data: locationData },
             { data: filterData }
-          ] = await Promise.all([setLocation(defaultLocationData), setFilterData(defaultFilterData)]);
+          ] = await Promise.all([
+            setLocation(defaultLocationData),
+            setFilterData(defaultFilterData)
+          ]);
 
-          if([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
-            this.currentLocation = locationData;
-            this.currentFilterData = filterData;
+          if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
+            this.updateFilterData(locationData, filterData);
           };
         } else {
-          console.log(1);
-          this.currentLocation = currentLocationData;
-          this.currentFilterData = currentFilterData;
+          this.updateFilterData(currentLocationData, currentFilterData);
         }
       } catch (error) {
         console.error(error);
       }
-    }
+    },
+    async setCurrentLocation(value) {
+      if (this.currentLocation[LOCATION_CODE_KEY] === value) {
+        return;
+      }
+
+      const currentLocationData = this.locationList.find((data) => data[LOCATION_CODE_KEY] === value);
+
+      try {
+        const [
+          { data: locationData },
+          { data: filterData }
+        ] = await Promise.all([
+          setLocation(currentLocationData),
+          setFilterData({ ...this.currentFilterData, [LOCATION_CODE_KEY]: value })
+        ]);
+
+        if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
+          this.updateFilterData(locationData, filterData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async setCurrentFilterData(data) {
+      try {
+        const [
+          { data: locationData },
+          { data: filterData }
+        ] = await Promise.all([
+          setLocation(this.currentLocation),
+          setFilterData({ ...data, [LOCATION_CODE_KEY]: this.currentLocation[LOCATION_CODE_KEY] })
+        ]);
+
+        if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
+          this.updateFilterData(locationData, filterData);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 });
 
