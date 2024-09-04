@@ -290,14 +290,17 @@ export default {
     ...mapActions(useCategoryStore, [
       "fetchCategoryData",
       "setCurrentItemsList",
-      "setSelectedItemsList",
-      "setCurrentCategory",
-      "setCurrentFilterData"
+      "setSelectedItemsList"
     ]),
 
-    ...mapActions(useLocationStore, ["setLocationList", "setCurrentLocation"]),
+    ...mapActions(useLocationStore, ["setLocationList"]),
 
-    ...mapActions(useFilterStore, ["initFilter"]),
+    ...mapActions(useFilterStore, [
+        "initFilter",
+        "setCurrentLocation",
+        "setCurrentCategory",
+        "setCurrentFilterData"
+      ]),
 
     ...mapActions(useModalStore, ["setModalOpen"]),
 

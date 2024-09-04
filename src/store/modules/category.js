@@ -172,19 +172,6 @@ const useCategoryStore = defineStore({
     setCurrentCategory(data) {
       this.currentCategory = data;
     },
-    saveSessionCategory(data) {
-      const savedString = JSON.stringify(data);
-      window.sessionStorage.setItem("currentMapCategory", savedString);
-    },
-    setSessionCategory() {
-      return;
-      const savedString = window.sessionStorage.getItem("currentMapCategory");
-
-      if (savedString) {
-        const categoryData = JSON.parse(savedString);
-        this.currentCategory = categoryData;
-      }
-    },
     async setCurrentFilterData(payload = null) {
       if (payload && payload.type === POINT_KEY) {
         this.setCurrentCategory(this.categoryList.find(({ type }) => type === POINT_KEY));

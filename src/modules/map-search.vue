@@ -103,9 +103,9 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, ["setSelectedItemsList", "setCurrentFilterData"]),
+    ...mapActions(useCategoryStore, ["setSelectedItemsList"]),
 
-    ...mapActions(useLocationStore, ["setCurrentLocation"]),
+    ...mapActions(useFilterStore, ["setCurrentLocation", "setCurrentFilterData"]),
 
     ...mapActions(useModalStore, ["setModalOpen"]),
 

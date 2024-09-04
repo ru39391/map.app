@@ -77,13 +77,9 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, [
-      "fetchCategoryData",
-      "setCurrentCategory",
-      "saveSessionCategory",
-      "setSessionCategory",
-      "setCurrentFilterData"
-    ]),
+    ...mapActions(useCategoryStore, ["fetchCategoryData"]),
+
+    ...mapActions(useFilterStore, ["setCurrentCategory", "setCurrentFilterData"]),
 
     setCategoryDropdownOpen(value) {
       this.isCategoryDropdownOpen = value;
@@ -101,10 +97,6 @@ export default {
         type,
         data: null
       });
-      /*
-      this.setCurrentCategory({ type, caption, category });
-      this.saveSessionCategory({ type, caption, category });
-      */
 
       this.fetchCategoryData({
         type,
@@ -117,10 +109,6 @@ export default {
         this.setCategoryDropdownOpen(false);
       }
     },
-  },
-
-  created() {
-    //this.setSessionCategory();
   },
 
   mounted() {

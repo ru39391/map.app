@@ -294,7 +294,9 @@ export default {
   },
 
   methods: {
-    ...mapActions(useCategoryStore, ["fetchCategoryData", "fetchPointsData", "setCurrentFilterData"]),
+    ...mapActions(useCategoryStore, ["fetchCategoryData", "fetchPointsData"]),
+
+    ...mapActions(useFilterStore, ["setCurrentFilterData"]),
 
     setFilterDropdownOpen(value) {
       this.isFilterDropdownOpen = value;
