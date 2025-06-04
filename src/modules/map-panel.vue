@@ -6,15 +6,20 @@
   >
     <div
       :class="[
-        'map-modal map-modal_type_panel',
-        { 'is-active': isModalHeightMax },
-        { 'is-hidden': !selectedItemsList.length }
+        'map-modal map-modal_type_panel is-active',
+        { 'is-hidden': !selectedItemsList.length },
       ]"
       @touchstart.self="handleTouchStart"
       @touchmove.self="handleTouchMove"
     >
       <div class="map-modal__header">
-        <button class="map-modal__close map-modal__close_mb_none" type="button" @click="setSelectedItemsList([])"><CloseIcon /></button>
+        <button
+          class="map-modal__close map-modal__close_mb_none"
+          type="button"
+          @click="setSelectedItemsList([])"
+        >
+          <CloseIcon />
+        </button>
       </div>
       <div class="map-modal__wrapper map-modal__wrapper_type_column">
         <InfoCard
@@ -30,53 +35,56 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'pinia';
-  import { useCategoryStore } from '../store/modules/category';
-  import InfoCard from './info-card.vue';
-  import CloseIcon from '../assets/icons/close-icon.vue';
+import { mapActions, mapState } from "pinia";
+import { useCategoryStore } from "../store/modules/category";
+import { useFilterStore } from "../store/modules/filter";
+import InfoCard from "./info-card.vue";
+import CloseIcon from "../assets/icons/close-icon.vue";
 
-  export default {
-    name: 'map-panel',
+export default {
+  name: "map-panel",
 
-    components: {
-      InfoCard,
-      CloseIcon
+  components: {
+    InfoCard,
+    CloseIcon,
+  },
+
+  data() {
+    return {
+      startY: 0,
+      isModalHeightMax: false,
+    };
+  },
+
+  computed: {
+    ...mapState(useCategoryStore, ["selectedItemsList"]),
+
+    ...mapState(useFilterStore, ["currentCategory"]),
+  },
+
+  methods: {
+    ...mapActions(useCategoryStore, ["setSelectedItemsList"]),
+
+    setModalHeightMax(value) {
+      this.isModalHeightMax = value;
     },
 
-    data() {
-      return {
-        startY: 0,
-        isModalHeightMax: false
-      };
+    handleTouchStart(event) {
+      this.startY = event.touches[0].clientY;
     },
 
-    computed: {
-      ...mapState(useCategoryStore, ['selectedItemsList', 'currentCategory'])
+    handleTouchMove(event) {
+      const currentY = event.touches[0].clientY;
+
+      this.setModalHeightMax(this.startY - currentY > 20);
     },
+  },
 
-    methods: {
-      ...mapActions(useCategoryStore, ['setSelectedItemsList']),
-
-      setModalHeightMax(value) {
-        this.isModalHeightMax = value;
-      },
-
-      handleTouchStart(event) {
-        this.startY = event.touches[0].clientY;
-      },
-
-      handleTouchMove(event) {
-        const currentY = event.touches[0].clientY;
-
-        this.setModalHeightMax(this.startY - currentY > 20);
-      }
+  watch: {
+    selectedItemsList(arr) {
+      console.log("Подробные данные обновлены", arr);
+      if (!arr.length) this.setModalHeightMax(Boolean(arr.length));
     },
-
-    watch: {
-      selectedItemsList(arr) {
-        console.log('Подробные данные обновлены', arr);
-        if(!arr.length) this.setModalHeightMax(Boolean(arr.length));
-      }
-    }
-  };
+  },
+};
 </script>

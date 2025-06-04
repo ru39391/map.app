@@ -50,7 +50,7 @@ const DEFAULT_LOCATION_DATA = {
 const MAP_ID = "map";
 const API_URL = "/api/branches/";
 const LOC_API_URL = "/api/cities/";
-const ASSETS_URL = "../assets/images/map";
+const ASSETS_URL = "/static";
 const ICONS_URL = `${ASSETS_URL}/icons`;
 const GEO_SWITCHER_URL = "/local/geolocation/switch-region-ajax.php";
 
