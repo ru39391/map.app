@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'checked-icon',
-  };
+export default {
+  name: "checked-icon",
+};
 </script>

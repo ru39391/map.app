@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'expend-more-icon',
-  };
+export default {
+  name: "expend-more-icon",
+};
 </script>

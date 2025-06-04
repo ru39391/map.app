@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'map-icon',
-  };
+export default {
+  name: "map-icon",
+};
 </script>

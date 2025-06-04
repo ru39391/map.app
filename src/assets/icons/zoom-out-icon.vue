@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'zoom-out-icon',
-  };
+export default {
+  name: "zoom-out-icon",
+};
 </script>

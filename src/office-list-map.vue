@@ -6,15 +6,26 @@
         'map-sidebar',
         { 'is-active': !isMapVisible && !isFilterVisible },
         { 'is-fixed': !isMapVisible && isFilterVisible },
-        { 'map-sidebar_type_filter': isPointsListVisible && isFilterVisible }
+        { 'map-sidebar_type_filter': isPointsListVisible && isFilterVisible },
       ]"
     >
       <div class="map-sidebar__header">
-        <button class="map-location-toggler" type="button" @click="setModalOpen(true)">
-          <LocationIcon />
-          <span class="map-location-toggler__caption">{{ currLocationCaption }}</span>
+        <button
+          class="map-location-toggler"
+          type="button"
+          @click="setModalOpen(true)"
+        >
+          <LocationIcon class="map-location-toggler__icon" />
+          <span class="map-location-toggler__caption">{{
+            currLocationCaption
+          }}</span>
         </button>
-        <div :class="['map-filter-holder', { 'is-active': isPointsListVisible && isFilterVisible }]">
+        <div
+          :class="[
+            'map-filter-holder',
+            { 'is-active': isPointsListVisible && isFilterVisible },
+          ]"
+        >
           <MapSelecter />
           <MapFilter @handleFilterVisibility="setFilterVisible" />
         </div>
@@ -22,43 +33,102 @@
           :arr="itemsList"
           :class="[{ 'is-hidden': isPointsListVisible && isFilterVisible }]"
           param="address"
-          placeholder="Город, район, улица..."
+          placeholder="Район, улица..."
         />
-      </div>
-      <div :class="['map-sidebar__section', { 'is-active': isAdsPanelVisible }]" v-if="isPointsListVisible">
-        <div class="map-sidebar__info">
-          <img class="map-sidebar__qr" src="./assets/qr.png" alt="" />
-          <div class="map-sidebar__desc">
-            Внести платеж или погасить кредит можно за пару кликов <nobr>в <a class="map-sidebar__link" href="https://redirect.appmetrica.yandex.com/serve/605327523684878235" target="_blank">нашем приложении</a></nobr>
-          </div>
-          <button class="map-sidebar__info-close" type="button" @click="setAdsPanelVisible(false)"><CloseIcon /></button>
+        <div
+          :class="[
+            'map-sidebar__info map-sidebar__info_type_alert',
+            { 'is-hidden': isAlertPanelVisible },
+          ]"
+          v-if="
+            !isPointsListVisible &&
+            !isCategoryListLoading &&
+            isMapVisible &&
+            customItemsList.length === 0
+          "
+        >
+          <div class="map-sidebar__desc">{{ captionsData.noItemsCap }}</div>
         </div>
       </div>
       <div
-        :class="[
-          'map-sidebar__wrapper',
-          { 'is-hidden': isMapVisible }
-        ]"
+        :class="['map-sidebar__section', { 'is-active': isAdsPanelVisible }]"
+        v-if="isPointsListVisible"
       >
-        <div :class="['map-sidebar__list', { 'is-hidden': selectedItemsList.length }]">
+        <div class="map-sidebar__info">
+          <img class="map-sidebar__qr" :src="qrCodeUrl" alt="" />
+          <div class="map-sidebar__desc">
+            Внести платеж или погасить кредит можно в
+            <a
+              class="map-sidebar__link"
+              href="#"
+              target="_blank"
+            >
+              нашем приложении
+            </a>
+          </div>
+          <button
+            class="map-sidebar__info-close"
+            type="button"
+            @click="setAdsPanelVisible(false)"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+      </div>
+      <div
+        v-if="!isCategoryListLoading"
+        :class="['map-sidebar__wrapper', { 'is-hidden': isMapVisible }]"
+      >
+        <div
+          :class="[
+            'map-sidebar__list map__custom-scrollbar',
+            { 'is-hidden': selectedItemsList.length },
+          ]"
+        >
+          <div
+            class="map-sidebar__link map-sidebar__link_fs_sm map-sidebar__link_td_none"
+            v-if="
+              !isPointsListVisible &&
+              !isCategoryListLoading &&
+              customItemsList.length === 0
+            "
+          >
+            {{ captionsData.noItemsCap }}
+          </div>
           <InfoCard
-            v-for="item in currentItemsList"
+            v-for="(item, index) in cardsList"
             :key="item.id"
             :ref="`card-${item.id}`"
             :id="`card-${item.id}`"
             :item="item"
+            :index="index"
             :currentCategory="currentCategory"
           />
+          <button
+            v-if="isCardsListBtnVisible"
+            class="map-sidebar__link map-sidebar__link_type_btn"
+            type="button"
+            @click="expandCardsList(customItemsList)"
+          >
+            Показать ещё
+          </button>
         </div>
-        <div :class="['map-sidebar__list', { 'is-hidden': !selectedItemsList.length }]">
+        <div
+          :class="[
+            'map-sidebar__list map__custom-scrollbar',
+            { 'is-hidden': !selectedItemsList.length },
+          ]"
+        >
           <button
             class="map-sidebar__link map-sidebar__link_type_btn"
             type="button"
             @click="setSelectedItemsList()"
           >
             <ChevronRightIcon />
-            <template v-if="selectedItemsList.length === 1">{{ itemsListCaption }}</template>
-            <template v-else>{{ itemsListCounter }}</template>
+            <template v-if="selectedItemsList.length === 1">{{
+              captionsData.itemsListCap
+            }}</template>
+            <template v-else>{{ captionsData.selItemsCap }}</template>
           </button>
           <InfoCard
             v-for="item in selectedItemsList"
@@ -71,10 +141,7 @@
         </div>
       </div>
     </div>
-    <MapModal
-      modalTitle="Где будем искать?"
-      modalSubtitle="Популярные города"
-    >
+    <MapModal modalTitle="Где будем искать?" modalSubtitle="Популярные города">
       <template #header>
         <MapSearch
           :arr="locationList"
@@ -88,7 +155,13 @@
           <button
             v-for="(locationItem, index) in currLocationList"
             :key="index"
-            :class="['btn-list__item', { 'is-active': locationItem.locationCode === currentLocation.locationCode }]"
+            :class="[
+              'btn-list__item',
+              {
+                'is-active':
+                  locationItem.locationCode === currentLocation.locationCode,
+              },
+            ]"
             type="button"
             @click="handleCurrLocation(locationItem)"
           >
@@ -99,198 +172,300 @@
     </MapModal>
     <MapSwitcher
       v-if="!isPointsListVisible"
+      :class="[{ 'is-filter-visible': isFilterVisible }]"
       :isMapVisible="isMapVisible"
       @handleMapVisibility="setMapVisible"
     />
     <MapPanel />
-    <div class="map-overlay" v-if="isCategoryListLoading"><LoaderIcon class="map-preloader" /></div>
+    <div class="map-overlay" v-if="isCategoryListLoading">
+      <LoaderIcon class="map-preloader" />
+    </div>
   </div>
 </template>
 
 <script>
-  import { mapActions, mapState } from 'pinia';
-  import { POINT_KEY, LOCATION_KEY, LOCATION_CODE_KEY, DEFAULT_LOC, DEFAULT_LOC_CODE, FILIAL_KEY, ATM_KEY, TERMINAL_KEY, FILTER_KEY } from './utils/constants';
-  import { useCategoryStore } from './store/modules/category';
-  import { useLocationStore } from './store/modules/location';
-  import { useModalStore } from './store/modules/modal';
-  import ChevronRightIcon from './assets/icons/chevron-right-icon.vue';
-  import CloseIcon from './assets/icons/close-icon.vue';
-  import LocationIcon from './assets/icons/location-icon.vue';
-  import LoaderIcon from './assets/icons/loader-icon.vue';
-  import InfoCard from './modules/info-card.vue';
-  import MapFilter from './modules/map-filter.vue';
-  import MapModal from './modules/map-modal.vue';
-  import MapPanel from './modules/map-panel.vue';
-  import MapSearch from './modules/map-search.vue';
-  import MapSection from './modules/map-section.vue';
-  import MapSelecter from './modules/map-selecter.vue';
-  import MapSwitcher from './modules/map-switcher.vue';
+import { mapActions, mapState } from "pinia";
+import {
+  POINT_KEY,
+  LOCATION_KEY,
+  LOCATION_CODE_KEY,
+  COORDS_KEY,
+  DEFAULT_LOC,
+  FILIAL_KEY,
+  ATM_KEY,
+  TERMINAL_KEY,
+  ASSETS_URL,
+  CARDS_LIST_LENGTH,
+} from "./utils/constants";
+import { handleLocationData } from "./utils";
+import { useCategoryStore } from "./store/modules/category";
+import { useFilterStore } from "./store/modules/filter";
+import { useModalStore } from "./store/modules/modal";
+import ChevronRightIcon from "./assets/icons/chevron-right-icon.vue";
+import CloseIcon from "./assets/icons/close-icon.vue";
+import LocationIcon from "./assets/icons/location-icon.vue";
+import LoaderIcon from "./assets/icons/loader-icon.vue";
+import InfoCard from "./modules/info-card.vue";
+import MapFilter from "./modules/map-filter.vue";
+import MapModal from "./modules/map-modal.vue";
+import MapPanel from "./modules/map-panel.vue";
+import MapSearch from "./modules/map-search.vue";
+import MapSection from "./modules/map-section.vue";
+import MapSelecter from "./modules/map-selecter.vue";
+import MapSwitcher from "./modules/map-switcher.vue";
+import yMapHandler from "./utils/ymap-handler";
 
-  export default {
-    name: 'office-list-map',
+export default {
+  name: "office-list-map",
 
-    components: {
-      ChevronRightIcon,
-      CloseIcon,
-      LocationIcon,
-      LoaderIcon,
-      InfoCard,
-      MapFilter,
-      MapModal,
-      MapPanel,
-      MapSearch,
-      MapSection,
-      MapSelecter,
-      MapSwitcher
+  components: {
+    ChevronRightIcon,
+    CloseIcon,
+    LocationIcon,
+    LoaderIcon,
+    InfoCard,
+    MapFilter,
+    MapModal,
+    MapPanel,
+    MapSearch,
+    MapSection,
+    MapSelecter,
+    MapSwitcher,
+  },
+
+  data() {
+    return {
+      cardsList: [],
+      cardsListLength: CARDS_LIST_LENGTH,
+      isMapVisible: true,
+      isFilterVisible: false,
+      isAdsPanelVisible: true,
+      isAlertPanelVisible: true,
+    };
+  },
+
+  computed: {
+    ...mapState(useCategoryStore, [
+      "isCategoryListLoading",
+      "currentItemsList",
+      "customItemsList",
+      "selectedItemsList",
+    ]),
+
+    ...mapState(useFilterStore, [
+      "locationList",
+      "currentLocation",
+      "categoryList",
+      "currentCategory",
+      "currentFilterData",
+    ]),
+
+    currLocationCaption() {
+      return this.currentLocation
+        ? this.currentLocation[LOCATION_KEY]
+        : DEFAULT_LOC;
     },
 
-    data() {
+    currLocationList() {
+      return this.locationList.filter(({ isPopular }) => isPopular);
+    },
+
+    currentCategoryKey() {
+      return this.currentCategory
+        ? this.currentCategory.type
+        : this.categoryList[0].type;
+    },
+
+    isPointsListVisible() {
+      return this.currentCategory && this.currentCategory.type === POINT_KEY;
+    },
+
+    qrCodeUrl() {
+      return `${ASSETS_URL}/qr.png`;
+    },
+
+    itemsList() {
+      return this.selectedItemsList.length
+        ? [...this.selectedItemsList]
+        : [...this.customItemsList];
+    },
+
+    captionsData() {
+      const data = {
+        [FILIAL_KEY]: "Отделений",
+        [ATM_KEY]: "Банкоматов",
+        [POINT_KEY]: "Точек погашения кредита",
+        [TERMINAL_KEY]: "Терминалов",
+      };
+
       return {
-        isMapVisible: true,
-        isFilterVisible: false,
-        isAdsPanelVisible: true
+        itemsListCap: `К списку ${data[this.currentCategoryKey].toLowerCase()}`,
+        noItemsCap: `Рядом нет подходящих ${data[
+          this.currentCategoryKey
+        ].toLowerCase()}`,
+        selItemsCap: `${data[this.currentCategoryKey]} по этому адресу: ${
+          this.selectedItemsList.length
+        }`,
       };
     },
 
-    computed: {
-      ...mapState(
-        useCategoryStore,
-        [
-          'isCategoryListLoading',
-          'currentItemsList',
-          'selectedItemsList',
-          'categoryList',
-          'currentCategory'
-        ]
-      ),
+    isCardsListBtnVisible() {
+      return (
+        this.customItemsList.length > this.cardsList.length &&
+        this.customItemsList.length > this.cardsListLength
+      );
+    },
+  },
 
-      ...mapState(
-        useLocationStore,
-        ['locationList', 'currentLocation']
-      ),
+  methods: {
+    ...mapActions(useCategoryStore, [
+      "fetchCategoryData",
+      "fetchPointsData",
+      "setSelectedItemsList",
+    ]),
 
-      currLocationCaption() {
-        return this.currentLocation ? this.currentLocation[LOCATION_KEY] : DEFAULT_LOC;
-      },
+    ...mapActions(useFilterStore, [
+      "initFilter",
+      "setLocationList",
+      "setCurrentLocation",
+    ]),
 
-      currLocationList() {
-        return this.locationList.filter(({ isPopular }) => isPopular);
-      },
+    ...mapActions(useModalStore, ["setModalOpen"]),
 
-      currentCategoryKey() {
-        return this.currentCategory ? this.currentCategory.type : this.categoryList[0].type
-      },
+    handleCurrLocation(data) {
+      this.setModalOpen(false);
 
-      isPointsListVisible() {
-        return this.currentCategory && this.currentCategory.type === POINT_KEY;
-      },
-
-      itemsList() {
-        return this.selectedItemsList.length ? [...this.selectedItemsList] : [...this.currentItemsList];
-      },
-
-      itemsListCaption() {
-        const data = {
-          [FILIAL_KEY]: 'отделений',
-          [ATM_KEY]: 'банкоматов',
-          [POINT_KEY]: 'точек погашения кредита',
-          [TERMINAL_KEY]: 'терминалов'
-        };
-
-        return `К списку ${data[this.currentCategoryKey]}`;
-      },
-
-      itemsListCounter() {
-        const data = {
-          [FILIAL_KEY]: 'отделения',
-          [ATM_KEY]: 'банкомата',
-          [TERMINAL_KEY]: 'терминала'
-        };
-
-        return `${this.selectedItemsList.length} ${data[this.currentCategoryKey]} по этому адресу:`;
+      if (
+        this.currentLocation &&
+        data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
+      ) {
+        this.setCurrentLocation(data);
       }
     },
 
-    methods: {
-      ...mapActions(
-        useCategoryStore,
-        [
-          'fetchCategoryData',
-          'setCurrentItemsList',
-          'setSelectedItemsList',
-          'setCurrentCategory',
-          'setCurrentFilterData'
-        ]
-      ),
+    async handlePointsData(payload) {
+      const { data } = payload;
 
-      ...mapActions(
-        useLocationStore,
-        ['setLocationList', 'setCurrentLocation']
-      ),
+      try {
+        const { isSucceed, data: locationData } = await handleLocationData({
+          value: payload[LOCATION_KEY],
+          code: payload[LOCATION_CODE_KEY],
+        });
 
-      ...mapActions(useModalStore, ['setModalOpen']),
+        if (isSucceed && data) {
+          const pointsData = Object.values(data).reduce(
+            (acc, item, index) => ({
+              ...acc,
+              [Object.keys(data)[index]]: {
+                ...item,
+                boundedBy: locationData.boundedBy,
+              },
+            }),
+            {}
+          );
 
-      handleCurrLocation(value) {
-        this.setModalOpen(false);
-
-        if(this.currentLocation && value[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]) this.setCurrentLocation(this.locationList, value[LOCATION_CODE_KEY]);
-      },
-
-      setMapVisible() {
-        this.isMapVisible = !this.isMapVisible;
-      },
-
-      setFilterVisible(value) {
-        this.isFilterVisible = value;
-      },
-
-      setAdsPanelVisible(value) {
-        this.isAdsPanelVisible = value;
-      },
-
-      fetchFilterData(data) {
-        const filterData = sessionStorage.getItem(FILTER_KEY);
-        const payload = filterData
-          ? {...JSON.parse(filterData)}
-          : {
-              type: this.currentCategoryKey,
-              [LOCATION_CODE_KEY]: data ? data[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
-            };
-
-        this.setCurrentFilterData(payload ? payload : null);
-        this.fetchCategoryData(payload, payload.params);
+          this.fetchPointsData(pointsData);
+        } else {
+          this.fetchPointsData({});
+        }
+      } catch (error) {
+        console.error(error);
       }
     },
 
-    watch: {
-      currentCategory(data) {
-        console.log('Категория обновлена', data);
-        this.setSelectedItemsList();
-      },
+    setMapVisible() {
+      this.isMapVisible = !this.isMapVisible;
+    },
 
-      locationList(arr) {
-        console.log('Список геолокаций обновлён', arr);
-        this.setCurrentLocation(arr);
-      },
+    setFilterVisible(value) {
+      this.isFilterVisible = value;
+    },
 
-      currentLocation(data) {
-        this.setSelectedItemsList();
-        this.fetchFilterData(data);
-      },
+    setAdsPanelVisible(value) {
+      this.isAdsPanelVisible = value;
+    },
 
-      currentItemsList(arr) {
-        console.log('Cписок карточек обновлён', arr);
-        this.setSelectedItemsList();
-      },
+    hideAlert() {
+      setTimeout(() => {
+        this.isAlertPanelVisible = true;
+      }, 3000);
+    },
 
-      isPointsListVisible(value) {
-        if(value) this.isMapVisible = value;
+    setCardsList(arr) {
+      this.cardsList = arr.filter((_, index) => index < this.cardsListLength);
+    },
+
+    expandCardsList(arr) {
+      if (this.cardsList.length === arr.length) {
+        return;
+      }
+
+      const items = arr.filter((_, index) => index >= this.cardsList.length);
+
+      this.cardsList = [
+        ...this.cardsList,
+        ...items.filter((_, index) => index < this.cardsListLength),
+      ];
+    },
+
+    handleUpdatedLocation(data, prevData) {
+      if (!prevData) {
+        this.fetchCategoryData(data, data.params || "");
+        return;
+      }
+
+      const values = Object.keys(data).reduce(
+        (acc, key) =>
+          data[key] === prevData[key] ? acc : { ...acc, [key]: data[key] },
+        {}
+      );
+      const isParamsDataExcluded =
+        Object.keys(values).length === 3 &&
+        Object.keys(values).filter((key) =>
+          [LOCATION_KEY, LOCATION_CODE_KEY, COORDS_KEY].includes(key)
+        ).length === 3;
+
+      if (isParamsDataExcluded) {
+        yMapHandler.setUpdMapCenter(values);
+      } else {
+        this.fetchCategoryData(data, data.params || "");
+      }
+    },
+  },
+
+  watch: {
+    currentItemsList(arr) {
+      console.log("Cписок карточек обновлён", arr);
+      this.setSelectedItemsList();
+    },
+
+    currentFilterData(data, prevData) {
+      console.log("Параметры фильтра обновлены", data);
+      if (data && data.type === POINT_KEY) {
+        this.handlePointsData(data);
+      } else {
+        this.handleUpdatedLocation(data, prevData);
       }
     },
 
-    beforeMount() {
-      this.setCurrentCategory(this.categoryList[0]);
-      this.setLocationList(this.currentCategoryKey);
+    isPointsListVisible(value) {
+      if (value) this.isMapVisible = value;
     },
-  }
+
+    customItemsList(arr) {
+      console.log({ customItemsList: arr.length });
+      this.setCardsList(arr);
+      yMapHandler.handleCardsList(arr);
+    },
+
+    cardsList(arr) {
+      console.log({ cardsList: arr.length });
+    },
+  },
+
+  beforeMount() {
+    this.initFilter();
+    this.setLocationList();
+  },
+};
 </script>

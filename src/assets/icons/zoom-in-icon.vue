@@ -22,7 +22,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'zoom-in-icon',
-  };
+export default {
+  name: "zoom-in-icon",
+};
 </script>

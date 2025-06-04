@@ -20,7 +20,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'copy-icon',
-  };
+export default {
+  name: "copy-icon",
+};
 </script>

@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'loader-icon',
-  };
+export default {
+  name: "loader-icon",
+};
 </script>

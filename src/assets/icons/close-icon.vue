@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'close-icon',
-  };
+export default {
+  name: "close-icon",
+};
 </script>

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'location-icon',
-  };
+export default {
+  name: "location-icon",
+};
 </script>

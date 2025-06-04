@@ -47,6 +47,6 @@
 
 <script>
 export default {
-  name: 'filter-icon',
+  name: "filter-icon",
 };
 </script>

@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'list-icon',
-  };
+export default {
+  name: "list-icon",
+};
 </script>

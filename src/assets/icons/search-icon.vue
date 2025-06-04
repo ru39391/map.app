@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'search-icon',
-  };
+export default {
+  name: "search-icon",
+};
 </script>

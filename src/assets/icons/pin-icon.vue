@@ -17,6 +17,6 @@
 
 <script>
 export default {
-  name: 'pin-icon',
+  name: "pin-icon",
 };
 </script>

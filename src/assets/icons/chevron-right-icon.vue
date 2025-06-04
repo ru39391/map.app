@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  export default {
-    name: 'chevron-right-icon',
-  };
+export default {
+  name: "chevron-right-icon",
+};
 </script>
