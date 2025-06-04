@@ -1,14 +1,18 @@
 .map-location-toggler {
   @extend %btn-default;
   @extend %d-flex-ai-center;
-  @include fs-lh(32px, 36px);
-  font-weight: 500;
-  gap: 0 6px;
+  @include text-lg;
+  gap: 0 12px;
   margin: 0 0 20px;
-  letter-spacing: -0.5px;
+}
 
-  @media (max-width: 991px) {
-    @include fs-lh(24px, 26px);
-    gap: 0 8px;
+.map-location-toggler__icon {
+  @include wh(18px);
+  @include fw(18px);
+  object-fit: cover;
+
+  @media (max-width: 1023px) {
+    @include wh(15px);
+    @include fw(15px);
   }
 }

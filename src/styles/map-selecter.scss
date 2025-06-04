@@ -7,17 +7,19 @@
   @extend %d-flex-ai-center;
   width: 100%;
   gap: 0 12px;
-  padding: 22px 24px;
+  padding: 22px 27px 22px 24px;
   text-align: left;
   justify-content: space-between;
   border-radius: 16px;
-  background-color: #fff;
+  background-color: $bnw1000;
+  //max-width: 239px;
 
-  @media (max-width: 991px) {
-    @include fs-lh(18px,22px);
+  @media (max-width: 1023px) {
+    @include fs-lh(18px, 22px);
     height: 100%;
-    padding: 5px 16px;
+    padding: 5px 19px 5px 16px;
     border-radius: 12px;
+    max-width: none;
   }
 
   &.is-active {
@@ -25,6 +27,13 @@
       transform: rotateX(180deg);
     }
   }
+}
+
+.map-selecter__caption {
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .map-selecter__arrow {

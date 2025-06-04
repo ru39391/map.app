@@ -1,11 +1,11 @@
 .info-card {
   padding: 24px;
   border-radius: 16px;
-  background-color: #fff;
+  background-color: $bnw1000;
   transition: all 0.3s ease;
   position: relative;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     padding: 20px;
   }
 
@@ -18,49 +18,66 @@
 .info-card__header {
   @extend %d-flex-column;
   gap: 4px 0;
-  margin: 0 0 16px;
+  margin: 0 0 4px;
 
-  @media (max-width: 991px) {
-    margin: 0 0 12px;
+  @media (max-width: 1023px) {
+    margin: 0 0 8px;
   }
 }
 
 .info-card__category {
-  @media (max-width: 991px) {
-    @include fs-lh(18px, 22px);
-  }
+  @include text-sm;
 }
 
 .info-card__caption {
-  @include fs-lh(36px, 1);
-  font-weight: 500;
-  letter-spacing: -1px;
+  @include text-lg;
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  @media (max-width: 991px) {
-    @include fs-lh(28px, 1);
-  }
 }
 
 .info-card__wrapper {
   @extend %d-flex-column;
-  gap: 28px 0;
+  gap: 16px 0;
 
-  @media (max-width: 991px) {
-    gap: 24px 0;
-    margin: 0 0 24px;
+  @media (max-width: 1023px) {
+    margin: 0 0 16px;
   }
 
   &.info-card__wrapper_margin_bottom {
-    margin: 0 0 24px;
+    margin: 0 0 16px;
   }
 
   &.info-card__wrapper_mb_none {
-    @media (max-width: 991px) {
+    @media (max-width: 1023px) {
       margin-bottom: 0;
     }
+  }
+}
+
+.info-card__work-time {
+  @include text-lg;
+}
+
+.info-card__address {
+  font-size: 20px;
+  line-height: 24px !important;
+  font-weight: 400 !important;
+
+  @media (max-width: 1023px) {
+    @include fs-lh(18px, 21.6px);
+  }
+
+  &--mt-16 {
+    margin-top: 16px;
+  }
+}
+
+.info-card__times {
+  @extend %d-flex-column;
+  @include text-sm;
+  gap: 4px;
+
+  @media (max-width: 1023px) {
+    @include fs-lh(18px, 21.6px);
   }
 }
 
@@ -82,29 +99,35 @@
   }
 
   &.info-card__item_fs_sm {
-    @include fs-lh(20px, 24px);
+    @include text-md;
+  }
 
-    @media (max-width: 991px) {
-      @include fs-lh(18px, 22px);
-    }
+  &.info-card__item_fs_xs {
+    @include text-sm;
   }
 
   &.info-card__item_fw_bold {
     font-weight: 500;
     line-height: 28px;
 
-    @media (max-width: 991px) {
+    @media (max-width: 1023px) {
       line-height: 24px;
     }
   }
 
   &.info-card__item_color_primary {
-    color: #46a7ec;
+    color: $blue600;
   }
 
   &.info-card__item_color_danger {
     color: #ff6f00;
   }
+}
+
+.info-card__item-title {
+  @include fs-lh(20px, 24px);
+  margin: 0 0 8px;
+  color: $bnw550;
 }
 
 .info-card__item-toggler {
@@ -119,10 +142,10 @@
   @include mobileOnly;
   gap: 32px 0;
   margin: 0 0 24px;
-  animation: show 0.5s;
+  //animation: show 0.5s;
 
   &.is-hidden {
-    @media (max-width: 991px) {
+    @media (max-width: 1023px) {
       display: none;
     }
   }
@@ -133,6 +156,15 @@
   gap: 8px 0;
   margin: 0 0 16px;
 
+  ul,
+  ol {
+    margin-bottom: 0;
+  }
+
+  &--mt-16 {
+    margin-top: 16px;
+  }
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -140,9 +172,62 @@
 
 .info-card__readmore {
   @extend %d-flex-ai-center;
-  @include desktopOnly(inline-block);
-  color: #242424;
-  text-decoration: underline;
+  @include desktopOnly;
+  @include text-sm;
+  color: $bnw150;
+  text-decoration: none !important;
+  gap: 10px;
+  display: flex;
+
+  @media (max-width: 1023px) {
+    margin: 0 0 16px;
+    opacity: 0;
+    height: 0;
+    display: flex;
+    overflow: hidden;
+    text-indent: -9999px;
+  }
+
+  svg {
+    transform: rotate(180deg);
+  }
+
+  &:hover {
+    color: $blue600;
+
+    path {
+      fill: $blue600;
+    }
+  }
+
+  &:after {
+    content: "";
+    display: none;
+
+    @media (max-width: 1023px) {
+      @include pos(0, 0);
+      @include wh(100%);
+      z-index: 2;
+      display: block;
+    }
+  }
+
+  &.info-card__readmore_mb_none {
+    @media (max-width: 1023px) {
+      margin-bottom: 0;
+    }
+  }
+
+  &.is-mobile-only {
+    @include mobileOnly;
+
+    @media (max-width: 1023px) {
+      opacity: 1;
+      height: auto;
+      overflow: visible;
+      text-indent: 0;
+    }
+  }
 }
 
 .info-card__link {
@@ -152,9 +237,9 @@
   &.info-card__link_type_btn {
     @extend %d-flex-ai-center;
     @include mobileOnly;
-    @include fs-lh(18px,20px);
+    @include fs-lh(18px, 20px);
     gap: 0 8px;
-    margin: 0 0 24px
+    margin: 0 0 24px;
   }
 
   &.is-active {
@@ -173,11 +258,11 @@
   @extend %btn-default;
 
   &:after {
-    content: '';
+    content: "";
 
-    @media (max-width: 991px) {
+    @media (max-width: 1023px) {
       @include wh(100%);
-      @include pos(0,0);
+      @include pos(0, 0);
       cursor: pointer;
     }
   }

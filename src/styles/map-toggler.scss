@@ -1,51 +1,55 @@
 .map-toggler {
-    @extend %toggler-default;
+  @extend %toggler-default;
 
-    &:checked + .map-toggler-label {
-        &:before {
-            display: none;
-        }
-
-        .map-toggler-label__icon {
-            @extend %d-flex-centered;
-            @extend %d-flex-column;
-            border-color: #46A7EC;
-        }
+  &:checked + .map-toggler-label {
+    &:before {
+      display: none;
     }
+
+    .map-toggler-label__icon {
+      @extend %d-flex-centered;
+      @extend %d-flex-column;
+      border-color: $blue600;
+    }
+  }
 }
 
 .map-toggler-label {
-    @extend %d-flex-ai-center;
-    @include before;
-    gap: 0 10px;
-    cursor: pointer;
+  @extend %d-flex-ai-center;
+  @include before;
+  gap: 0 16px;
+  cursor: pointer;
+  margin-bottom: 0;
 
-    @media (max-width:991px) {
-      @include fs-lh(18px, 22px);
+  @media (max-width: 1023px) {
+    @include fs-lh(18px, 22px);
+    gap: 0 8px;
+  }
+
+  &:before {
+    @include wh(36px);
+    @include fw(36px);
+    position: static;
+    border-radius: 6px;
+    border: 2px solid $bnw850;
+
+    @media (max-width: 1023px) {
+      @include wh(24px);
+      @include fw(24px);
     }
-
-    &:before {
-        @include wh(36px);
-        position: static;
-        border-radius: 6px;
-        border: 2px solid #DEDEDE;
-
-        @media (max-width:991px) {
-          @include wh(20px);
-        }
-    }
+  }
 }
 
 .map-toggler-label__icon {
-    @include fw(36px);
-    @include wh(36px);
-    display: none;
-    border-radius: 6px;
-    border: 2px solid rgba(0,0,0,0);
+  @include fw(36px);
+  @include wh(36px);
+  display: none;
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0);
 
-    @media (max-width:991px) {
-      @include fw(20px);
-      @include wh(20px);
-      padding: 4px 2px;
-    }
+  @media (max-width: 1023px) {
+    @include fw(24px);
+    @include wh(24px);
+    padding: 4px 2px;
+  }
 }

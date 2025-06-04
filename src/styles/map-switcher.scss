@@ -1,16 +1,22 @@
 .map-switcher {
   @extend %btn-default;
   @extend %d-flex-ai-center;
-  @include fs-lh(20px,24px);
+  @include fs-lh(20px, 24px);
   @include mobileOnly;
   position: fixed;
   left: 50%;
   bottom: 44px;
-  gap: 0 8px;
-  padding: 8px 24px;
-  z-index: 1040;
+  gap: 0 12px;
+  padding: 12px 24px;
+  z-index: 1060;
   transform: translateX(-50%);
   border-radius: 100px;
-  background-color: #c1ff05;
+  background-color: $green500;
   box-shadow: -4px 4px 16px rgba(0, 0, 0, 0.1);
+
+  &.is-filter-visible {
+    @media (max-width: 1023px) {
+      display: none !important;
+    }
+  }
 }

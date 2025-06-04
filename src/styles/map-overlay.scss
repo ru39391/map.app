@@ -4,17 +4,17 @@
   @include wh(100%);
   @include pos(0, 0, fixed);
   padding: 40px 16px 16px;
-  z-index: 1060;
+  z-index: 1080;
   background-color: rgba(0, 0, 0, 0.5);
 
   &.map-overlay_type_holder {
-    @media (max-width: 991px) {
+    @media (max-width: 1023px) {
       padding: 40px 0 0;
       justify-content: flex-end;
     }
 
     .map-modal {
-      @media (max-width: 991px) {
+      @media (max-width: 1023px) {
         max-height: 100%;
         overflow-x: auto;
         border-radius: 16px 16px 0 0;
@@ -27,35 +27,35 @@
       @extend %d-flex-column;
       transition: all 0.3s ease;
 
-      @media (max-width: 991px) {
+      @media (max-width: 1023px) {
         max-height: 50%;
         overflow: hidden;
-        padding: 18px 0 0;
+        padding: 16px 0 0;
       }
 
       &.is-hidden {
-        @media (max-width: 991px) {
+        @media (max-width: 1023px) {
           display: none;
         }
       }
 
       &.is-active {
-        @media (max-width: 991px) {
+        @media (max-width: 1023px) {
           max-height: 100%;
         }
       }
     }
 
     .map-modal__header {
-      @media (max-width: 991px) {
-        @include offset(0 0 9px,0 16px);
+      @media (max-width: 1023px) {
+        @include offset(0 0 7px, 0 16px);
         display: flex;
         align-items: flex-end;
       }
     }
 
     .map-modal__wrapper {
-      @media (max-width: 991px) {
+      @media (max-width: 1023px) {
         padding: 9px 16px 20px;
         overflow-x: auto;
       }
@@ -74,10 +74,10 @@
   max-width: 520px;
   padding: 36px;
   border-radius: 16px;
-  background-color: #f7f7f7;
+  background-color: $bnw950;
   animation: show 0.5s;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     padding: 18px 16px 20px;
   }
 
@@ -85,11 +85,12 @@
     @include before;
 
     &:before {
-      @include pos(6px,50%);
-      @include wh(48px,4px);
+      @include pos(6px, 50%);
+      @include wh(48px, 4px);
       transform: translateX(-50%);
       border-radius: 16px;
-      background-color: darken(#f7f7f7, 15%);
+      background-color: darken($bnw950, 15%);
+      display: none;
     }
   }
 
@@ -103,10 +104,10 @@
   @extend %d-flex-column;
   @extend %d-flex-centered;
 
-  @media (max-width: 991px) {
-    @include wh(12px);
-    @include fw(12px);
-    color: #8C8C8C;
+  @media (max-width: 1023px) {
+    @include wh(18px);
+    @include fw(18px);
+    color: $bnw150;
     margin: 0 0 18px;
   }
 
@@ -121,7 +122,7 @@
   gap: 20px 0;
   margin: 0 0 36px;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     gap: 16px 0;
     margin: 0 0 20px;
   }
@@ -131,7 +132,7 @@
   @include fs-lh(32px, 36px);
   font-weight: 500;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     @include fs-lh(28px, 1);
   }
 }
@@ -141,7 +142,7 @@
   font-weight: 500;
   margin: 0 0 20px;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     margin: 0 0 16px;
   }
 }
