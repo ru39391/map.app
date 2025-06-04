@@ -15,8 +15,10 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: "close-icon",
-};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "CloseIcon",
+});
 </script>

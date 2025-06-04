@@ -35,86 +35,66 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
-import { LOCATION_CODE_KEY, DEFAULT_LOC_CODE } from "../utils/constants";
-import { useCategoryStore } from "../store/modules/category";
+<script lang="ts">
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useFilterStore } from "../store/modules/filter";
 import ExpendMoreIcon from "../assets/icons/expend-more-icon.vue";
 
-export default {
-  name: "map-selecter",
+export default defineComponent({
+  name: "MapSelecter",
 
   components: {
     ExpendMoreIcon,
   },
 
-  data() {
-    return {
-      isCategoryDropdownOpen: false,
-    };
-  },
+  setup() {
+    const mapSelecter = ref<HTMLElement | null>(null)
+    const isCategoryDropdownOpen = ref<boolean>(false);
+    const filterStore = useFilterStore();
+    const {
+      categoryList,
+      currentCategory,
+      currentFilterData
+    } = computed(
+      () => ({
+        categoryList: filterStore.categoryList,
+        currentCategory: filterStore.currentCategory,
+        currentFilterData: filterStore.currentFilterData,
+      })
+    );
+    const selecterCaption = computed(() => currentCategory ? currentCategory.caption : '');
 
-  computed: {
-    ...mapState(useFilterStore, [
-      "currentLocation",
-      "categoryList",
-      "currentCategory",
-      "currentFilterData",
-    ]),
+    const setCategoryDropdownOpen = (value: boolean) => isCategoryDropdownOpen.value = value;
+    const handleCurrentCategory = ({ type }) => {
+      setCategoryDropdownOpen(false);
 
-    selecterCaption() {
-      return this.currentCategory ? this.currentCategory.caption : "";
-    },
-
-    currentLocationData() {
-      return {
-        [LOCATION_CODE_KEY]: this.currentLocation
-          ? this.currentLocation[LOCATION_CODE_KEY]
-          : DEFAULT_LOC_CODE,
-      };
-    },
-  },
-
-  methods: {
-    ...mapActions(useCategoryStore, ["fetchCategoryData"]),
-
-    ...mapActions(useFilterStore, [
-      "setCurrentCategory",
-      "setCurrentFilterData",
-    ]),
-
-    setCategoryDropdownOpen(value) {
-      this.isCategoryDropdownOpen = value;
-    },
-
-    handleCurrentCategory({ type }) {
-      this.setCategoryDropdownOpen(false);
-
-      if (this.currentCategory && type === this.currentCategory.type) {
+      if (currentCategory && type === currentCategory.type) {
         return;
       }
 
-      this.setCurrentFilterData({
-        ...this.currentFilterData,
-        type,
-        data: null,
-      });
-    },
-
-    closeDropdown({ target }) {
-      if (!this.$refs.mapSelecter.contains(target)) {
-        this.setCategoryDropdownOpen(false);
+      filterStore.setCurrentFilterData({ ...currentFilterData, type, data: null });
+    };
+    const closeDropdown = (event: MouseEvent) => {
+      if (mapSelecter.value && !mapSelecter.value.contains(event.target as Node)) {
+        setCategoryDropdownOpen(false);
       }
-    },
-  },
+    };
 
-  mounted() {
-    document.addEventListener("mousedown", this.closeDropdown);
-  },
+    onMounted(() => {
+      document.addEventListener("mousedown", closeDropdown);
+    });
 
-  beforeUnmount() {
-    document.removeEventListener("mousedown", this.closeDropdown);
+    onBeforeUnmount(() => {
+      document.removeEventListener("mousedown", closeDropdown);
+    });
+
+    return {
+      categoryList,
+      isCategoryDropdownOpen,
+      selecterCaption,
+      handleCurrentCategory,
+      setCategoryDropdownOpen
+    };
   },
-};
+});
 </script>

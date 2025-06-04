@@ -21,8 +21,10 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: "zoom-in-icon",
-};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "ZoomInIcon",
+});
 </script>

@@ -27,8 +27,10 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: "loader-icon",
-};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "LoaderIcon",
+});
 </script>

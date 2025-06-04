@@ -19,8 +19,10 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: "copy-icon",
-};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "CopyIcon",
+});
 </script>

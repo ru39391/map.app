@@ -1,8 +1,18 @@
 import { defineStore } from "pinia";
-import { PARTNER_NAME, POINT_KEY, API_URL } from "../../utils/constants";
+import { PARTNER_NAME, POINT_KEY, API_URL, ATM_KEY, FILIAL_KEY, TERMINAL_KEY } from "../../utils/constants";
 
 import { setSelectedItems, handlePointsData } from "../../utils";
 import axios from "axios";
+
+import { fetchAtmData } from '../../utils/fetchAtmData';
+import { fetchFilialData } from '../../utils/fetchFilialData';
+import { fetchTerminalData } from '../../utils/fetchTerminalData';
+
+const types = {
+  [ATM_KEY]: fetchAtmData(),
+  [FILIAL_KEY]: fetchFilialData(),
+  [TERMINAL_KEY]: fetchTerminalData(),
+}
 
 const useCategoryStore = defineStore({
   id: "category",
@@ -25,7 +35,8 @@ const useCategoryStore = defineStore({
       console.log({ requestUrl });
 
       try {
-        const { data: itemsData } = await axios.get(requestUrl);
+        //const { data: itemsData } = await axios.get(requestUrl);
+        const itemsData = await types[data.type];
         //console.log({ itemsData });
 
         if (itemsData.success) {

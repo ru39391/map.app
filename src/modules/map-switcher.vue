@@ -15,12 +15,13 @@
   </button>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import ListIcon from "../assets/icons/list-icon.vue";
 import MapIcon from "../assets/icons/map-icon.vue";
 
-export default {
-  name: "map-switcher",
+export default defineComponent({
+  name: "MapSwitcher",
 
   components: {
     ListIcon,
@@ -33,5 +34,5 @@ export default {
       required: true,
     },
   },
-};
+});
 </script>

@@ -13,8 +13,10 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: "list-icon",
-};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "ListIcon",
+});
 </script>

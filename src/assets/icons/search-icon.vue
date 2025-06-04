@@ -15,8 +15,11 @@
   </svg>
 </template>
 
-<script>
-export default {
-  name: "search-icon",
-};
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "SearchIcon",
+});
 </script>
+
