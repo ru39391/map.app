@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-const useFilterStore = defineStore("modal", () => {
+const useModalStore = defineStore("modal", () => {
   const isModalOpen = ref<boolean>(false);
 
   const setModalOpen = (value: boolean) => {
@@ -14,4 +14,4 @@ const useFilterStore = defineStore("modal", () => {
   };
 });
 
-export { useFilterStore };
+export { useModalStore };

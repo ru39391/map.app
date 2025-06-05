@@ -58,11 +58,7 @@
           <img class="map-sidebar__qr" :src="qrCodeUrl" alt="" />
           <div class="map-sidebar__desc">
             Внести платеж или погасить кредит можно в
-            <a
-              class="map-sidebar__link"
-              href="#"
-              target="_blank"
-            >
+            <a class="map-sidebar__link" href="#" target="_blank">
               нашем приложении
             </a>
           </div>
@@ -183,8 +179,8 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script lang="ts">
+import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
 import {
   POINT_KEY,
   LOCATION_KEY,
@@ -215,8 +211,8 @@ import MapSelecter from "./modules/map-selecter.vue";
 import MapSwitcher from "./modules/map-switcher.vue";
 import yMapHandler from "./utils/ymap-handler";
 
-export default {
-  name: "office-list-map",
+export default defineComponent({
+  name: "OfficeListMap",
 
   components: {
     ChevronRightIcon,
@@ -233,64 +229,49 @@ export default {
     MapSwitcher,
   },
 
-  data() {
-    return {
-      cardsList: [],
-      cardsListLength: CARDS_LIST_LENGTH,
-      isMapVisible: true,
-      isFilterVisible: false,
-      isAdsPanelVisible: true,
-      isAlertPanelVisible: true,
-    };
-  },
+  setup() {
+    const categoryStore = useCategoryStore();
+    const filterStore = useFilterStore();
+    const modalStore = useModalStore();
+    const cardsList = ref<Record<string, string>[]>([]);
+    const cardsListLength = ref<number>(CARDS_LIST_LENGTH);
+    const isMapVisible = ref<boolean>(true);
+    const isFilterVisible = ref<boolean>(false);
+    const isAdsPanelVisible = ref<boolean>(true);
+    const isAlertPanelVisible = ref<boolean>(true);
 
-  computed: {
-    ...mapState(useCategoryStore, [
-      "isCategoryListLoading",
-      "currentItemsList",
-      "customItemsList",
-      "selectedItemsList",
-    ]),
+    const isCategoryListLoading = computed(
+      () => categoryStore.isCategoryListLoading
+    );
+    const currentItemsList = computed(() => categoryStore.currentItemsList);
+    const customItemsList = computed(() => categoryStore.customItemsList);
+    const selectedItemsList = computed(() => categoryStore.selectedItemsList);
 
-    ...mapState(useFilterStore, [
-      "locationList",
-      "currentLocation",
-      "categoryList",
-      "currentCategory",
-      "currentFilterData",
-    ]),
+    const locationList = computed(() => filterStore.locationList);
+    const currentLocation = computed(() => filterStore.currentLocation);
+    const categoryList = computed(() => filterStore.categoryList);
+    const currentCategory = computed(() => filterStore.currentCategory);
+    const currentFilterData = computed(() => filterStore.currentFilterData);
 
-    currLocationCaption() {
-      return this.currentLocation
-        ? this.currentLocation[LOCATION_KEY]
-        : DEFAULT_LOC;
-    },
-
-    currLocationList() {
-      return this.locationList.filter(({ isPopular }) => isPopular);
-    },
-
-    currentCategoryKey() {
-      return this.currentCategory
-        ? this.currentCategory.type
-        : this.categoryList[0].type;
-    },
-
-    isPointsListVisible() {
-      return this.currentCategory && this.currentCategory.type === POINT_KEY;
-    },
-
-    qrCodeUrl() {
-      return `${ASSETS_URL}/qr.png`;
-    },
-
-    itemsList() {
-      return this.selectedItemsList.length
-        ? [...this.selectedItemsList]
-        : [...this.customItemsList];
-    },
-
-    captionsData() {
+    const currLocationCaption = computed(() =>
+      currentLocation ? currentLocation.value[LOCATION_KEY] : DEFAULT_LOC
+    );
+    const currLocationList = computed(() =>
+      locationList.value.filter(({ isPopular }) => isPopular)
+    );
+    const currentCategoryKey = computed(() =>
+      currentCategory ? currentCategory.value.type : categoryList.value[0].type
+    );
+    const isPointsListVisible = computed(
+      () => currentCategory && currentCategory.value.type === POINT_KEY
+    );
+    const qrCodeUrl = computed(() => `${ASSETS_URL}/qr.png`);
+    const itemsList = computed(() =>
+      selectedItemsList.value.length
+        ? [...selectedItemsList.value]
+        : [...customItemsList.value]
+    );
+    const captionsData = computed(() => {
       const data = {
         [FILIAL_KEY]: "Отделений",
         [ATM_KEY]: "Банкоматов",
@@ -299,51 +280,45 @@ export default {
       };
 
       return {
-        itemsListCap: `К списку ${data[this.currentCategoryKey].toLowerCase()}`,
-        noItemsCap: `Рядом нет подходящих ${data[
-          this.currentCategoryKey
+        itemsListCap: `К списку ${data[
+          currentCategoryKey.value
         ].toLowerCase()}`,
-        selItemsCap: `${data[this.currentCategoryKey]} по этому адресу: ${
-          this.selectedItemsList.length
+        noItemsCap: `Рядом нет подходящих ${data[
+          currentCategoryKey.value
+        ].toLowerCase()}`,
+        selItemsCap: `${data[currentCategoryKey.value]} по этому адресу: ${
+          selectedItemsList.value.length
         }`,
       };
-    },
+    });
+    const isCardsListBtnVisible = computed(
+      () =>
+        customItemsList.value.length > cardsList.value.length &&
+        customItemsList.value.length > cardsListLength.value
+    );
 
-    isCardsListBtnVisible() {
-      return (
-        this.customItemsList.length > this.cardsList.length &&
-        this.customItemsList.length > this.cardsListLength
-      );
-    },
-  },
+    const fetchCategoryData = categoryStore.fetchCategoryData;
+    const fetchPointsData = categoryStore.fetchPointsData;
+    const setSelectedItemsList = categoryStore.setSelectedItemsList;
 
-  methods: {
-    ...mapActions(useCategoryStore, [
-      "fetchCategoryData",
-      "fetchPointsData",
-      "setSelectedItemsList",
-    ]),
+    const initFilter = filterStore.initFilter;
+    const setLocationList = filterStore.setLocationList;
+    const setCurrentLocation = filterStore.setCurrentLocation;
 
-    ...mapActions(useFilterStore, [
-      "initFilter",
-      "setLocationList",
-      "setCurrentLocation",
-    ]),
+    const setModalOpen = modalStore.setModalOpen;
 
-    ...mapActions(useModalStore, ["setModalOpen"]),
-
-    handleCurrLocation(data) {
-      this.setModalOpen(false);
+    const handleCurrLocation = (data) => {
+      setModalOpen(false);
 
       if (
-        this.currentLocation &&
-        data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
+        currentLocation.value &&
+        data[LOCATION_CODE_KEY] !== currentLocation.value[LOCATION_CODE_KEY]
       ) {
-        this.setCurrentLocation(data);
+        setCurrentLocation(data);
       }
-    },
+    };
 
-    async handlePointsData(payload) {
+    const handlePointsData = async (payload) => {
       const { data } = payload;
 
       try {
@@ -364,53 +339,53 @@ export default {
             {}
           );
 
-          this.fetchPointsData(pointsData);
+          fetchPointsData(pointsData);
         } else {
-          this.fetchPointsData({});
+          fetchPointsData({});
         }
       } catch (error) {
         console.error(error);
       }
-    },
+    };
 
-    setMapVisible() {
-      this.isMapVisible = !this.isMapVisible;
-    },
+    const setMapVisible = () => {
+      isMapVisible.value = !isMapVisible.value;
+    };
 
-    setFilterVisible(value) {
-      this.isFilterVisible = value;
-    },
+    const setFilterVisible = (value) => {
+      isFilterVisible.value = value;
+    };
 
-    setAdsPanelVisible(value) {
-      this.isAdsPanelVisible = value;
-    },
+    const setAdsPanelVisible = (value) => {
+      isAdsPanelVisible.value = value;
+    };
 
-    hideAlert() {
+    const hideAlert = () => {
       setTimeout(() => {
-        this.isAlertPanelVisible = true;
+        isAlertPanelVisible.value = true;
       }, 3000);
-    },
+    };
 
-    setCardsList(arr) {
-      this.cardsList = arr.filter((_, index) => index < this.cardsListLength);
-    },
+    const setCardsList = (arr) => {
+      cardsList.value = arr.filter((_, index) => index < cardsListLength.value);
+    };
 
-    expandCardsList(arr) {
-      if (this.cardsList.length === arr.length) {
+    const expandCardsList = (arr) => {
+      if (cardsList.value.length === arr.length) {
         return;
       }
 
-      const items = arr.filter((_, index) => index >= this.cardsList.length);
+      const items = arr.filter((_, index) => index >= cardsList.value.length);
 
-      this.cardsList = [
-        ...this.cardsList,
-        ...items.filter((_, index) => index < this.cardsListLength),
+      cardsList.value = [
+        ...cardsList.value,
+        ...items.filter((_, index) => index < cardsListLength.value),
       ];
-    },
+    };
 
-    handleUpdatedLocation(data, prevData) {
+    const handleUpdatedLocation = (data, prevData) => {
       if (!prevData) {
-        this.fetchCategoryData(data, data.params || "");
+        fetchCategoryData(data, data.params || "");
         return;
       }
 
@@ -428,44 +403,73 @@ export default {
       if (isParamsDataExcluded) {
         yMapHandler.setUpdMapCenter(values);
       } else {
-        this.fetchCategoryData(data, data.params || "");
+        fetchCategoryData(data, data.params || "");
       }
-    },
-  },
+    };
 
-  watch: {
-    currentItemsList(arr) {
-      console.log("Cписок карточек обновлён", arr);
-      this.setSelectedItemsList();
-    },
+    onBeforeMount(() => {
+      initFilter();
+      setLocationList();
+    });
 
-    currentFilterData(data, prevData) {
-      console.log("Параметры фильтра обновлены", data);
-      if (data && data.type === POINT_KEY) {
-        this.handlePointsData(data);
-      } else {
-        this.handleUpdatedLocation(data, prevData);
+    watch(
+      () => currentItemsList.value,
+      (arr) => {
+        setSelectedItemsList(arr);
+        console.log("Cписок карточек обновлён", arr);
       }
-    },
+    );
 
-    isPointsListVisible(value) {
-      if (value) this.isMapVisible = value;
-    },
+    watch(
+      () => currentFilterData.value,
+      (data, prevData) => {
+        if (data && data.type === POINT_KEY) {
+          handlePointsData(data);
+        } else {
+          handleUpdatedLocation(data, prevData);
+        }
+        console.log("Параметры фильтра обновлены", data);
+      }
+    );
 
-    customItemsList(arr) {
-      console.log({ customItemsList: arr.length });
-      this.setCardsList(arr);
-      yMapHandler.handleCardsList(arr);
-    },
+    watch(
+      () => isPointsListVisible.value,
+      (value) => {
+        if (value) isMapVisible.value = value;
+      }
+    );
 
-    cardsList(arr) {
-      console.log({ cardsList: arr.length });
-    },
+    watch(
+      () => customItemsList.value,
+      (arr) => {
+        setCardsList(arr);
+        yMapHandler.handleCardsList(arr);
+        console.log({ customItemsList: arr.length });
+      }
+    );
+
+    watch(
+      () => cardsList.value,
+      (arr) => {
+        console.log({ cardsList: arr.length });
+      }
+    );
+
+    return {
+      currLocationCaption,
+      currLocationList,
+      isCategoryListLoading,
+      qrCodeUrl,
+      itemsList,
+      captionsData,
+      isCardsListBtnVisible,
+      expandCardsList,
+      handleCurrLocation,
+      setMapVisible,
+      setFilterVisible,
+      setAdsPanelVisible,
+      hideAlert,
+    };
   },
-
-  beforeMount() {
-    this.initFilter();
-    this.setLocationList();
-  },
-};
+});
 </script>

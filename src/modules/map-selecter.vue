@@ -48,7 +48,7 @@ export default defineComponent({
   },
 
   setup() {
-    const mapSelecter = ref<HTMLElement | null>(null)
+    const mapSelecter = ref<HTMLElement | null>(null);
     const isCategoryDropdownOpen = ref<boolean>(false);
     const filterStore = useFilterStore();
     const {
