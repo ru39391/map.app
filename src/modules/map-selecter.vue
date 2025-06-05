@@ -50,29 +50,25 @@ export default defineComponent({
   setup() {
     const mapSelecter = ref<HTMLElement | null>(null);
     const isCategoryDropdownOpen = ref<boolean>(false);
-    const filterStore = useFilterStore();
-    const {
-      categoryList,
-      currentCategory,
-      currentFilterData
-    } = computed(
-      () => ({
-        categoryList: filterStore.categoryList,
-        currentCategory: filterStore.currentCategory,
-        currentFilterData: filterStore.currentFilterData,
-      })
-    );
-    const selecterCaption = computed(() => currentCategory ? currentCategory.caption : '');
 
-    const setCategoryDropdownOpen = (value: boolean) => isCategoryDropdownOpen.value = value;
+    const filterStore = useFilterStore();
+    const categoryList = computed(() => filterStore.categoryList);
+    const currentCategory = computed(() => filterStore.currentCategory);
+    const currentFilterData = computed(() => filterStore.currentFilterData);
+
+    const selecterCaption = computed(() => currentCategory.value ? currentCategory.value.caption : '');
+
+    const setCategoryDropdownOpen = (value: boolean) => {
+      isCategoryDropdownOpen.value = value;
+    };
     const handleCurrentCategory = ({ type }) => {
       setCategoryDropdownOpen(false);
 
-      if (currentCategory && type === currentCategory.type) {
+      if (currentCategory.value && type === currentCategory.value.type) {
         return;
       }
 
-      filterStore.setCurrentFilterData({ ...currentFilterData, type, data: null });
+      filterStore.setCurrentFilterData({ ...currentFilterData.value, type, data: null });
     };
     const closeDropdown = (event: MouseEvent) => {
       if (mapSelecter.value && !mapSelecter.value.contains(event.target as Node)) {
@@ -90,6 +86,7 @@ export default defineComponent({
 
     return {
       categoryList,
+      currentCategory,
       isCategoryDropdownOpen,
       selecterCaption,
       handleCurrentCategory,

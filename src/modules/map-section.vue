@@ -55,8 +55,6 @@ export default defineComponent({
   },
 
   setup() {
-    const categoryStore = useCategoryStore();
-    const filterStore = useFilterStore();
     const mapMarkersList = ref<Record<string, string>[]>([]);
     const markerIconSizes = ref<Record<string, number[]>>({
       iconImageSize: [86, 86],
@@ -116,6 +114,9 @@ export default defineComponent({
         },
       },
     });
+
+    const categoryStore = useCategoryStore();
+    const filterStore = useFilterStore();
     const currentItemsList = computed(() => categoryStore.currentItemsList);
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
     const currentCategory = computed(() => filterStore.currentCategory);

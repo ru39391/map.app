@@ -1,5 +1,4 @@
 <template>
-  <!--
   <div class="map-wrapper h-100">
     <MapSection />
     <div
@@ -17,9 +16,7 @@
           @click="setModalOpen(true)"
         >
           <LocationIcon class="map-location-toggler__icon" />
-          <span class="map-location-toggler__caption">{{
-            currLocationCaption
-          }}</span>
+          <span class="map-location-toggler__caption">{{ currLocationCaption }}</span>
         </button>
         <div
           :class="[
@@ -28,14 +25,18 @@
           ]"
         >
           <MapSelecter />
+          <!--
           <MapFilter @handleFilterVisibility="setFilterVisible" />
+          -->
         </div>
+        <!--
         <MapSearch
           :arr="itemsList"
           :class="[{ 'is-hidden': isPointsListVisible && isFilterVisible }]"
           param="address"
           placeholder="Район, улица..."
         />
+        -->
         <div
           :class="[
             'map-sidebar__info map-sidebar__info_type_alert',
@@ -122,11 +123,10 @@
             @click="setSelectedItemsList()"
           >
             <ChevronRightIcon />
-            <template v-if="selectedItemsList.length === 1">{{
-              captionsData.itemsListCap
-            }}</template>
+            <template v-if="selectedItemsList.length === 1">{{ captionsData.itemsListCap }}</template>
             <template v-else>{{ captionsData.selItemsCap }}</template>
           </button>
+          <!--
           <InfoCard
             v-for="item in selectedItemsList"
             :key="item.id"
@@ -135,9 +135,11 @@
             :item="item"
             :currentCategory="currentCategory"
           />
+          -->
         </div>
       </div>
     </div>
+    <!--
     <MapModal modalTitle="Где будем искать?" modalSubtitle="Популярные города">
       <template #header>
         <MapSearch
@@ -174,11 +176,11 @@
       @handleMapVisibility="setMapVisible"
     />
     <MapPanel />
+    -->
     <div class="map-overlay" v-if="isCategoryListLoading">
       <LoaderIcon class="map-preloader" />
     </div>
   </div>
-  -->
 </template>
 
 <script lang="ts">
@@ -232,10 +234,6 @@ export default defineComponent({
   },
 
   setup() {
-    const categoryStore = useCategoryStore();
-    const filterStore = useFilterStore();
-    const modalStore = useModalStore();
-
     const cardsList = ref<Record<string, string>[]>([]);
     const cardsListLength = ref<number>(CARDS_LIST_LENGTH);
     const isMapVisible = ref<boolean>(true);
@@ -243,11 +241,14 @@ export default defineComponent({
     const isAdsPanelVisible = ref<boolean>(true);
     const isAlertPanelVisible = ref<boolean>(true);
 
+    const modalStore = useModalStore();
+    const categoryStore = useCategoryStore();
     const isCategoryListLoading = computed(() => categoryStore.isCategoryListLoading);
     const currentItemsList = computed(() => categoryStore.currentItemsList);
     const customItemsList = computed(() => categoryStore.customItemsList);
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
 
+    const filterStore = useFilterStore();
     const locationList = computed(() => filterStore.locationList);
     const currentLocation = computed(() => filterStore.currentLocation);
     const categoryList = computed(() => filterStore.categoryList);
@@ -286,24 +287,14 @@ export default defineComponent({
       () => customItemsList.value.length > cardsList.value.length && customItemsList.value.length > cardsListLength.value
     );
 
-    const fetchCategoryData = categoryStore.fetchCategoryData;
-    const fetchPointsData = categoryStore.fetchPointsData;
-    const setSelectedItemsList = categoryStore.setSelectedItemsList;
-
-    const initFilter = filterStore.initFilter;
-    const setLocationList = filterStore.setLocationList;
-    const setCurrentLocation = filterStore.setCurrentLocation;
-
-    const setModalOpen = modalStore.setModalOpen;
-
     const handleCurrLocation = (data) => {
-      setModalOpen(false);
+      modalStore.setModalOpen(false);
 
       if (
         currentLocation.value &&
         data[LOCATION_CODE_KEY] !== currentLocation.value[LOCATION_CODE_KEY]
       ) {
-        setCurrentLocation(data);
+        filterStore.setCurrentLocation(data);
       }
     };
 
@@ -328,9 +319,9 @@ export default defineComponent({
             {}
           );
 
-          fetchPointsData(pointsData);
+          categoryStore.fetchPointsData(pointsData);
         } else {
-          fetchPointsData({});
+          categoryStore.fetchPointsData({});
         }
       } catch (error) {
         console.error(error);
@@ -374,7 +365,7 @@ export default defineComponent({
 
     const handleUpdatedLocation = (data, prevData) => {
       if (!prevData) {
-        fetchCategoryData(data, data.params || "");
+        categoryStore.fetchCategoryData(data, data.params || "");
         return;
       }
 
@@ -392,19 +383,19 @@ export default defineComponent({
       if (isParamsDataExcluded) {
         yMapHandler.setUpdMapCenter(values);
       } else {
-        fetchCategoryData(data, data.params || "");
+        categoryStore.fetchCategoryData(data, data.params || "");
       }
     };
 
     onBeforeMount(() => {
-      initFilter();
-      setLocationList();
+      filterStore.initFilter();
+      filterStore.setLocationList();
     });
 
     watch(
       () => currentItemsList.value,
       (arr) => {
-        setSelectedItemsList(arr);
+        categoryStore.setSelectedItemsList(arr);
         console.log("Cписок карточек обновлён", arr);
       }
     );
@@ -433,31 +424,43 @@ export default defineComponent({
       (arr) => {
         setCardsList(arr);
         yMapHandler.handleCardsList(arr);
-        console.log({ customItemsList: arr.length });
+        //console.log({ customItemsList: arr.length });
       }
     );
 
     watch(
       () => cardsList.value,
       (arr) => {
-        console.log({ cardsList: arr.length });
+        //console.log({ cardsList: arr.length });
       }
     );
 
     return {
+      captionsData,
+      cardsList,
+      currentCategory,
+      currentLocation,
       currLocationCaption,
       currLocationList,
-      isCategoryListLoading,
-      qrCodeUrl,
-      itemsList,
-      captionsData,
+      customItemsList,
+      isAdsPanelVisible,
+      isAlertPanelVisible,
       isCardsListBtnVisible,
+      isCategoryListLoading,
+      isFilterVisible,
+      isMapVisible,
+      isPointsListVisible,
+      itemsList,
+      locationList,
+      qrCodeUrl,
+      selectedItemsList,
       expandCardsList,
       handleCurrLocation,
-      setMapVisible,
-      setFilterVisible,
       setAdsPanelVisible,
-      hideAlert,
+      setFilterVisible,
+      setMapVisible,
+      setModalOpen: modalStore.setModalOpen,
+      setSelectedItemsList: categoryStore.setSelectedItemsList
     };
   },
 });

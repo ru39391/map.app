@@ -3,15 +3,15 @@
     <button
       class="map-filter__toggler"
       type="button"
-      @click="setFilterDropdownOpen(!isFilterDropdownOpen)"
+      @click="setFilterDropdownOpen(!isFilterDropdownOpen.value)"
     >
       <FilterIcon />
     </button>
     <form
       :class="[
         'map-dropdown map-dropdown_type_filter',
-        { 'map-dropdown_type_panel': isPointsListVisible },
-        { 'is-active': isFilterDropdownOpen },
+        { 'map-dropdown_type_panel': isPointsListVisible.value },
+        { 'is-active': isFilterDropdownOpen.value },
       ]"
       @submit.prevent
       @click.self="setFilterDropdownOpen(false)"
@@ -20,8 +20,8 @@
         class="map__custom-scrollbar"
         :class="[
           'map-dropdown__wrapper',
-          { 'map-dropdown__wrapper_height_min': isPointsListVisible },
-          { 'is-active': isFilterDropdownOpen },
+          { 'map-dropdown__wrapper_height_min': isPointsListVisible.value },
+          { 'is-active': isFilterDropdownOpen.value },
         ]"
       >
         <button
@@ -31,7 +31,7 @@
         >
           <CloseIcon />
         </button>
-        <template v-if="isPointsListVisible">
+        <template v-if="isPointsListVisible.value">
           <div
             v-for="(pointData, index) in pointsFilterList"
             :key="index"
@@ -126,8 +126,15 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script lang="ts">
+import {
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import {
   POINT_KEY,
   BEELINE_KEY,
@@ -145,8 +152,8 @@ import CheckedIcon from "../assets/icons/checked-icon.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 import FilterIcon from "../assets/icons/filter-icon.vue";
 
-export default {
-  name: "map-filter",
+export default defineComponent({
+  name: "MapFilter",
 
   components: {
     CheckedIcon,
@@ -154,175 +161,161 @@ export default {
     FilterIcon,
   },
 
-  data() {
-    return {
-      filterData: null,
-      isFilterDropdownOpen: false,
-      pointsFilterData: null,
-      pointsFilterList: [
-        {
-          title: "Сеть партнера",
-          params: [
-            {
-              key: BEELINE_KEY,
-              caption: "Билайн",
-              request: "Салон Билайн",
-            },
-            {
-              key: MTS_KEY,
-              caption: "МТС",
-              request: "Салон МТС",
-            },
-            {
-              key: KH_KEY,
-              caption: "Ноу-Хау",
-              request: "Магазин ИОН",
-            },
-            {
-              key: KARI_KEY,
-              caption: "Kari Россия",
-              request: "Kari Россия",
-            },
-          ],
-          desc: [
-            {
-              caption: "Комиссия:",
-              value: "1% но не менее 50 рублей",
-            },
-            {
-              caption: "Срок зачисления:",
-              value: "моментально",
-            },
-            {
-              caption: "Ограничения:",
-              value: "нет ограничений",
-            },
-            {
-              caption: "Потребуется:",
-              value: "номер счета, паспорт",
-            },
-          ],
-        },
-        {
-          title: "Другие способы",
-          params: [
-            {
-              key: LXNET_KEY,
-              caption: "Элекснет",
-              request: "Элекснет",
-            },
-          ],
-          desc: [
-            {
-              caption: "Комиссия:",
-              value: "1,4% но не менее 50 рублей",
-            },
-            {
-              caption: "Срок зачисления:",
-              value: "моментально",
-            },
-            {
-              caption: "Ограничения:",
-              value:
-                "cумма одной операции не более 15 000 р. Сумма операций в сутки через один терминал не более 90 000 р. Сумма операций в сутки через все терминалы сети не более 585 000 р.",
-            },
-            {
-              caption: "Потребуется:",
-              value: "номер счета",
-            },
-          ],
-        },
-        {
-          title: "",
-          params: [
-            {
-              key: RUPOST_KEY,
-              caption: "Почта России",
-              request: "Почта России",
-            },
-          ],
-          desc: [
-            {
-              caption: "Комиссия:",
-              value: "нет комиссии",
-            },
-            {
-              caption: "Срок зачисления:",
-              value: "в течение пяти банковских дней",
-            },
-            {
-              caption: "Ограничения:",
-              value: "платеж: не более 500 000 р.",
-            },
-            {
-              caption: "Потребуется:",
-              value: "паспорт, квитанция для оплаты",
-            },
-          ],
-        },
-      ],
+  setup() {
+    const mapFilter = ref<HTMLElement | null>(null);
+    const filterData = ref<Record<string, string> | null>(null);
+    const isFilterDropdownOpen = ref<boolean>(false);
+    const pointsFilterData = ref<Record<string, string> | null>(null);
+    const pointsFilterList = ref<Record<string, string>[]>([
+      {
+        title: "Сеть партнера",
+        params: [
+          {
+            key: BEELINE_KEY,
+            caption: "Билайн",
+            request: "Салон Билайн",
+          },
+          {
+            key: MTS_KEY,
+            caption: "МТС",
+            request: "Салон МТС",
+          },
+          {
+            key: KH_KEY,
+            caption: "Ноу-Хау",
+            request: "Магазин ИОН",
+          },
+          {
+            key: KARI_KEY,
+            caption: "Kari Россия",
+            request: "Kari Россия",
+          },
+        ],
+        desc: [
+          {
+            caption: "Комиссия:",
+            value: "1% но не менее 50 рублей",
+          },
+          {
+            caption: "Срок зачисления:",
+            value: "моментально",
+          },
+          {
+            caption: "Ограничения:",
+            value: "нет ограничений",
+          },
+          {
+            caption: "Потребуется:",
+            value: "номер счета, паспорт",
+          },
+        ],
+      },
+      {
+        title: "Другие способы",
+        params: [
+          {
+            key: LXNET_KEY,
+            caption: "Элекснет",
+            request: "Элекснет",
+          },
+        ],
+        desc: [
+          {
+            caption: "Комиссия:",
+            value: "1,4% но не менее 50 рублей",
+          },
+          {
+            caption: "Срок зачисления:",
+            value: "моментально",
+          },
+          {
+            caption: "Ограничения:",
+            value:
+              "cумма одной операции не более 15 000 р. Сумма операций в сутки через один терминал не более 90 000 р. Сумма операций в сутки через все терминалы сети не более 585 000 р.",
+          },
+          {
+            caption: "Потребуется:",
+            value: "номер счета",
+          },
+        ],
+      },
+      {
+        title: "",
+        params: [
+          {
+            key: RUPOST_KEY,
+            caption: "Почта России",
+            request: "Почта России",
+          },
+        ],
+        desc: [
+          {
+            caption: "Комиссия:",
+            value: "нет комиссии",
+          },
+          {
+            caption: "Срок зачисления:",
+            value: "в течение пяти банковских дней",
+          },
+          {
+            caption: "Ограничения:",
+            value: "платеж: не более 500 000 р.",
+          },
+          {
+            caption: "Потребуется:",
+            value: "паспорт, квитанция для оплаты",
+          },
+        ],
+      },
+    ]);
+
+    const categoryStore = useCategoryStore();
+    const filterStore = useFilterStore();
+
+    const isCategoryListLoading = computed(
+      () => categoryStore.isCategoryListLoading
+    );
+    const currentLocation = computed(() => filterStore.currentLocation);
+    const categoryList = computed(() => filterStore.categoryList);
+    const currentCategory = computed(() => filterStore.currentCategory);
+    const categoryFilterData = computed(() => filterStore.categoryFilterData);
+    const currentFilterData = computed(() => filterStore.currentFilterData);
+
+    const isPointsListVisible = computed(
+      () => currentCategory.value && currentCategory?.value.type === POINT_KEY
+    );
+    const currentCategoryData = computed(() => ({
+      type: currentCategory.value
+        ? currentCategory.value.type
+        : categoryList.value[0].type,
+      [LOCATION_CODE_KEY]: currentLocation.value
+        ? currentLocation.value[LOCATION_CODE_KEY]
+        : DEFAULT_LOC_CODE,
+    }));
+    const filterList = computed(() =>
+      categoryFilterData.value
+        ? categoryFilterData.value[currentCategoryData.value.type]
+        : []
+    );
+    const pointsFilterConfig = computed(() => ({
+      ...pointsFilterList[2].params[0],
+      target: {},
+      checked: true,
+    }));
+
+    const setFilterDropdownOpen = (value) => {
+      isFilterDropdownOpen.value = value;
     };
-  },
 
-  computed: {
-    ...mapState(useCategoryStore, ["isCategoryListLoading"]),
-
-    ...mapState(useFilterStore, [
-      "currentLocation",
-      "categoryList",
-      "currentCategory",
-      "categoryFilterData",
-      "currentFilterData",
-    ]),
-
-    isPointsListVisible() {
-      return this.currentCategory && this.currentCategory.type === POINT_KEY;
-    },
-
-    currentCategoryData() {
-      return {
-        type: this.currentCategory
-          ? this.currentCategory.type
-          : this.categoryList[0].type,
-        [LOCATION_CODE_KEY]: this.currentLocation
-          ? this.currentLocation[LOCATION_CODE_KEY]
-          : DEFAULT_LOC_CODE,
-      };
-    },
-
-    filterList() {
-      return this.categoryFilterData
-        ? this.categoryFilterData[this.currentCategoryData.type]
-        : [];
-    },
-
-    pointsFilterConfig() {
-      return {
-        ...this.pointsFilterList[2].params[0],
-        target: {},
-        checked: true,
-      };
-    },
-  },
-
-  methods: {
-    ...mapActions(useCategoryStore, ["fetchCategoryData", "fetchPointsData"]),
-
-    ...mapActions(useFilterStore, ["setCurrentFilterData"]),
-
-    setFilterDropdownOpen(value) {
-      this.isFilterDropdownOpen = value;
-    },
-
-    handleFilterData({ target }) {
+    const handleFilterData = ({ target }) => {
       const { id, checked } = target;
 
-      this.filterData = this.filterData
-        ? { ...this.filterData, [id]: Number(checked) }
+      filterData.value = filterData.value
+        ? { ...filterData.value, [id]: Number(checked) }
         : { [id]: Number(checked) };
-    },
+    };
 
-    submitFilter({ data, type }) {
+    const submitFilter = ({ data, type }) => {
       if (!data) {
         return;
       }
@@ -339,23 +332,23 @@ export default {
         {}
       );
 
-      this.setCurrentFilterData({
-        ...this.currentFilterData,
+      filterStore.setCurrentFilterData({
+        ...currentFilterData.value,
         data: type === POINT_KEY ? pointsParamsData : paramsData,
       });
-    },
+    };
 
-    updatePointsFilterData(boundedBy) {
-      if (!this.pointsFilterData) {
+    const updatePointsFilterData = (boundedBy) => {
+      if (!pointsFilterData) {
         return {};
       }
 
-      return Object.values(this.pointsFilterData).reduce(
+      return Object.values(pointsFilterData).reduce(
         (acc, item, index) =>
           item.checked
             ? {
                 ...acc,
-                [Object.keys(this.pointsFilterData)[index]]: {
+                [Object.keys(pointsFilterData)[index]]: {
                   ...item,
                   boundedBy,
                 },
@@ -363,96 +356,108 @@ export default {
             : acc,
         {}
       );
-    },
+    };
 
-    handlePointsFilterData(data) {
+    const handlePointsFilterData = (data) => {
       const { key, target } = data;
-      const { boundedBy } = this.currentLocation;
+      const { boundedBy } = currentLocation.value;
 
-      const pointsFilterData = this.updatePointsFilterData(boundedBy);
+      const pointsFilterValues = updatePointsFilterData(boundedBy);
 
-      this.pointsFilterData = this.pointsFilterData
+      pointsFilterData.value = pointsFilterData.value
         ? {
-            ...pointsFilterData,
+            ...pointsFilterValues,
             [key]: { ...data, checked: target.checked, boundedBy },
           }
         : { [key]: { ...data, checked: target.checked, boundedBy } };
-    },
+    };
 
-    updatePointsList({ boundedBy }) {
-      if (!this.isPointsListVisible) {
+    const updatePointsList = ({ boundedBy }) => {
+      if (!isPointsListVisible.value) {
         return;
       }
 
-      const pointsFilterData = this.updatePointsFilterData(boundedBy);
+      const pointsFilterData = updatePointsFilterData(boundedBy);
 
-      this.fetchPointsData(pointsFilterData);
-    },
-
-    closeFilter({ target }) {
-      if (!this.$refs.mapFilter.contains(target)) {
-        this.setFilterDropdownOpen(false);
+      categoryStore.fetchPointsData(pointsFilterData);
+    };
+    const closeFilter = (event: MouseEvent) => {
+      if (mapFilter.value && !mapFilter.value.contains(event.target as Node)) {
+        setFilterDropdownOpen(false);
       }
-    },
-
-    resetFilter(payload = null) {
-      this.pointsFilterData =
+    };
+    const resetFilter = (payload = null) => {
+      pointsFilterData.value =
         payload && payload.type === POINT_KEY
           ? { ...(payload && payload.data && { ...payload.data }) }
           : null;
-      this.filterData =
+      filterData.value =
         payload && payload.type !== POINT_KEY
           ? { ...(payload && payload.data && { ...payload.data }) }
           : null;
-    },
-  },
+    };
 
-  watch: {
-    currentFilterData(updData) {
-      const { boundedBy } = this.currentLocation;
+    watch(
+      () => currentFilterData.value,
+      (updData) => {
+        const { boundedBy } = currentLocation.value;
 
-      if (updData.type === POINT_KEY && updData.data === null) {
-        this.submitFilter({
-          data: {
-            [this.pointsFilterConfig.key]: {
-              ...this.pointsFilterConfig,
-              boundedBy,
+        if (updData.type === POINT_KEY && updData.data === null) {
+          submitFilter({
+            data: {
+              [pointsFilterConfig.value.key]: {
+                ...pointsFilterConfig.value,
+                boundedBy,
+              },
             },
-          },
-          type: POINT_KEY,
-        });
-        this.resetFilter({
-          data: {
-            [this.pointsFilterConfig.key]: {
-              ...this.pointsFilterConfig,
-              boundedBy,
+            type: POINT_KEY,
+          });
+          resetFilter({
+            data: {
+              [pointsFilterConfig.value.key]: {
+                ...pointsFilterConfig.value,
+                boundedBy,
+              },
             },
-          },
-        });
-      } else {
-        this.resetFilter(updData);
+          });
+        } else {
+          resetFilter(updData);
+        }
       }
-    },
+    );
 
-    currentLocation() {
-      this.resetFilter(this.currentFilterData);
-    },
+    watch(
+      () => currentLocation.value,
+      () => resetFilter(currentFilterData.value)
+    );
 
-    isCategoryListLoading(value) {
-      if (!value) this.setFilterDropdownOpen(false);
-    },
+    watch(
+      () => isCategoryListLoading.value,
+      (value) => {
+        if (!value) setFilterDropdownOpen(false);
+      }
+    );
 
-    isFilterDropdownOpen(value) {
-      this.$emit("handleFilterVisibility", value);
-    },
+    watch(
+      () => isFilterDropdownOpen.value,
+      (value) => {
+        //this.$emit("handleFilterVisibility", value);
+      }
+    );
+
+    onMounted(() => {
+      document.addEventListener("mousedown", closeFilter);
+    });
+
+    onBeforeUnmount(() => {
+      document.removeEventListener("mousedown", closeFilter);
+    });
+
+    return {
+      isFilterDropdownOpen,
+      isPointsListVisible,
+      setFilterDropdownOpen,
+    };
   },
-
-  mounted() {
-    document.addEventListener("mousedown", this.closeFilter);
-  },
-
-  beforeUnmount() {
-    document.removeEventListener("mousedown", this.closeFilter);
-  },
-};
+});
 </script>
