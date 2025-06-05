@@ -1,4 +1,5 @@
 <template>
+  <!--
   <div class="map-wrapper h-100">
     <MapSection />
     <div
@@ -177,6 +178,7 @@
       <LoaderIcon class="map-preloader" />
     </div>
   </div>
+  -->
 </template>
 
 <script lang="ts">
@@ -233,6 +235,7 @@ export default defineComponent({
     const categoryStore = useCategoryStore();
     const filterStore = useFilterStore();
     const modalStore = useModalStore();
+
     const cardsList = ref<Record<string, string>[]>([]);
     const cardsListLength = ref<number>(CARDS_LIST_LENGTH);
     const isMapVisible = ref<boolean>(true);
@@ -240,9 +243,7 @@ export default defineComponent({
     const isAdsPanelVisible = ref<boolean>(true);
     const isAlertPanelVisible = ref<boolean>(true);
 
-    const isCategoryListLoading = computed(
-      () => categoryStore.isCategoryListLoading
-    );
+    const isCategoryListLoading = computed(() => categoryStore.isCategoryListLoading);
     const currentItemsList = computed(() => categoryStore.currentItemsList);
     const customItemsList = computed(() => categoryStore.customItemsList);
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
@@ -254,23 +255,19 @@ export default defineComponent({
     const currentFilterData = computed(() => filterStore.currentFilterData);
 
     const currLocationCaption = computed(() =>
-      currentLocation ? currentLocation.value[LOCATION_KEY] : DEFAULT_LOC
+      currentLocation.value ? currentLocation.value[LOCATION_KEY] : DEFAULT_LOC
     );
     const currLocationList = computed(() =>
       locationList.value.filter(({ isPopular }) => isPopular)
     );
     const currentCategoryKey = computed(() =>
-      currentCategory ? currentCategory.value.type : categoryList.value[0].type
+      currentCategory.value ? currentCategory?.value.type : categoryList.value[0].type
     );
     const isPointsListVisible = computed(
-      () => currentCategory && currentCategory.value.type === POINT_KEY
+      () => currentCategory.value && currentCategory?.value.type === POINT_KEY
     );
     const qrCodeUrl = computed(() => `${ASSETS_URL}/qr.png`);
-    const itemsList = computed(() =>
-      selectedItemsList.value.length
-        ? [...selectedItemsList.value]
-        : [...customItemsList.value]
-    );
+    const itemsList = computed(() => selectedItemsList.value.length ? [...selectedItemsList.value] : [...customItemsList.value]);
     const captionsData = computed(() => {
       const data = {
         [FILIAL_KEY]: "Отделений",
@@ -280,21 +277,13 @@ export default defineComponent({
       };
 
       return {
-        itemsListCap: `К списку ${data[
-          currentCategoryKey.value
-        ].toLowerCase()}`,
-        noItemsCap: `Рядом нет подходящих ${data[
-          currentCategoryKey.value
-        ].toLowerCase()}`,
-        selItemsCap: `${data[currentCategoryKey.value]} по этому адресу: ${
-          selectedItemsList.value.length
-        }`,
+        itemsListCap: `К списку ${data[currentCategoryKey.value].toLowerCase()}`,
+        noItemsCap: `Рядом нет подходящих ${data[currentCategoryKey.value].toLowerCase()}`,
+        selItemsCap: `${data[currentCategoryKey.value]} по этому адресу: ${selectedItemsList.value.length}`,
       };
     });
     const isCardsListBtnVisible = computed(
-      () =>
-        customItemsList.value.length > cardsList.value.length &&
-        customItemsList.value.length > cardsListLength.value
+      () => customItemsList.value.length > cardsList.value.length && customItemsList.value.length > cardsListLength.value
     );
 
     const fetchCategoryData = categoryStore.fetchCategoryData;

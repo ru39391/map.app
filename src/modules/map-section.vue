@@ -14,8 +14,8 @@
   </div>
 </template>
 
-<script>
-import { mapState } from "pinia";
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from "vue";
 import {
   DEFAULT_KEY,
   SELECTED_KEY,
@@ -45,8 +45,8 @@ import ZoomInIcon from "../assets/icons/zoom-in-icon.vue";
 import ZoomOutIcon from "../assets/icons/zoom-out-icon.vue";
 import yMapHandler from "../utils/ymap-handler";
 
-export default {
-  name: "map-section",
+export default defineComponent({
+  name: "MapSection",
 
   components: {
     LocationIcon,
@@ -54,93 +54,86 @@ export default {
     ZoomOutIcon,
   },
 
-  data() {
-    return {
-      mapMarkersList: [],
-      markerIconSizes: {
-        iconImageSize: [86, 86],
-        iconImageOffset: [-43, -86],
-      },
-      markerIcons: {
+  setup() {
+    const categoryStore = useCategoryStore();
+    const filterStore = useFilterStore();
+    const mapMarkersList = ref<Record<string, string>[]>([]);
+    const markerIconSizes = ref<Record<string, number[]>>({
+      iconImageSize: [86, 86],
+      iconImageOffset: [-43, -86],
+    });
+    const markerIcons = ref<Record<string, Record<string, string>>>({
+      [DEFAULT_KEY]: {
         [DEFAULT_KEY]: {
-          [DEFAULT_KEY]: {
-            iconImageHref: MAP_PINS[DEFAULT_KEY],
-          },
-          [PARTNER_KEY]: {
-            iconImageHref: MAP_PINS[PARTNER_KEY],
-          },
-          [BEELINE_KEY]: {
-            iconImageHref: MAP_PINS[BEELINE_KEY],
-          },
-          [LXNET_KEY]: {
-            iconImageHref: MAP_PINS[LXNET_KEY],
-          },
-          [MTS_KEY]: {
-            iconImageHref: MAP_PINS[MTS_KEY],
-          },
-          [KARI_KEY]: {
-            iconImageHref: MAP_PINS[KARI_KEY],
-          },
-          [RUPOST_KEY]: {
-            iconImageHref: MAP_PINS[RUPOST_KEY],
-          },
-          [KH_KEY]: {
-            iconImageHref: MAP_PINS[KH_KEY],
-          },
+          iconImageHref: MAP_PINS[DEFAULT_KEY],
         },
-        [SELECTED_KEY]: {
-          [DEFAULT_KEY]: {
-            iconImageHref: MAP_PINS[SELECTED_KEY],
-          },
-          [PARTNER_KEY]: {
-            iconImageHref: MAP_PINS[PARTNER_SELECTED_KEY],
-          },
-          [BEELINE_KEY]: {
-            iconImageHref: MAP_PINS[BEELINE_SELECTED_KEY],
-          },
-          [LXNET_KEY]: {
-            iconImageHref: MAP_PINS[LXNET_SELECTED_KEY],
-          },
-          [MTS_KEY]: {
-            iconImageHref: MAP_PINS[MTS_SELECTED_KEY],
-          },
-          [KARI_KEY]: {
-            iconImageHref: MAP_PINS[KARI_SELECTED_KEY],
-          },
-          [RUPOST_KEY]: {
-            iconImageHref: MAP_PINS[RUPOST_SELECTED_KEY],
-          },
-          [KH_KEY]: {
-            iconImageHref: MAP_PINS[KH_SELECTED_KEY],
-          },
+        [PARTNER_KEY]: {
+          iconImageHref: MAP_PINS[PARTNER_KEY],
+        },
+        [BEELINE_KEY]: {
+          iconImageHref: MAP_PINS[BEELINE_KEY],
+        },
+        [LXNET_KEY]: {
+          iconImageHref: MAP_PINS[LXNET_KEY],
+        },
+        [MTS_KEY]: {
+          iconImageHref: MAP_PINS[MTS_KEY],
+        },
+        [KARI_KEY]: {
+          iconImageHref: MAP_PINS[KARI_KEY],
+        },
+        [RUPOST_KEY]: {
+          iconImageHref: MAP_PINS[RUPOST_KEY],
+        },
+        [KH_KEY]: {
+          iconImageHref: MAP_PINS[KH_KEY],
         },
       },
-    };
-  },
+      [SELECTED_KEY]: {
+        [DEFAULT_KEY]: {
+          iconImageHref: MAP_PINS[SELECTED_KEY],
+        },
+        [PARTNER_KEY]: {
+          iconImageHref: MAP_PINS[PARTNER_SELECTED_KEY],
+        },
+        [BEELINE_KEY]: {
+          iconImageHref: MAP_PINS[BEELINE_SELECTED_KEY],
+        },
+        [LXNET_KEY]: {
+          iconImageHref: MAP_PINS[LXNET_SELECTED_KEY],
+        },
+        [MTS_KEY]: {
+          iconImageHref: MAP_PINS[MTS_SELECTED_KEY],
+        },
+        [KARI_KEY]: {
+          iconImageHref: MAP_PINS[KARI_SELECTED_KEY],
+        },
+        [RUPOST_KEY]: {
+          iconImageHref: MAP_PINS[RUPOST_SELECTED_KEY],
+        },
+        [KH_KEY]: {
+          iconImageHref: MAP_PINS[KH_SELECTED_KEY],
+        },
+      },
+    });
+    const currentItemsList = computed(() => categoryStore.currentItemsList);
+    const selectedItemsList = computed(() => categoryStore.selectedItemsList);
+    const currentCategory = computed(() => filterStore.currentCategory);
+    const currentLocation = computed(() => filterStore.currentLocation);
 
-  computed: {
-    ...mapState(useCategoryStore, ["currentItemsList", "selectedItemsList"]),
+    const isPointsListVisible = computed(
+      () => currentCategory.value && currentCategory?.value.type === POINT_KEY
+    );
+    const markerOptions = computed(() => ({
+      iconLayout: "default#image",
+      ...markerIconSizes.value,
+      ...(!isPointsListVisible.value && {
+        ...markerIcons.value[DEFAULT_KEY][DEFAULT_KEY],
+      }),
+    }));
 
-    ...mapState(useFilterStore, ["currentCategory", "currentLocation"]),
-
-    isPointsListVisible() {
-      return this.currentCategory && this.currentCategory.type === POINT_KEY;
-    },
-
-    markerOptions() {
-      return {
-        iconLayout: "default#image",
-        ...this.markerIconSizes,
-        ...(!this.isPointsListVisible && {
-          ...this.markerIcons[DEFAULT_KEY][DEFAULT_KEY],
-        }),
-      };
-    },
-  },
-
-  methods: {
-    setMapMarkersList(arr) {
-      this.mapMarkersList = this.isPointsListVisible
+    const setMapMarkersList = (arr) => {
+      mapMarkersList.value = isPointsListVisible.value
         ? arr
         : arr.map(({ id, coords, isPartner, lon, lat, workingStatus }) => ({
             id,
@@ -151,12 +144,12 @@ export default {
               coords: [lon, lat].map((value) => Number(value)),
             }),
           }));
-    },
+    };
 
-    getCurrLocationData() {
+    const getCurrLocationData = () => {
       const locationData = localStorage.getItem(LOCATION_KEY);
       const currLocationData = locationData ? JSON.parse(locationData) : null;
-      const isLocationDataExist = currLocationData || this.currentLocation;
+      const isLocationDataExist = currLocationData || currentLocation.value;
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -165,10 +158,10 @@ export default {
                 isSucceed: true,
                 [COORDS_KEY]: currLocationData
                   ? currLocationData[COORDS_KEY]
-                  : this.currentLocation[COORDS_KEY],
+                  : currentLocation.value[COORDS_KEY],
                 bounds: currLocationData
                   ? currLocationData.boundedBy
-                  : this.currentLocation.boundedBy,
+                  : currentLocation.value.boundedBy,
               })
             : reject({
                 isSucceed: false,
@@ -176,40 +169,47 @@ export default {
               });
         }, 200);
       });
-    },
+    };
 
-    async handleYMap(arr) {
+    const handleYMap = async (arr) => {
       try {
-        const { isSucceed, coords, bounds } = await this.getCurrLocationData();
+        const { isSucceed, coords, bounds } = await getCurrLocationData();
 
         if (isSucceed) {
           yMapHandler.renderYMap({
             arr,
             coords,
             bounds,
-            config: this.markerOptions,
-            icons: this.markerIcons,
+            config: markerOptions.value,
+            icons: markerIcons.value,
           });
         }
       } catch (error) {
         console.error(error);
       }
-    },
+    };
+
+    watch(
+      () => currentItemsList.value,
+      (arr) => {
+        setMapMarkersList(arr);
+      }
+    );
+
+    watch(
+      () => mapMarkersList.value,
+      (arr) => {
+        handleYMap(arr);
+        console.log("Список объектов карты обновлён", arr);
+      }
+    );
+
+    watch(
+      () => selectedItemsList.value,
+      (arr) => {
+        yMapHandler.resetPlacemarks(arr);
+      }
+    );
   },
-
-  watch: {
-    currentItemsList(arr) {
-      this.setMapMarkersList(arr);
-    },
-
-    mapMarkersList(arr) {
-      console.log("Список объектов карты обновлён", arr);
-      this.handleYMap(arr);
-    },
-
-    selectedItemsList(arr) {
-      yMapHandler.resetPlacemarks(arr);
-    },
-  },
-};
+});
 </script>
