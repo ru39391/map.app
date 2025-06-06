@@ -10,6 +10,14 @@ import {
 } from "../../utils/constants";
 
 import { setSelectedItems, handlePointsData } from "../../utils";
+import type {
+  TCategoryData,
+  TFilterData,
+  THandledData,
+  TItemData,
+  TPointsFilterData
+} from "../../utils/types";
+
 import axios from "axios";
 
 import { fetchAtmData } from "../../utils/fetchAtmData";
@@ -24,11 +32,17 @@ const types = {
 
 const useCategoryStore = defineStore("category", () => {
   const isCategoryListLoading = ref<boolean>(false);
-  const currentItemsList = ref<Record<string, string>[]>([]);
-  const selectedItemsList = ref<Record<string, string>[]>([]);
-  const customItemsList = ref<Record<string, string>[]>([]);
+  const currentItemsList = ref<TItemData[]>([]);
+  const selectedItemsList = ref<TItemData[]>([]);
+  const customItemsList = ref<TItemData[]>([]);
 
-  const fetchCategoryData = async (data, params = "") => {
+  /**
+   * Получает данные о филиалах/банкоматах/терминалах банка,
+   * сохраняет массив в хранилище
+   * @property {TFilterData} data - параметры фильтра
+   * @property {string} params - доп. параметры вида /?LINK_FL=1&LINK_CRP=1&MOBILE_GROUP=1
+  */
+  const fetchCategoryData = async (data: TFilterData, params = "") => {
     isCategoryListLoading.value = true;
 
     if (data.type === POINT_KEY) {
@@ -41,11 +55,11 @@ const useCategoryStore = defineStore("category", () => {
 
     try {
       //const { data: itemsData } = await axios.get(requestUrl);
-      const itemsData = await types[data.type];
+      const itemsData: { success: boolean; data: TCategoryData[]; } = await types[data.type];
       //console.log({ itemsData });
 
       if (itemsData.success) {
-        const items = itemsData.data.map((data) => {
+        const items: TItemData[] = itemsData.data.map((data: TCategoryData) => {
           const {
             name,
             address,
@@ -103,7 +117,12 @@ const useCategoryStore = defineStore("category", () => {
     }
   };
 
-  const fetchPointsData = async (data) => {
+  /**
+   * Получает данные о точках погашения,
+   * сохраняет массив в хранилище
+   * @property {TPointsFilterData} data - параметры фильтра
+  */
+  const fetchPointsData = async (data: TPointsFilterData) => {
     const paramsArr = Object.values(data).filter(({ checked }) => checked);
 
     currentItemsList.value = [];
@@ -111,14 +130,11 @@ const useCategoryStore = defineStore("category", () => {
 
     try {
       const resultArr = await Promise.all(
-        paramsArr.map(({ key, request, boundedBy }) =>
-          handlePointsData({ key, request, boundedBy })
-        )
+        paramsArr.map(({ key, request, boundedBy }) => handlePointsData({ key, request, boundedBy }))
       );
 
       currentItemsList.value = resultArr.reduce(
-        (acc, item) =>
-          Object.values(item)[0] ? [...acc, ...Object.values(item)[1]] : acc,
+        (acc: TItemData[], { isSucceed, data }: THandledData<TItemData[]>) => isSucceed ? [...acc, ...data as TItemData[]] : acc,
         []
       );
     } catch (error) {
@@ -128,11 +144,21 @@ const useCategoryStore = defineStore("category", () => {
     }
   };
 
-  const setSelectedItemsList = (arr = []) => {
+  /**
+   * Помещает в хранилище данные выбранных объектов
+   * (по клику на пин/группу пинов, при изменении границ карты)
+   * @property {string[]} arr - список id
+  */
+  const setSelectedItemsList = (arr: string[] = []) => {
     selectedItemsList.value = setSelectedItems(currentItemsList.value, arr);
   };
 
-  const setCustomItemsList = (arr = []) => {
+  /**
+   * Помещает в хранилище сокращённый массив объектов
+   * (если их общее количество превышает определённое значение)
+   * @property {string[]} arr - список id
+  */
+  const setCustomItemsList = (arr: string[] = []) => {
     customItemsList.value = setSelectedItems(currentItemsList.value, arr);
   };
 

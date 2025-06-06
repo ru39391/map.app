@@ -12,6 +12,11 @@ import {
   GEO_NAME_SEL,
   GEO_SWITCHER_URL,
 } from "./constants";
+import type {
+  THandledData,
+  TItemData,
+  TPointsFilterValues
+} from "./types";
 
 import axios from "axios";
 
@@ -22,8 +27,8 @@ const stringifyFilterData = (data) =>
     ""
   );
 
-const handlePointsData = async ({ key, request, boundedBy }) => {
-  let data = { isSucceed: false, data: null };
+const handlePointsData = async ({ key, request, boundedBy }: Pick<TPointsFilterValues, 'key' | 'request' | 'boundedBy'>): Promise<THandledData<TItemData[]>> => {
+  let data: THandledData<TItemData[]> = { isSucceed: false, data: null };
 
   try {
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
@@ -44,7 +49,10 @@ const handlePointsData = async ({ key, request, boundedBy }) => {
         workingStatus: item.properties.get("workingStatus"),
         workMode: [item.properties.get("workingTime")],
         coords: item.geometry.getCoordinates(),
-      })),
+        individual: false,
+        isPartner: false,
+        workModeCom: []
+      } as TItemData)) as TItemData[],
     };
   } catch (error) {
     console.error(error);
@@ -197,12 +205,21 @@ const setFilterData = async (values) => {
   });
 };
 
-const setSelectedItems = (currentItems, arr = []) => {
+/**
+  * Создание выборки отделений по списку их id
+  * @property {TItemData[]} currentItems - массив данных отделений банка
+  * @property {string[]} arr - массив id отделений для ограниченной выборки
+*/
+const setSelectedItems = (currentItems: TItemData[], arr: string[] = []): TItemData[] => {
   if (!arr.length) {
     return [];
   }
 
-  return arr.map((item) => currentItems.find(({ id }) => id === item));
+  return arr.reduce((acc: TItemData[], item) => {
+    const data = currentItems.find(({ id }) => id && id === item);
+
+    return data ? [...acc, data] : acc;
+  }, []);
 };
 
 const changeLocation = async (id) => {

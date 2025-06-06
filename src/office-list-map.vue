@@ -184,7 +184,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
+import { computed, ComputedRef, defineComponent, onBeforeMount, ref, watch } from "vue";
 import {
   POINT_KEY,
   LOCATION_KEY,
@@ -234,6 +234,9 @@ export default defineComponent({
   },
 
   setup() {
+    /**
+     * // TODO: составить документацию
+     */
     const cardsList = ref<Record<string, string>[]>([]);
     const cardsListLength = ref<number>(CARDS_LIST_LENGTH);
     const isMapVisible = ref<boolean>(true);
@@ -249,20 +252,31 @@ export default defineComponent({
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
 
     const filterStore = useFilterStore();
-    const locationList = computed(() => filterStore.locationList);
-    const currentLocation = computed(() => filterStore.currentLocation);
-    const categoryList = computed(() => filterStore.categoryList);
+    const {
+      categoryList,
+      //currentCategory,
+      //currentFilterData,
+      //currentLocation,
+      locationList
+    } = computed(() => ({
+      categoryList: filterStore.categoryList,
+      //currentCategory: filterStore.currentCategory,
+      //currentFilterData: filterStore.currentFilterData,
+      //currentLocation: filterStore.currentLocation,
+      locationList: filterStore.locationList,
+    })).value;
     const currentCategory = computed(() => filterStore.currentCategory);
     const currentFilterData = computed(() => filterStore.currentFilterData);
+    const currentLocation = computed(() => filterStore.currentLocation);
 
     const currLocationCaption = computed(() =>
       currentLocation.value ? currentLocation.value[LOCATION_KEY] : DEFAULT_LOC
     );
     const currLocationList = computed(() =>
-      locationList.value.filter(({ isPopular }) => isPopular)
+      [...locationList].filter(({ isPopular }) => isPopular)
     );
     const currentCategoryKey = computed(() =>
-      currentCategory.value ? currentCategory?.value.type : categoryList.value[0].type
+      currentCategory.value ? currentCategory?.value.type : [...categoryList][0].type
     );
     const isPointsListVisible = computed(
       () => currentCategory.value && currentCategory?.value.type === POINT_KEY
@@ -332,11 +346,11 @@ export default defineComponent({
       isMapVisible.value = !isMapVisible.value;
     };
 
-    const setFilterVisible = (value) => {
+    const setFilterVisible = (value: boolean) => {
       isFilterVisible.value = value;
     };
 
-    const setAdsPanelVisible = (value) => {
+    const setAdsPanelVisible = (value: boolean) => {
       isAdsPanelVisible.value = value;
     };
 
@@ -364,21 +378,19 @@ export default defineComponent({
     };
 
     const handleUpdatedLocation = (data, prevData) => {
+      console.log('data', data);
       if (!prevData) {
         categoryStore.fetchCategoryData(data, data.params || "");
         return;
       }
 
       const values = Object.keys(data).reduce(
-        (acc, key) =>
-          data[key] === prevData[key] ? acc : { ...acc, [key]: data[key] },
+        (acc, key) => data[key] === prevData[key] ? acc : { ...acc, [key]: data[key] },
         {}
       );
       const isParamsDataExcluded =
         Object.keys(values).length === 3 &&
-        Object.keys(values).filter((key) =>
-          [LOCATION_KEY, LOCATION_CODE_KEY, COORDS_KEY].includes(key)
-        ).length === 3;
+        Object.keys(values).filter((key) => [LOCATION_KEY, LOCATION_CODE_KEY, COORDS_KEY].includes(key)).length === 3;
 
       if (isParamsDataExcluded) {
         yMapHandler.setUpdMapCenter(values);
@@ -395,8 +407,9 @@ export default defineComponent({
     watch(
       () => currentItemsList.value,
       (arr) => {
-        categoryStore.setSelectedItemsList(arr);
-        console.log("Cписок карточек обновлён", arr);
+        // TODO: сравнить с прежним кодом
+        /// categoryStore.setSelectedItemsList(arr);
+        //console.log("Cписок карточек обновлён", arr);
       }
     );
 
@@ -408,7 +421,7 @@ export default defineComponent({
         } else {
           handleUpdatedLocation(data, prevData);
         }
-        console.log("Параметры фильтра обновлены", data);
+        //console.log("Параметры фильтра обновлены", data);
       }
     );
 
