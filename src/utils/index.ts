@@ -13,24 +13,43 @@ import {
   GEO_SWITCHER_URL,
 } from "./constants";
 import type {
+  TFilterData,
   THandledData,
   TItemData,
+  TLocationData,
   TPointsFilterValues
 } from "./types";
 
 import axios from "axios";
 
-const stringifyFilterData = (data) =>
-  Object.keys(data).reduce(
+/**
+ * Конвертирует в строку данные фильтра,
+ * используемые для создания выборки
+ * @property {TFilterData['data']} data - данные для создания выборки
+*/
+const stringifyFilterData = (data: TFilterData['data']): string => {
+  if(!data) {
+    return '';
+  }
+
+  return Object.keys(data).reduce(
     (acc, item, index) =>
       acc + `${index === 0 ? "?" : "&"}${item}=${Object.values(data)[index]}`,
     ""
   );
+}
 
+/**
+ * Возвращает данные выборки точек погашения
+ * @property {TPointsFilterValues['key']} key - ключ группы организаций
+ * @property {TPointsFilterValues['request']} request - значение запроса для API Я.Карт
+ * @property {TPointsFilterValues['boundedBy']} boundedBy - массив значений координат, ограничивающих область отображения на карте
+*/
 const handlePointsData = async ({ key, request, boundedBy }: Pick<TPointsFilterValues, 'key' | 'request' | 'boundedBy'>): Promise<THandledData<TItemData[]>> => {
   let data: THandledData<TItemData[]> = { isSucceed: false, data: null };
 
   try {
+    // TODO: типизировать несколько элементов, связанных с Я.Картами
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
     const searchRes = await ymapsRes.search(request, {
       results: 10000,
@@ -147,12 +166,15 @@ const handleCurrentLocation = (arr) => {
   return data || defaultLocationData;
 };
 
-const setLocation = async (values) => {
+/**
+ * Возвращает данные текущего местоположения после записи в локальное хранилище
+ * @property {TLocationData} values - данные текущего местоположения
+*/
+const setLocation = async (values: TLocationData): Promise<THandledData<TLocationData>> => {
   let data = { isSucceed: false, data: null };
 
-  const isLocationSet = (key) => localStorage.getItem(key) !== null;
-  const setLocationData = (key, data) =>
-    localStorage.setItem(key, JSON.stringify(data));
+  const isLocationSet = (key: typeof LOCATION_KEY) => localStorage.getItem(key) !== null;
+  const setLocationData = (key: typeof LOCATION_KEY, data: TLocationData) => localStorage.setItem(key, JSON.stringify(data));
 
   if (isLocationSet(LOCATION_KEY)) {
     localStorage.removeItem(LOCATION_KEY);
@@ -166,18 +188,22 @@ const setLocation = async (values) => {
       isLocationSet(LOCATION_KEY)
         ? resolve({
             isSucceed: isLocationSet(LOCATION_KEY),
-            data: JSON.parse(localStorage.getItem(LOCATION_KEY)),
+            data: JSON.parse(localStorage.getItem(LOCATION_KEY) as string)
           })
         : reject({ ...data });
     }, 200);
   });
 };
 
-const setFilterData = async (values) => {
+/**
+ * Возвращает текущие данные фильтра после записи в хранилище сессии
+ * @property {TFilterData} values - текущие данные фильтра
+*/
+const setFilterData = async (values: TFilterData): Promise<THandledData<TFilterData>> => {
   let data = { isSucceed: false, data: null };
 
-  const isFilterDataSet = (key) => sessionStorage.getItem(key) !== null;
-  const setFilterParams = (key, payload) =>
+  const isFilterDataSet = (key: typeof FILTER_KEY) => sessionStorage.getItem(key) !== null;
+  const setFilterParams = (key: typeof FILTER_KEY, payload: TFilterData) =>
     sessionStorage.setItem(
       key,
       JSON.stringify({
@@ -198,7 +224,7 @@ const setFilterData = async (values) => {
       isFilterDataSet(FILTER_KEY)
         ? resolve({
             isSucceed: isFilterDataSet(FILTER_KEY),
-            data: JSON.parse(sessionStorage.getItem(FILTER_KEY)),
+            data: JSON.parse(sessionStorage.getItem(FILTER_KEY) as string),
           })
         : reject({ ...data });
     }, 200);

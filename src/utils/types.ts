@@ -8,7 +8,11 @@ import {
   KH_KEY,
   LXNET_KEY,
   MTS_KEY,
-  RUPOST_KEY
+  RUPOST_KEY,
+  COORDS_KEY,
+  LOCATION_KEY,
+  LOCATION_ID_KEY,
+  LOCATION_CODE_KEY
 } from './constants';
 
 export type THandledData<T> = { isSucceed: boolean; data: T | null; };
@@ -45,17 +49,18 @@ export type TItemData = {
   isPartner: boolean;
   workMode: string[];
   workModeCom: string[];
-  coords?: number[];
   workingStatus?: TWorkingStatus;
+  [COORDS_KEY]?: number[];
 };
 
 export type TPointsFilterData = Partial<Record<TPointsFilterKeys, TPointsFilterValues>>;
 
-export type TFilterData = Record<string, string> & {
+export type TFilterData = Record<'params' | typeof LOCATION_KEY | typeof LOCATION_CODE_KEY, string> & {
   data: Record<string, 1 | 0> | TPointsFilterData | null;
-  coords: Required<Pick<TItemData, 'coords'>>;
   type: TCategoryData['category'] | typeof POINT_KEY;
-  //params: string;
-  //[LOCATION_KEY]: string;
-  //[LOCATION_CODE_KEY]: string;
+  [COORDS_KEY]: number[];
 };
+
+export type TCategoryListData = Record<'caption' | 'category', string> & Pick<TFilterData, 'type'>;
+
+export type TLocationData = Record<typeof LOCATION_ID_KEY, string> & Pick<TFilterData, typeof LOCATION_KEY | typeof LOCATION_CODE_KEY | typeof COORDS_KEY> & Pick<TPointsFilterValues, 'boundedBy'> & { isPopular: boolean; };

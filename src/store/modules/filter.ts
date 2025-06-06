@@ -22,7 +22,14 @@ import {
   DEFAULT_LOC_CODE,
   DEFAULT_LOCATION_DATA,
   API_URL,
+  DEFAULT_COORDS,
 } from "../../utils/constants";
+import type {
+  TFilterData,
+  THandledData,
+  TCategoryListData,
+  TLocationData
+} from "../../utils/types";
 
 import axios from "axios";
 
@@ -34,8 +41,8 @@ const categoryStore = useCategoryStore();
 
 const useFilterStore = defineStore("filter", () => {
   const locationList = ref<Record<string, string>[]>([]);
-  const currentLocation = ref<Record<string, string> | null>(null);
-  const categoryList = ref<Record<string, string>[]>([
+  const currentLocation = ref<TLocationData | null>(null);
+  const categoryList = ref<TCategoryListData[]>([
     { type: FILIAL_KEY, caption: "Отделения", category: "Филиал" },
     { type: ATM_KEY, caption: "Банкоматы", category: "Банкомат" },
     { type: TERMINAL_KEY, caption: "Терминалы", category: "Терминал" },
@@ -45,16 +52,20 @@ const useFilterStore = defineStore("filter", () => {
       category: "Точка погашения",
     },
   ]);
-  const currentCategory = ref<Record<string, string> | null>(null);
+  const currentCategory = ref<TCategoryListData | null>(null);
   const categoryFilterData = ref<Record<string, string> | null>(null);
-  const currentFilterData = ref<Record<string, string> | null>(null);
+  const currentFilterData = ref<TFilterData | null>(null);
 
-  const getStorageData = (key) => {
+  /**
+   * Извлекает данные фильтра из сессии/местоположения из локального хранилища
+   * @property {typeof FILTER_KEY | typeof LOCATION_KEY} key - ключ для извлечения данных из локального хранилища
+  */
+  const getStorageData = (key: typeof FILTER_KEY | typeof LOCATION_KEY): Promise<THandledData<TFilterData | TLocationData>> => {
     const storageData =
       key === FILTER_KEY
         ? sessionStorage.getItem(key)
         : localStorage.getItem(key);
-    const data = storageData ? JSON.parse(storageData) : null;
+    const data: TFilterData | TLocationData | null = storageData ? JSON.parse(storageData) : null;
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -66,55 +77,65 @@ const useFilterStore = defineStore("filter", () => {
     });
   };
 
-  const updateFilterData = (locationData, filterData) => {
+  /**
+   * Помещает в хранилище данные текущего местоположения,
+   * конфигурацию фильтра,
+   * параметры текущей категории выборки (филиалы/банкоматы/терминалы/точки погашения)
+   * @property {TLocationData} locationData - данные текущего местоположения
+   * @property {TFilterData} filterData - конфигурация фильтра
+  */
+  const updateFilterData = (locationData: TLocationData, filterData: TFilterData) => {
     currentLocation.value = locationData;
     currentFilterData.value = filterData;
-    currentCategory.value = [...categoryList.value].find(
-      ({ type }) => type === filterData.type
-    );
+    currentCategory.value = [...categoryList.value].find(({ type }) => type === filterData.type) || null;
   };
 
+  /**
+   * Производит инициализацию для записи в хранилище данных текущего местоположения и параметров фильтра
+  */
   const initFilter = async () => {
-    const defaultFilterData = {
+    const defaultFilterData: TFilterData = {
       [LOCATION_KEY]: DEFAULT_LOC,
       [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE,
+      [COORDS_KEY]: DEFAULT_COORDS,
       type: categoryList.value[0].type,
       data: null,
+      params: ''
     };
 
     try {
-      const [{ data: currentLocationData }, { data: currentFilterData }] =
-        await Promise.all([
-          getStorageData(LOCATION_KEY),
-          getStorageData(FILTER_KEY),
-        ]);
-      const currentData = [currentLocationData, currentFilterData].filter(
-        (data) => Boolean(data)
-      );
+      const [
+        { data: currentLocationData },
+        { data: currentFilterData }
+      ] = await Promise.all([getStorageData(LOCATION_KEY), getStorageData(FILTER_KEY) ]);
+      const currentData = [currentLocationData, currentFilterData].filter((data) => Boolean(data));
 
       if (currentData.length === 2) {
-        updateFilterData(currentLocationData, currentFilterData);
+        updateFilterData(
+          currentLocationData as TLocationData,
+          currentFilterData as TFilterData
+        );
       } else {
-        const handledFilterData = currentLocationData
+        const handledFilterData = currentLocationData as TLocationData | null
           ? {
               ...defaultFilterData,
-              [LOCATION_KEY]: currentLocationData[LOCATION_KEY],
-              [LOCATION_CODE_KEY]: currentLocationData[LOCATION_CODE_KEY],
+              ...[LOCATION_KEY, LOCATION_CODE_KEY, COORDS_KEY].reduce(
+                (acc, key) => ({ ...acc, [key]: { ...currentLocationData as TLocationData }[key] }),
+                {}
+              )
             }
           : defaultFilterData;
         const [{ data: locationData }, { data: filterData }] =
           await Promise.all([
-            setLocation(currentLocationData || DEFAULT_LOCATION_DATA),
-            setFilterData(currentFilterData || handledFilterData),
+            setLocation((currentLocationData || DEFAULT_LOCATION_DATA) as TLocationData),
+            setFilterData((currentFilterData || handledFilterData) as TFilterData),
           ]);
 
-        if (
-          [locationData, filterData].reduce(
-            (acc, item) => acc && Boolean(item),
-            true
-          )
-        ) {
-          updateFilterData(locationData, filterData);
+        if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
+          updateFilterData(
+            locationData as TLocationData,
+            filterData as TFilterData
+          );
         }
       }
     } catch (error) {

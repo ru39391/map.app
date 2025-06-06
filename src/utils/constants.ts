@@ -45,6 +45,7 @@ const DEFAULT_LOCATION_DATA = {
   [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE,
   [COORDS_KEY]: DEFAULT_COORDS,
   boundedBy: DEFAULT_BOUNDS,
+  isPopular: true
 };
 
 const MAP_ID = "map";
