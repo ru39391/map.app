@@ -64,3 +64,5 @@ export type TFilterData = Record<'params' | typeof LOCATION_KEY | typeof LOCATIO
 export type TCategoryListData = Record<'caption' | 'category', string> & Pick<TFilterData, 'type'>;
 
 export type TLocationData = Record<typeof LOCATION_ID_KEY, string> & Pick<TFilterData, typeof LOCATION_KEY | typeof LOCATION_CODE_KEY | typeof COORDS_KEY> & Pick<TPointsFilterValues, 'boundedBy'> & { isPopular: boolean; };
+
+export type TDeptsData = Record<TCategoryData['category'], Record<'name' | 'code', string>[]> & { cities: (Record<string, string> & Record<'UF_RANGE_LOW_LAT' | 'UF_RANGE_LOW_LNG' | 'UF_RANGE_UP_LAT' | 'UF_RANGE_UP_LNG' | 'UF_RADIUS' | 'UF_SORT', string | null>)[]; };

@@ -13,6 +13,7 @@ import {
   GEO_SWITCHER_URL,
 } from "./constants";
 import type {
+  TDeptsData,
   TFilterData,
   THandledData,
   TItemData,
@@ -22,10 +23,13 @@ import type {
 
 import axios from "axios";
 
+import { fetchFilterData } from "./fetchFilterData";
+
 /**
  * Конвертирует в строку данные фильтра,
  * используемые для создания выборки
  * @property {TFilterData['data']} data - данные для создания выборки
+ * @returns {string} обработанные данные
 */
 const stringifyFilterData = (data: TFilterData['data']): string => {
   if(!data) {
@@ -108,7 +112,12 @@ const handleLocationData = async ({ value, code }) => {
   return data;
 };
 
-const handleLocationItem = (data) => {
+/**
+ * Преобразует входящие данные геолокации в удобный для обработки объект данных местоположения
+ * @property {TDeptsData['cities'][number]} data - объект данных одного из населённых пунктов, где представлен банк
+ * @returns {TLocationData} данные местоположения
+*/
+const handleLocationItem = (data: TDeptsData['cities'][number]): TLocationData => {
   const {
     ID,
     UF_NAME,
@@ -137,7 +146,11 @@ const handleLocationItem = (data) => {
   };
 };
 
-const removeStorageItem = (key = LOCATION_KEY) => {
+/**
+ * Удаляет данные из хранилища сессии
+ * @property {typeof LOCATION_KEY | typeof FILTER_KEY} key - ключ параметра
+*/
+const removeStorageItem = (key: typeof LOCATION_KEY | typeof FILTER_KEY = LOCATION_KEY) => {
   sessionStorage.removeItem(key);
 };
 
@@ -232,9 +245,10 @@ const setFilterData = async (values: TFilterData): Promise<THandledData<TFilterD
 };
 
 /**
-  * Создание выборки отделений по списку их id
-  * @property {TItemData[]} currentItems - массив данных отделений банка
-  * @property {string[]} arr - массив id отделений для ограниченной выборки
+ * Создание выборки отделений по списку их id
+ * @property {TItemData[]} currentItems - массив данных отделений банка
+ * @property {string[]} arr - массив id отделений для ограниченной выборки
+ * @returns {TItemData[]} массив, соответствующих идентификаторам, отделений
 */
 const setSelectedItems = (currentItems: TItemData[], arr: string[] = []): TItemData[] => {
   if (!arr.length) {
@@ -248,25 +262,29 @@ const setSelectedItems = (currentItems: TItemData[], arr: string[] = []): TItemD
   }, []);
 };
 
-const changeLocation = async (id) => {
-  let data = null;
+/**
+ * Изменяет позицию на карте после получения данных по id местоположения
+ * @property {string} id - id геолокации
+*/
+const changeLocation = async (id: string): Promise<{ data: TLocationData | null; }> => {
+  let data: { data: TLocationData | null; } = { data: null };
   const location_id = id || DEFAULT_LOC_ID;
-  const selectedLocation = document.querySelector(GEO_NAME_SEL);
 
   try {
+    /*
+    // TODO: создать эндпойнт для получения данных геолокации по id
     const { data: selectedLocationData } = await axios.post(
       `${GEO_SWITCHER_URL}?id=${location_id}`
     );
+    */
+    const res = await fetchFilterData();
+    const selectedLocationData = [...res.cities as TDeptsData['cities']].find((item) => item.ID === id);
 
     if (selectedLocationData) {
       const payload = handleLocationItem(selectedLocationData);
       const { data: locationData } = await setLocation(payload);
 
       data = { data: locationData };
-
-      // TODO: вынести эту конструкцию из приложения
-      if (selectedLocation)
-        selectedLocation.textContent = locationData[LOCATION_KEY];
     } else {
       console.error(
         `Путь ${GEO_SWITCHER_URL}?id=${location_id} возвращает некорректное значение`

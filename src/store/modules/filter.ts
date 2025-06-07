@@ -25,6 +25,7 @@ import {
   DEFAULT_COORDS,
 } from "../../utils/constants";
 import type {
+  TDeptsData,
   TFilterData,
   THandledData,
   TCategoryListData,
@@ -35,25 +36,22 @@ import axios from "axios";
 
 import { fetchFilterData } from "../../utils/fetchFilterData";
 
+// TODO: возможно, избыточный вызов
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();
 
 const useFilterStore = defineStore("filter", () => {
-  const locationList = ref<Record<string, string>[]>([]);
+  const locationList = ref<TLocationData[]>([]);
   const currentLocation = ref<TLocationData | null>(null);
   const categoryList = ref<TCategoryListData[]>([
     { type: FILIAL_KEY, caption: "Отделения", category: "Филиал" },
     { type: ATM_KEY, caption: "Банкоматы", category: "Банкомат" },
     { type: TERMINAL_KEY, caption: "Терминалы", category: "Терминал" },
-    {
-      type: POINT_KEY,
-      caption: "Точки погашения",
-      category: "Точка погашения",
-    },
+    { type: POINT_KEY, caption: "Точки погашения", category: "Точка погашения" },
   ]);
   const currentCategory = ref<TCategoryListData | null>(null);
-  const categoryFilterData = ref<Record<string, string> | null>(null);
+  const categoryFilterData = ref<Omit<TDeptsData, 'cities'> | null>(null);
   const currentFilterData = ref<TFilterData | null>(null);
 
   /**
@@ -143,6 +141,9 @@ const useFilterStore = defineStore("filter", () => {
     }
   };
 
+  /**
+   * Получает параметры категорий фильтра и список населённых пунктов, где представлен банк, помещает в хранилище
+  */
   const setLocationList = async () => {
     categoryStore.isCategoryListLoading = true;
 
@@ -151,13 +152,11 @@ const useFilterStore = defineStore("filter", () => {
       const data = await fetchFilterData();
 
       if (data) {
-        const filterKeys = categoryList.value.map(({ type }) => type);
-
-        categoryFilterData.value = filterKeys.reduce(
-          (acc, key) => (data[key] ? { ...acc, [key]: data[key] } : acc),
-          {}
+        categoryFilterData.value = [...categoryList.value].reduce(
+          (acc, { type }) => (data[type] ? { ...acc, [type]: data[type] } : acc),
+          {} as Omit<TDeptsData, 'cities'>
         );
-        locationList.value = data.cities.map((item) => handleLocationItem(item));
+        locationList.value = {...data as TDeptsData}.cities.map((item) => handleLocationItem(item));
       }
     } catch (error) {
       console.error(error);
@@ -166,40 +165,54 @@ const useFilterStore = defineStore("filter", () => {
     }
   };
 
-  const setCurrentLocation = async (data) => {
-    if (currentLocation.value[LOCATION_CODE_KEY] === data[LOCATION_CODE_KEY]) {
+  /**
+   * Изменяет текущую геолокацию и меняет параметры фильтра на соответствующие ей,
+   * помещает изменённые данные в хранилище
+   * @property {TLocationData} data - обновлённые данные геолокации
+  */
+  const setCurrentLocation = async (data: TLocationData) => {
+    if (currentLocation.value && currentLocation.value[LOCATION_CODE_KEY] === data[LOCATION_CODE_KEY]) {
       return;
     }
 
-    const currentLocationData = locationList.value.find(
-      (item) => item[LOCATION_CODE_KEY] === data[LOCATION_CODE_KEY]
-    );
+    const currentLocationData = locationList.value.find((item) => item[LOCATION_CODE_KEY] === data[LOCATION_CODE_KEY]);
+
+    if(!currentLocationData && !currentFilterData.value) {
+      return;
+    }
 
     try {
       const [{ data: locationData }, { data: filterData }] = await Promise.all([
-        changeLocation(currentLocationData[LOCATION_ID_KEY]),
+        changeLocation({...currentLocationData as TLocationData}[LOCATION_ID_KEY]),
         setFilterData({
-          ...currentFilterData.value,
+          ...currentFilterData.value as TFilterData,
           [LOCATION_KEY]: data[LOCATION_KEY],
           [LOCATION_CODE_KEY]: data[LOCATION_CODE_KEY],
           [COORDS_KEY]: data[COORDS_KEY],
         }),
       ]);
 
-      if (
-        [locationData, filterData].reduce(
-          (acc, item) => acc && Boolean(item),
-          true
-        )
-      ) {
-        updateFilterData(locationData, filterData);
+      if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
+        updateFilterData(
+          locationData as TLocationData,
+          filterData as TFilterData
+        );
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const setCurrentFilterData = async (data) => {
+  /**
+   * Меняет параметры фильтра, перезаписывает данные геолокации,
+   * помещает изменённые данные в хранилище
+   * @property {TFilterData} data - обновлённые параметры фильтра
+  */
+  const setCurrentFilterData = async (data: TFilterData) => {
+    if(!currentLocation.value) {
+      return;
+    }
+
     try {
       const [{ data: locationData }, { data: filterData }] = await Promise.all([
         setLocation(currentLocation.value),
@@ -211,13 +224,11 @@ const useFilterStore = defineStore("filter", () => {
         }),
       ]);
 
-      if (
-        [locationData, filterData].reduce(
-          (acc, item) => acc && Boolean(item),
-          true
-        )
-      ) {
-        updateFilterData(locationData, filterData);
+      if ([locationData, filterData].reduce((acc, item) => acc && Boolean(item), true)) {
+        updateFilterData(
+          locationData as TLocationData,
+          filterData as TFilterData
+        );
       }
     } catch (error) {
       console.error(error);

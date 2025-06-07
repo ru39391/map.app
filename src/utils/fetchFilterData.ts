@@ -1,4 +1,6 @@
-const fetchFilterData = () =>
+import type { TDeptsData } from './constants';
+
+const fetchFilterData = (): Promise<TDeptsData> =>
   new Promise((resolve) => {
     setTimeout(() => {
       resolve({
