@@ -50,8 +50,12 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from "vue";
+import type {
+  TItemData,
+  TLocationData
+} from "../utils/types";
 import { useCategoryStore } from "../store/modules/category";
 import { useFilterStore } from "../store/modules/filter";
 import { useModalStore } from "../store/modules/modal";
@@ -59,20 +63,12 @@ import { LOCATION_KEY, LOCATION_CODE_KEY } from "../utils/constants";
 import PinIcon from "../assets/icons/pin-icon.vue";
 import SearchIcon from "../assets/icons/search-icon.vue";
 
-export default {
-  name: "map-search",
+export default defineComponent({
+  name: "MapSearch",
 
   components: {
     PinIcon,
     SearchIcon,
-  },
-
-  data() {
-    return {
-      searchValue: "",
-      resultList: [],
-      isSearchInputFocused: false,
-    };
   },
 
   props: {
@@ -92,107 +88,118 @@ export default {
     },
   },
 
-  computed: {
-    ...mapState(useFilterStore, [
-      "locationList",
-      "currentLocation",
-      "currentFilterData",
-    ]),
+  setup(props) {
+    const searchValue = ref<string>('');
+    const resultList = ref<TLocationData[] | TItemData[]>([]);
+    const isSearchInputFocused = ref<boolean>(false);
 
-    ...mapState(useModalStore, ["isModalOpen"]),
+    const categoryStore = useCategoryStore();
+    const filterStore = useFilterStore();
+    const currentLocation = computed(() => filterStore.currentLocation);
 
-    isResultListOpen() {
-      return this.searchValue && this.resultList.length;
-    },
-  },
+    const modalStore = useModalStore();
+    const isModalOpen = computed(() => modalStore.isModalOpen);
 
-  methods: {
-    ...mapActions(useCategoryStore, ["setSelectedItemsList"]),
+    const isResultListOpen = computed(() => searchValue.value && resultList.value.length);
 
-    ...mapActions(useFilterStore, ["setCurrentLocation"]),
+    /**
+     * Устанавливает истинное значение, если производится ввод в поле поиска
+     * @property {boolean} value
+    */
+    const setSearchInputFocused = (value: boolean) => {
+      isSearchInputFocused.value = value;
+    };
 
-    ...mapActions(useModalStore, ["setModalOpen"]),
-
-    setSearchInputFocused(value) {
-      this.isSearchInputFocused = value;
-    },
-
-    handleChange(value) {
+    /**
+     * Ищет совпадения по мере ввода в поле
+     * @property {string} value - вводимое значение
+    */
+    const handleChange = (value: string) => {
       const currValue = value.toLowerCase();
 
-      this.resultList = this.arr.reduce((acc, item) => {
+      resultList.value = [...props.arr as TLocationData[] | TItemData[]].reduce((acc, item) => {
         const regex = new RegExp(value, "gi");
-        const itemValue = item[this.param].toLowerCase();
+        const itemValue: string = item[props.param].toLowerCase();
 
         return itemValue.includes(currValue)
           ? [
               ...acc,
               {
                 ...item,
-                [this.param]: item[this.param].replace(
+                [props.param]: item[props.param].replace(
                   regex,
-                  (match, p1) =>
-                    `<span class="map-dropdown__highlight">${match}</span>`
+                  (match: string) => `<span class="map-dropdown__highlight">${match}</span>`
                 ),
               },
             ]
           : acc;
       }, []);
-    },
+    };
 
-    handleResultItem(data) {
-      if (data.id) {
-        this.setSelectedItemsList([data.id]);
+    /**
+     * Устанавливает список карточек с совпадающим значением или обновляет геолокацию:
+     * в зависимости от типа входящих данных
+     * @property {TLocationData | TItemData} data
+    */
+    const handleResultItem = (data: TLocationData | TItemData): Promise<{ isSucceed: boolean; }> => {
+      if ({...data as TItemData}.id) {
+        categoryStore.setSelectedItemsList([{...data as TItemData}.id]);
       } else {
-        this.setModalOpen(false);
+        modalStore.setModalOpen(false);
 
-        if (
-          this.currentLocation &&
-          data[LOCATION_CODE_KEY] !== this.currentLocation[LOCATION_CODE_KEY]
-        ) {
-          this.setCurrentLocation({
-            ...data,
-            [LOCATION_KEY]: data[LOCATION_KEY].replace(/[^А-Яа-яЁё]/g, ""),
+        if (currentLocation.value && data[LOCATION_CODE_KEY] !== currentLocation.value[LOCATION_CODE_KEY]) {
+          filterStore.setCurrentLocation({
+            ...data as TLocationData,
+            [LOCATION_KEY]: {...data as TLocationData}[LOCATION_KEY].replace(/[^А-Яа-яЁё]/g, "")
           });
         }
       }
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          data
-            ? resolve({
-                isSucceed: true,
-                ...data,
-              })
-            : reject({
-                isSucceed: false,
-                message: "Некорректный формат данных",
-              });
+          data ? resolve({ isSucceed: true }) : reject({ isSucceed: false });
         }, 200);
       });
-    },
+    };
 
-    async resetResultList(data) {
+    /**
+     * Сбрасывает список результатов поиска
+     * @property {TLocationData | TItemData} data
+    */
+    const resetResultList = async (data: TLocationData | TItemData) => {
       try {
-        const { isSucceed } = await this.handleResultItem(data);
+        const { isSucceed } = await handleResultItem(data);
 
         if (isSucceed) {
-          this.resultList = [];
+          resultList.value = [];
         }
       } catch (error) {
         console.error(error);
       }
-    },
-  },
+    };
 
-  watch: {
-    searchValue(value) {
-      this.handleChange(value);
-    },
+    watch(
+      () => searchValue.value,
+      (value) => {
+        handleChange(value);
+      }
+    );
 
-    isModalOpen() {
-      this.searchValue = "";
-    },
+    watch(
+      () => isModalOpen.value,
+      () => {
+        searchValue.value = "";
+      }
+    );
+
+    return {
+      searchValue,
+      resultList,
+      isSearchInputFocused,
+      isResultListOpen,
+      resetResultList,
+      setSearchInputFocused,
+    }
   },
-};
+});
 </script>

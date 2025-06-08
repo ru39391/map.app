@@ -29,14 +29,12 @@
           <MapFilter @handleFilterVisibility="setFilterVisible" />
           -->
         </div>
-        <!--
         <MapSearch
           :arr="itemsList"
           :class="[{ 'is-hidden': isPointsListVisible && isFilterVisible }]"
           param="address"
           placeholder="Район, улица..."
         />
-        -->
         <div
           :class="[
             'map-sidebar__info map-sidebar__info_type_alert',
@@ -126,7 +124,6 @@
             <template v-if="selectedItemsList.length === 1">{{ captionsData.itemsListCap }}</template>
             <template v-else>{{ captionsData.selItemsCap }}</template>
           </button>
-          <!--
           <InfoCard
             v-for="item in selectedItemsList"
             :key="item.id"
@@ -135,12 +132,10 @@
             :item="item"
             :currentCategory="currentCategory"
           />
-          -->
         </div>
       </div>
     </div>
     <MapModal modalTitle="Где будем искать?" modalSubtitle="Популярные города">
-    <!--
       <template #header>
         <MapSearch
           :arr="locationList"
@@ -149,7 +144,6 @@
           noResultMess="В этом городе еще нет отделения"
         />
       </template>
-    -->
       <template #wrapper>
         <div class="btn-list">
           <button
