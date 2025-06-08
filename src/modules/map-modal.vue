@@ -26,13 +26,13 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script lang="ts">
+import { computed, defineComponent } from "vue";
 import { useModalStore } from "../store/modules/modal";
 import CloseIcon from "../assets/icons/close-icon.vue";
 
-export default {
-  name: "map-modal",
+export default defineComponent({
+  name: "MapModal",
 
   components: {
     CloseIcon,
@@ -47,12 +47,14 @@ export default {
     },
   },
 
-  computed: {
-    ...mapState(useModalStore, ["isModalOpen"]),
-  },
+  setup() {
+    const modalStore = useModalStore();
+    const isModalOpen = computed(() => modalStore.isModalOpen);
 
-  methods: {
-    ...mapActions(useModalStore, ["setModalOpen"]),
+    return {
+      isModalOpen,
+      setModalOpen: modalStore.setModalOpen,
+    }
   },
-};
+});
 </script>

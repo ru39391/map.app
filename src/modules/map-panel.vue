@@ -34,57 +34,75 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "pinia";
+<script lang="ts">
+import { computed, defineComponent, ref, watch } from "vue";
 import { useCategoryStore } from "../store/modules/category";
 import { useFilterStore } from "../store/modules/filter";
 import InfoCard from "./info-card.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 
-export default {
-  name: "map-panel",
+export default defineComponent({
+  name: "MapPanel",
 
   components: {
     InfoCard,
     CloseIcon,
   },
 
-  data() {
-    return {
-      startY: 0,
-      isModalHeightMax: false,
+  setup() {
+    const startY = ref<number>(0);
+    const isModalHeightMax = ref<boolean>(false);
+
+    const categoryStore = useCategoryStore();
+    const selectedItemsList = computed(() => categoryStore.selectedItemsList);
+
+    const filterStore = useFilterStore();
+    const currentCategory = computed(() => filterStore.currentCategory);
+
+    /**
+     * Устанавливает значение параметра, при котором блок с подробной информацией имеет максимально возможную высоту
+     * @property {boolean} value
+    */
+    const setModalHeightMax = (value: boolean) => {
+      isModalHeightMax.value = value;
     };
-  },
 
-  computed: {
-    ...mapState(useCategoryStore, ["selectedItemsList"]),
+    /**
+     * Обрабатывает вертикальную координату касания
+     * @property {TouchEvent} event
+    */
+    const handleTouchStart = (event: TouchEvent) => {
+      startY.value = event.touches[0].clientY;
+    };
 
-    ...mapState(useFilterStore, ["currentCategory"]),
-  },
-
-  methods: {
-    ...mapActions(useCategoryStore, ["setSelectedItemsList"]),
-
-    setModalHeightMax(value) {
-      this.isModalHeightMax = value;
-    },
-
-    handleTouchStart(event) {
-      this.startY = event.touches[0].clientY;
-    },
-
-    handleTouchMove(event) {
+    /**
+     * Обрабатывает вертикальную координату касания и изменяет значение параметра, влияющего на высоту блока
+     * @property {TouchEvent} event
+    */
+    const handleTouchMove = (event: TouchEvent) => {
       const currentY = event.touches[0].clientY;
 
-      this.setModalHeightMax(this.startY - currentY > 20);
-    },
-  },
+      setModalHeightMax(startY.value - currentY > 20);
+    };
 
-  watch: {
-    selectedItemsList(arr) {
-      console.log("Подробные данные обновлены", arr);
-      if (!arr.length) this.setModalHeightMax(Boolean(arr.length));
-    },
+    /**
+     * Если не выбраны объекты данных, изменяем высоту блока с подробной информацией
+    */
+    watch(
+      () => selectedItemsList.value,
+      (arr) => {
+        if (!arr.length) setModalHeightMax(Boolean(arr.length));
+        console.log("Подробные данные обновлены", arr);
+      }
+    );
+
+    return {
+      currentCategory,
+      selectedItemsList,
+      handleTouchMove,
+      handleTouchStart,
+      setSelectedItemsList: categoryStore.setSelectedItemsList
+    }
   },
-};
+});
 </script>

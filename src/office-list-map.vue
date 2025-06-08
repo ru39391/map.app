@@ -139,8 +139,8 @@
         </div>
       </div>
     </div>
-    <!--
     <MapModal modalTitle="Где будем искать?" modalSubtitle="Популярные города">
+    <!--
       <template #header>
         <MapSearch
           :arr="locationList"
@@ -149,6 +149,7 @@
           noResultMess="В этом городе еще нет отделения"
         />
       </template>
+    -->
       <template #wrapper>
         <div class="btn-list">
           <button
@@ -169,16 +170,13 @@
         </div>
       </template>
     </MapModal>
-    -->
     <MapSwitcher
       v-if="!isPointsListVisible"
       :class="[{ 'is-filter-visible': isFilterVisible }]"
       :isMapVisible="isMapVisible"
       @handleMapVisibility="setMapVisible"
     />
-    <!--
     <MapPanel />
-    -->
     <div class="map-overlay" v-if="isCategoryListLoading">
       <LoaderIcon class="map-preloader" />
     </div>
