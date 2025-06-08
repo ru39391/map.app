@@ -169,12 +169,14 @@
         </div>
       </template>
     </MapModal>
+    -->
     <MapSwitcher
       v-if="!isPointsListVisible"
       :class="[{ 'is-filter-visible': isFilterVisible }]"
       :isMapVisible="isMapVisible"
       @handleMapVisibility="setMapVisible"
     />
+    <!--
     <MapPanel />
     -->
     <div class="map-overlay" v-if="isCategoryListLoading">
@@ -184,7 +186,13 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, onBeforeMount, ref, watch } from "vue";
+import { computed, defineComponent, onBeforeMount, ref, watch } from "vue";
+import type {
+  TFilterData,
+  TItemData,
+  TLocationData,
+  TPointsFilterData
+} from "./utils/types";
 import {
   POINT_KEY,
   LOCATION_KEY,
@@ -234,10 +242,7 @@ export default defineComponent({
   },
 
   setup() {
-    /**
-     * // TODO: составить документацию
-     */
-    const cardsList = ref<Record<string, string>[]>([]);
+    const cardsList = ref<TItemData[]>([]);
     const cardsListLength = ref<number>(CARDS_LIST_LENGTH);
     const isMapVisible = ref<boolean>(true);
     const isFilterVisible = ref<boolean>(false);
@@ -247,40 +252,31 @@ export default defineComponent({
     const modalStore = useModalStore();
     const categoryStore = useCategoryStore();
     const isCategoryListLoading = computed(() => categoryStore.isCategoryListLoading);
+    /**
+     * Основной список объектов
+    */
     const currentItemsList = computed(() => categoryStore.currentItemsList);
+    /**
+     * Список объектов, соответствующий элементам в текущих границах карты
+    */
     const customItemsList = computed(() => categoryStore.customItemsList);
+    /**
+     * Список выбранных по клику на пин карты объектов
+    */
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
 
     const filterStore = useFilterStore();
-    const {
-      categoryList,
-      //currentCategory,
-      //currentFilterData,
-      //currentLocation,
-      locationList
-    } = computed(() => ({
-      categoryList: filterStore.categoryList,
-      //currentCategory: filterStore.currentCategory,
-      //currentFilterData: filterStore.currentFilterData,
-      //currentLocation: filterStore.currentLocation,
-      locationList: filterStore.locationList,
-    })).value;
+    const categoryList = computed(() => filterStore.categoryList);
+    const locationList = computed(() => filterStore.locationList);
     const currentCategory = computed(() => filterStore.currentCategory);
     const currentFilterData = computed(() => filterStore.currentFilterData);
     const currentLocation = computed(() => filterStore.currentLocation);
 
-    const currLocationCaption = computed(() =>
-      currentLocation.value ? currentLocation.value[LOCATION_KEY] : DEFAULT_LOC
-    );
-    const currLocationList = computed(() =>
-      [...locationList].filter(({ isPopular }) => isPopular)
-    );
-    const currentCategoryKey = computed(() =>
-      currentCategory.value ? currentCategory?.value.type : [...categoryList][0].type
-    );
-    const isPointsListVisible = computed(
-      () => currentCategory.value && currentCategory?.value.type === POINT_KEY
-    );
+    const currLocationCaption = computed(() => currentLocation.value ? currentLocation.value[LOCATION_KEY] : DEFAULT_LOC);
+    const currLocationList = computed(() => [...locationList.value].filter(({ isPopular }) => isPopular));
+    const currentCategoryKey = computed(() => currentCategory.value ? currentCategory?.value.type : [...categoryList.value][0].type);
+    const isPointsListVisible = computed(() => currentCategory.value && currentCategory?.value.type === POINT_KEY);
+
     const qrCodeUrl = computed(() => `${ASSETS_URL}/qr.png`);
     const itemsList = computed(() => selectedItemsList.value.length ? [...selectedItemsList.value] : [...customItemsList.value]);
     const captionsData = computed(() => {
@@ -301,19 +297,24 @@ export default defineComponent({
       () => customItemsList.value.length > cardsList.value.length && customItemsList.value.length > cardsListLength.value
     );
 
-    const handleCurrLocation = (data) => {
+    /**
+     * Обновляет геолокацию по клику на элемент списка неселённых пунктов
+     * @property {TLocationData} data - данные выбранной геолокации
+    */
+    const handleCurrLocation = (data: TLocationData) => {
       modalStore.setModalOpen(false);
 
-      if (
-        currentLocation.value &&
-        data[LOCATION_CODE_KEY] !== currentLocation.value[LOCATION_CODE_KEY]
-      ) {
+      if (currentLocation.value && data[LOCATION_CODE_KEY] !== currentLocation.value[LOCATION_CODE_KEY]) {
         filterStore.setCurrentLocation(data);
       }
     };
 
-    const handlePointsData = async (payload) => {
-      const { data } = payload;
+    /**
+     * Формирует актуальный список точек погашения, используя данные фильтра
+     * @property {TFilterData} payload - обновлённые данные фильтра
+    */
+    const handlePointsData = async (payload: TFilterData) => {
+      const { data }: { data: TPointsFilterData | null; } = payload;
 
       try {
         const { isSucceed, data: locationData } = await handleLocationData({
@@ -322,49 +323,59 @@ export default defineComponent({
         });
 
         if (isSucceed && data) {
-          const pointsData = Object.values(data).reduce(
-            (acc, item, index) => ({
+          const pointsData = Object.entries(data).reduce(
+            (acc: TPointsFilterData, item) => ({
               ...acc,
-              [Object.keys(data)[index]]: {
-                ...item,
-                boundedBy: locationData.boundedBy,
-              },
+              [item[0]]: { ...item[1], boundedBy: locationData.boundedBy },
             }),
             {}
           );
 
           categoryStore.fetchPointsData(pointsData);
         } else {
-          categoryStore.fetchPointsData({});
+          categoryStore.fetchPointsData({} as TPointsFilterData);
         }
       } catch (error) {
         console.error(error);
       }
     };
 
+    /**
+     * Переключает отображение объектов на мобильных: в виде карты/в виде списка
+    */
     const setMapVisible = () => {
       isMapVisible.value = !isMapVisible.value;
     };
 
+    /**
+     * Переключает отображение фильтра, соответствующего выбранному типу объектов
+    */
     const setFilterVisible = (value: boolean) => {
       isFilterVisible.value = value;
     };
 
+    /**
+     * Переключает видимость уведомления, отображаемого при поиске точек погашения
+    */
     const setAdsPanelVisible = (value: boolean) => {
       isAdsPanelVisible.value = value;
     };
 
-    const hideAlert = () => {
-      setTimeout(() => {
-        isAlertPanelVisible.value = true;
-      }, 3000);
-    };
-
-    const setCardsList = (arr) => {
+    /**
+     * Устанавливает список отображаемых карточек на основе массива объектов, расположенных в текущих границах карты.
+     * Если длина массива больше определённого значения, список карточек разбивается на группы
+     * @property {TItemData[]} arr - массив объектов, расположенных в текущих границах карты
+    */
+    const setCardsList = (arr: TItemData[]) => {
       cardsList.value = arr.filter((_, index) => index < cardsListLength.value);
     };
 
-    const expandCardsList = (arr) => {
+    /**
+     * По клику на элемент дополняет список отображаемых карточек,
+     * если количество объектов в границах карты превышает определённое значение
+     * @property {TItemData[]} arr - массив объектов, расположенных в текущих границах карты
+    */
+    const expandCardsList = (arr: TItemData[]) => {
       if (cardsList.value.length === arr.length) {
         return;
       }
@@ -377,8 +388,12 @@ export default defineComponent({
       ];
     };
 
-    const handleUpdatedLocation = (data, prevData) => {
-      console.log('data', data);
+    /**
+     * Формирует актуальный список филиалов/банкоматов/терминалов, используя данные фильтра
+     * @property {TFilterData} data - обновлённые данные фильтра
+     * @property {TFilterData} data - prevData фильтра до изменения
+    */
+    const handleUpdatedLocation = (data: TFilterData, prevData: TFilterData) => {
       if (!prevData) {
         categoryStore.fetchCategoryData(data, data.params || "");
         return;
@@ -386,7 +401,7 @@ export default defineComponent({
 
       const values = Object.keys(data).reduce(
         (acc, key) => data[key] === prevData[key] ? acc : { ...acc, [key]: data[key] },
-        {}
+        {} as Partial<TFilterData>
       );
       const isParamsDataExcluded =
         Object.keys(values).length === 3 &&
@@ -404,15 +419,21 @@ export default defineComponent({
       filterStore.setLocationList();
     });
 
+    /**
+     * Сбрасывает список карточек в левом сайдбаре при изменении основного массива объектов
+    */
     watch(
       () => currentItemsList.value,
-      (arr) => {
-        // TODO: сравнить с прежним кодом
-        /// categoryStore.setSelectedItemsList(arr);
+      () => {
+        categoryStore.setSelectedItemsList();
         //console.log("Cписок карточек обновлён", arr);
       }
     );
 
+    /**
+     * Обновляет в зависимости от типа объекта список филиалов/банкоматов/терминалов
+     * или точек погашения при изменении данных фильтра
+    */
     watch(
       () => currentFilterData.value,
       (data, prevData) => {
@@ -425,6 +446,10 @@ export default defineComponent({
       }
     );
 
+    /**
+     * Устанавливает на мобильных отображаемой по умолчанию карту,
+     * если в выпадающем списке фильтра выбрана опция "Точки погашения"
+    */
     watch(
       () => isPointsListVisible.value,
       (value) => {
@@ -432,6 +457,10 @@ export default defineComponent({
       }
     );
 
+    /**
+     * Изменяет список карточек в левом сайдбаре
+     * при изменении данных объектов в пределах границ карты
+    */
     watch(
       () => customItemsList.value,
       (arr) => {
@@ -441,12 +470,16 @@ export default defineComponent({
       }
     );
 
+    /**
+     * Отображение в консоли количества карточек в сайдбаре
+     * при изменении содержащего их массива
     watch(
       () => cardsList.value,
       (arr) => {
-        //console.log({ cardsList: arr.length });
+        console.log({ cardsList: arr.length });
       }
     );
+    */
 
     return {
       captionsData,

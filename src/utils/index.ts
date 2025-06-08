@@ -86,8 +86,16 @@ const handlePointsData = async ({ key, request, boundedBy }: Pick<TPointsFilterV
   return data;
 };
 
-const handleLocationData = async ({ value, code }) => {
-  let data = { isSucceed: false, data: null };
+/**
+ * Возвращает координаты населённого пункта и область карты для его отображения,
+ * полученные по названию при помощи API Я.Карт
+ * @property {TFilterData[typeof LOCATION_KEY]} value - название населённого пункта
+ * @property {TFilterData[typeof LOCATION_CODE_KEY]} code - внутренний id местоположения
+*/
+const handleLocationData = async (
+  { value, code }: { value: TFilterData[typeof LOCATION_KEY]; code: TFilterData[typeof LOCATION_CODE_KEY]; }
+): Promise<THandledData<Omit<TLocationData, typeof LOCATION_ID_KEY | 'isPopular'>>> => {
+  let data: THandledData<Omit<TLocationData, typeof LOCATION_ID_KEY | 'isPopular'>> = { isSucceed: false, data: null };
 
   try {
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
