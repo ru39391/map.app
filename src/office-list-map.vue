@@ -253,14 +253,20 @@ export default defineComponent({
     const isCategoryListLoading = computed(() => categoryStore.isCategoryListLoading);
     /**
      * Основной список объектов
+     *
+     * @returns {TItemData[]}
     */
     const currentItemsList = computed(() => categoryStore.currentItemsList);
     /**
      * Список объектов, соответствующий элементам в текущих границах карты
+     *
+     * @returns {TItemData[]}
     */
     const customItemsList = computed(() => categoryStore.customItemsList);
     /**
      * Список выбранных по клику на пин карты объектов
+     *
+     * @returns {TItemData[]}
     */
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
 

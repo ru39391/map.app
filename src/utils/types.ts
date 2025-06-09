@@ -3,6 +3,9 @@ import {
   FILIAL_KEY,
   POINT_KEY,
   TERMINAL_KEY,
+  DEFAULT_KEY,
+  SELECTED_KEY,
+  PARTNER_KEY,
   BEELINE_KEY,
   KARI_KEY,
   KH_KEY,
@@ -49,6 +52,8 @@ export type TItemData = {
   isPartner: boolean;
   workMode: string[];
   workModeCom: string[];
+  lon?: string;
+  lat?: string;
   workingStatus?: TWorkingStatus;
   [COORDS_KEY]?: number[];
 };
@@ -66,3 +71,5 @@ export type TCategoryListData = Record<'caption' | 'category', string> & Pick<TF
 export type TLocationData = Record<typeof LOCATION_ID_KEY, string> & Pick<TFilterData, typeof LOCATION_KEY | typeof LOCATION_CODE_KEY | typeof COORDS_KEY> & Pick<TPointsFilterValues, 'boundedBy'> & { isPopular: boolean; };
 
 export type TDeptsData = Record<TCategoryData['category'], Record<'name' | 'code', string>[]> & { cities: (Record<string, string> & Record<'UF_RANGE_LOW_LAT' | 'UF_RANGE_LOW_LNG' | 'UF_RANGE_UP_LAT' | 'UF_RANGE_UP_LNG' | 'UF_RADIUS' | 'UF_SORT', string | null>)[]; };
+
+export type TMarkerIcons = Record<typeof DEFAULT_KEY | typeof SELECTED_KEY, Record<typeof DEFAULT_KEY | typeof PARTNER_KEY | TPointsFilterKeys, Record<string, string>>>;

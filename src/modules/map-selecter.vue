@@ -37,6 +37,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
+import type { TFilterData } from "../utils/types";
 import { useFilterStore } from "../store/modules/filter";
 import ExpendMoreIcon from "../assets/icons/expend-more-icon.vue";
 
@@ -65,10 +66,19 @@ export default defineComponent({
 
     const selecterCaption = computed(() => currentCategory.value ? currentCategory.value.caption : '');
 
+    /**
+     * Изменяет видимость выпадающего меню с категориями фильтра
+     * @property {boolean} value - истинное, если отображаем выпадающее меню
+    */
     const setCategoryDropdownOpen = (value: boolean) => {
       isCategoryDropdownOpen.value = value;
     };
-    const handleCurrentCategory = ({ type }) => {
+
+    /**
+     * Устанавливает категорию фильтра (отделения/банкоматы/терминалы/точки погашения)
+     * @property {TFilterData['type']} type - категория фильтра
+    */
+    const handleCurrentCategory = ({ type }: { type: TFilterData['type']; }) => {
       setCategoryDropdownOpen(false);
 
       if (currentCategory.value && type === currentCategory.value.type) {
@@ -77,6 +87,12 @@ export default defineComponent({
 
       filterStore.setCurrentFilterData({ ...currentFilterData.value, type, data: null });
     };
+
+    /**
+     * Закрывает меню фильтра по клику
+     * @property {MouseEvent} event
+    */
+    // TODO: скорректировать
     const closeDropdown = (event: MouseEvent) => {
       if (mapSelecter.value && !mapSelecter.value.contains(event.target as Node)) {
         setCategoryDropdownOpen(false);

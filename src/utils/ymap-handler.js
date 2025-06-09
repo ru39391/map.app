@@ -15,7 +15,7 @@ import {
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();
-
+// TODO: выполнить типизацию
 class YMapHandler {
   constructor() {
     this.mapId = MAP_ID;

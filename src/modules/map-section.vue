@@ -16,6 +16,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from "vue";
+import type { TItemData, TLocationData, TMarkerIcons } from "../utils/types";
 import {
   DEFAULT_KEY,
   SELECTED_KEY,
@@ -62,12 +63,12 @@ export default defineComponent({
   },
 
   setup() {
-    const mapMarkersList = ref<Record<string, string>[]>([]);
+    const mapMarkersList = ref<Partial<TItemData>[]>([]);
     const markerIconSizes = ref<Record<string, number[]>>({
       iconImageSize: [86, 86],
       iconImageOffset: [-43, -86],
     });
-    const markerIcons = ref<Record<string, Record<string, string>>>({
+    const markerIcons = ref<TMarkerIcons>({
       [DEFAULT_KEY]: {
         [DEFAULT_KEY]: {
           iconImageHref: MAP_PINS[DEFAULT_KEY],
@@ -123,24 +124,45 @@ export default defineComponent({
     });
 
     const categoryStore = useCategoryStore();
-    const filterStore = useFilterStore();
+    /**
+     * Основной список объектов
+     *
+     * @returns {TItemData[]}
+    */
     const currentItemsList = computed(() => categoryStore.currentItemsList);
+    /**
+     * Список выбранных по клику на пин карты объектов
+     *
+     * @returns {TItemData[]}
+    */
     const selectedItemsList = computed(() => categoryStore.selectedItemsList);
+
+    const filterStore = useFilterStore();
+    /**
+     * Текущие параметры фильтра
+     *
+     * @returns {TCategoryListData | null}
+    */
     const currentCategory = computed(() => filterStore.currentCategory);
+    /**
+     * Текущее местоположение
+     *
+     * @returns {TLocationData | null}
+    */
     const currentLocation = computed(() => filterStore.currentLocation);
 
-    const isPointsListVisible = computed(
-      () => currentCategory.value && currentCategory?.value.type === POINT_KEY
-    );
+    const isPointsListVisible = computed(() => currentCategory.value && currentCategory?.value.type === POINT_KEY);
     const markerOptions = computed(() => ({
       iconLayout: "default#image",
       ...markerIconSizes.value,
-      ...(!isPointsListVisible.value && {
-        ...markerIcons.value[DEFAULT_KEY][DEFAULT_KEY],
-      }),
+      ...(!isPointsListVisible.value && { ...markerIcons.value[DEFAULT_KEY][DEFAULT_KEY] }),
     }));
 
-    const setMapMarkersList = (arr) => {
+    /**
+     * Помещает в массив пинов карты список основных объектов
+     * @property {TItemData[]} arr - основной список объектов
+    */
+    const setMapMarkersList = (arr: TItemData[]) => {
       mapMarkersList.value = isPointsListVisible.value
         ? arr
         : arr.map(({ id, coords, isPartner, lon, lat, workingStatus }) => ({
@@ -148,28 +170,26 @@ export default defineComponent({
             coords,
             isPartner,
             isWork: workingStatus.isWork,
-            ...(!coords && {
-              coords: [lon, lat].map((value) => Number(value)),
+            ...(!coords && {coords: [lon, lat].map((value) => Number(value)),
             }),
           }));
     };
 
-    const getCurrLocationData = () => {
+    /**
+     * Возвращает данные текущей геолокации для отрисовки карты
+    */
+    const getCurrLocationData = (): Promise<{ isSucceed: boolean; [COORDS_KEY]: number[]; bounds: number[][]; }> => {
       const locationData = localStorage.getItem(LOCATION_KEY);
-      const currLocationData = locationData ? JSON.parse(locationData) : null;
-      const isLocationDataExist = currLocationData || currentLocation.value;
+      const currLocationData: TLocationData | null = locationData ? JSON.parse(locationData) : null;
+      const isLocationDataExist: boolean = Boolean(currLocationData) || Boolean(currentLocation.value);
 
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           isLocationDataExist
             ? resolve({
                 isSucceed: true,
-                [COORDS_KEY]: currLocationData
-                  ? currLocationData[COORDS_KEY]
-                  : currentLocation.value[COORDS_KEY],
-                bounds: currLocationData
-                  ? currLocationData.boundedBy
-                  : currentLocation.value.boundedBy,
+                [COORDS_KEY]: currLocationData ? currLocationData[COORDS_KEY] : currentLocation.value[COORDS_KEY],
+                bounds: currLocationData ? currLocationData.boundedBy : currentLocation.value.boundedBy,
               })
             : reject({
                 isSucceed: false,
@@ -179,7 +199,11 @@ export default defineComponent({
       });
     };
 
-    const handleYMap = async (arr) => {
+    /**
+     * Выполняет отрисовку карты на основе обновлённого списка объектов
+     * @property {TItemData[]} arr - основной список объектов
+    */
+    const handleYMap = async (arr: Partial<TItemData>[]) => {
       try {
         const { isSucceed, coords, bounds } = await getCurrLocationData();
 
@@ -197,6 +221,10 @@ export default defineComponent({
       }
     };
 
+    /**
+     * При изменении основного списка отделений обновить массив точек карты
+     * @property {TItemData[]} arr - основной список объектов
+    */
     watch(
       () => currentItemsList.value,
       (arr) => {
@@ -204,6 +232,10 @@ export default defineComponent({
       }
     );
 
+    /**
+     * При изменении списка пинов выполнить обновление карты
+     * @property {Partial<TItemData>[]} arr - список точек карты
+    */
     watch(
       () => mapMarkersList.value,
       (arr) => {
@@ -212,6 +244,10 @@ export default defineComponent({
       }
     );
 
+    /**
+     * При изменении списка выбранных объектов выполнить обновление объектов карты
+     * @property {TItemData[]} arr - список выбранных по клику на пин карты объектов
+    */
     watch(
       () => selectedItemsList.value,
       (arr) => {
