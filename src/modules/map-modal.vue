@@ -31,6 +31,13 @@ import { computed, defineComponent } from "vue";
 import { useModalStore } from "../store/modules/modal";
 import CloseIcon from "../assets/icons/close-icon.vue";
 
+/**
+ * Модальное окно
+ *
+ * @component
+ * @example
+ * <MapModal />
+ */
 export default defineComponent({
   name: "MapModal",
 

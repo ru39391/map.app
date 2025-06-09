@@ -101,6 +101,13 @@ import CopyIcon from "../assets/icons/copy-icon.vue";
 import ExpendMoreIcon from "../assets/icons/expend-more-icon.vue";
 import ChevronRightIcon from "../assets/icons/chevron-right-icon.vue";
 
+/**
+ * Карточка отображения данных отделения
+ *
+ * @component
+ * @example
+ * <InfoCard />
+ */
 export default defineComponent({
   name: "InfoCard",
 

@@ -20,6 +20,13 @@ import { defineComponent } from 'vue';
 import ListIcon from "../assets/icons/list-icon.vue";
 import MapIcon from "../assets/icons/map-icon.vue";
 
+/**
+ * Переключает отображение (карта или список) филиалов/банкоматов/терминалов на мобильных устройствах
+ *
+ * @component
+ * @example
+ * <MapSwitcher />
+ */
 export default defineComponent({
   name: "MapSwitcher",
 

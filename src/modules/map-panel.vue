@@ -41,6 +41,13 @@ import { useFilterStore } from "../store/modules/filter";
 import InfoCard from "./info-card.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 
+/**
+ * Панель подробной информации банковского отделения для отображения на мобильных
+ *
+ * @component
+ * @example
+ * <MapPanel />
+ */
 export default defineComponent({
   name: "MapPanel",
 
@@ -87,6 +94,7 @@ export default defineComponent({
 
     /**
      * Если не выбраны объекты данных, изменяем высоту блока с подробной информацией
+     * @property {TItemData[]} arr - список выбранных по клику на пин карты объектов
     */
     watch(
       () => selectedItemsList.value,

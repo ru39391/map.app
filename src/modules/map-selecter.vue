@@ -40,6 +40,13 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useFilterStore } from "../store/modules/filter";
 import ExpendMoreIcon from "../assets/icons/expend-more-icon.vue";
 
+/**
+ * Выпадающее меню с параметрами фильтра
+ *
+ * @component
+ * @example
+ * <MapSelecter />
+ */
 export default defineComponent({
   name: "MapSelecter",
 

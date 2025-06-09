@@ -63,6 +63,13 @@ import { LOCATION_KEY, LOCATION_CODE_KEY } from "../utils/constants";
 import PinIcon from "../assets/icons/pin-icon.vue";
 import SearchIcon from "../assets/icons/search-icon.vue";
 
+/**
+ * Поле формы поиска (отделения по значению адреса, населённого пункта по его названию)
+ *
+ * @component
+ * @example
+ * <MapSearch />
+ */
 export default defineComponent({
   name: "MapSearch",
 
@@ -178,6 +185,10 @@ export default defineComponent({
       }
     };
 
+    /**
+     * Обработка значения поля по мере ввода
+     * @property {string} value - значение поля
+    */
     watch(
       () => searchValue.value,
       (value) => {
@@ -185,6 +196,9 @@ export default defineComponent({
       }
     );
 
+    /**
+     * Сброс значения поля при изменении видимости модального окна
+    */
     watch(
       () => isModalOpen.value,
       () => {

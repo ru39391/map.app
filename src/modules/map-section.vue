@@ -45,6 +45,13 @@ import ZoomInIcon from "../assets/icons/zoom-in-icon.vue";
 import ZoomOutIcon from "../assets/icons/zoom-out-icon.vue";
 import yMapHandler from "../utils/ymap-handler";
 
+/**
+ * Блок с картой
+ *
+ * @component
+ * @example
+ * <MapSection />
+ */
 export default defineComponent({
   name: "MapSection",
 

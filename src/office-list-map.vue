@@ -215,6 +215,13 @@ import MapSelecter from "./modules/map-selecter.vue";
 import MapSwitcher from "./modules/map-switcher.vue";
 import yMapHandler from "./utils/ymap-handler";
 
+/**
+ * Главный компонент карты с фильтром
+ *
+ * @component
+ * @example
+ * <OfficeListMap />
+ */
 export default defineComponent({
   name: "OfficeListMap",
 
@@ -383,7 +390,7 @@ export default defineComponent({
     /**
      * Формирует актуальный список филиалов/банкоматов/терминалов, используя данные фильтра
      * @property {TFilterData} data - обновлённые данные фильтра
-     * @property {TFilterData} data - prevData фильтра до изменения
+     * @property {TFilterData} prevData - фильтра до изменения
     */
     const handleUpdatedLocation = (data: TFilterData, prevData: TFilterData) => {
       if (!prevData) {
@@ -425,6 +432,8 @@ export default defineComponent({
     /**
      * Обновляет в зависимости от типа объекта список филиалов/банкоматов/терминалов
      * или точек погашения при изменении данных фильтра
+     * @property {TFilterData} data - обновлённые данные фильтра
+     * @property {TFilterData} prevData - фильтра до изменения
     */
     watch(
       () => currentFilterData.value,
@@ -441,6 +450,7 @@ export default defineComponent({
     /**
      * Устанавливает на мобильных отображаемой по умолчанию карту,
      * если в выпадающем списке фильтра выбрана опция "Точки погашения"
+     * @property {boolean} value - истинно, если выбрано отображение точек погашения в фильтре
     */
     watch(
       () => isPointsListVisible.value,
@@ -452,6 +462,7 @@ export default defineComponent({
     /**
      * Изменяет список карточек в левом сайдбаре
      * при изменении данных объектов в пределах границ карты
+     * @property {TItemData[]} arr - список объектов, соответствующий элементам в текущих границах карты
     */
     watch(
       () => customItemsList.value,
@@ -465,6 +476,7 @@ export default defineComponent({
     /**
      * Отображение в консоли количества карточек в сайдбаре
      * при изменении содержащего их массива
+     * @property {TItemData[]} arr - массив карточек в сайдбаре
     watch(
       () => cardsList.value,
       (arr) => {

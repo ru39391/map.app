@@ -152,6 +152,7 @@ import CheckedIcon from "../assets/icons/checked-icon.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 import FilterIcon from "../assets/icons/filter-icon.vue";
 
+
 export default defineComponent({
   name: "MapFilter",
 
