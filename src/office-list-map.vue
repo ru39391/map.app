@@ -25,9 +25,7 @@
           ]"
         >
           <MapSelecter />
-          <!--
           <MapFilter @handleFilterVisibility="setFilterVisible" />
-          -->
         </div>
         <MapSearch
           :arr="itemsList"

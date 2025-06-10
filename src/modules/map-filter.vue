@@ -3,15 +3,15 @@
     <button
       class="map-filter__toggler"
       type="button"
-      @click="setFilterDropdownOpen(!isFilterDropdownOpen.value)"
+      @click="setFilterDropdownOpen(!isFilterDropdownOpen)"
     >
       <FilterIcon />
     </button>
     <form
       :class="[
         'map-dropdown map-dropdown_type_filter',
-        { 'map-dropdown_type_panel': isPointsListVisible.value },
-        { 'is-active': isFilterDropdownOpen.value },
+        { 'map-dropdown_type_panel': isPointsListVisible },
+        { 'is-active': isFilterDropdownOpen },
       ]"
       @submit.prevent
       @click.self="setFilterDropdownOpen(false)"
@@ -20,8 +20,8 @@
         class="map__custom-scrollbar"
         :class="[
           'map-dropdown__wrapper',
-          { 'map-dropdown__wrapper_height_min': isPointsListVisible.value },
-          { 'is-active': isFilterDropdownOpen.value },
+          { 'map-dropdown__wrapper_height_min': isPointsListVisible },
+          { 'is-active': isFilterDropdownOpen },
         ]"
       >
         <button
@@ -31,15 +31,13 @@
         >
           <CloseIcon />
         </button>
-        <template v-if="isPointsListVisible.value">
+        <template v-if="isPointsListVisible">
           <div
             v-for="(pointData, index) in pointsFilterList"
             :key="index"
             class="map-dropdown__section"
           >
-            <div class="map-dropdown__title" v-if="pointData.title">
-              {{ pointData.title }}
-            </div>
+            <div class="map-dropdown__title" v-if="pointData.title">{{ pointData.title }}</div>
             <div
               class="map-dropdown__list map-dropdown__list_mb_min"
               v-if="pointData.params.length"
@@ -50,17 +48,10 @@
               >
                 <input
                   :id="paramData.key"
-                  :checked="
-                    Boolean(pointsFilterData && pointsFilterData[paramData.key])
-                  "
+                  :checked="Boolean(pointsFilterData && pointsFilterData[paramData.key])"
                   class="map-toggler"
                   type="checkbox"
-                  @change="
-                    handlePointsFilterData({
-                      ...paramData,
-                      target: $event.target,
-                    })
-                  "
+                  @change="handlePointsFilterData({ ...paramData, target: $event.target })"
                 />
                 <label :for="paramData.key" class="map-toggler-label">
                   <span class="map-toggler-label__icon"><CheckedIcon /></span>
@@ -74,9 +65,7 @@
                 :key="idx"
                 class="map-dropdown__desc-row"
               >
-                <div class="map-dropdown__desc-caption">
-                  {{ descData.caption }}
-                </div>
+                <div class="map-dropdown__desc-caption">{{ descData.caption }}</div>
                 <div class="map-dropdown__desc-value">{{ descData.value }}</div>
               </div>
             </div>
@@ -85,12 +74,7 @@
             class="map-filter-btn"
             type="submit"
             :disabled="!pointsFilterData"
-            @click="
-              submitFilter({
-                data: pointsFilterData,
-                type: currentCategory.type,
-              })
-            "
+            @click="submitFilter({ data: pointsFilterData, type: currentCategory.type })"
           >
             Применить
           </button>
@@ -127,14 +111,14 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from "vue";
+import { computed, ComputedRef, defineComponent, defineEmits, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import type {
+  TFilterData,
+  TPointsFilterData,
+  TPointsFilterKeys,
+  TPointsFilterList,
+  TPointsFilterValues
+} from '../utils/types';
 import {
   POINT_KEY,
   BEELINE_KEY,
@@ -152,6 +136,7 @@ import CheckedIcon from "../assets/icons/checked-icon.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 import FilterIcon from "../assets/icons/filter-icon.vue";
 
+
 // TODO: выполнить типизацию
 export default defineComponent({
   name: "MapFilter",
@@ -162,12 +147,14 @@ export default defineComponent({
     FilterIcon,
   },
 
-  setup() {
+  emits: ['handleFilterVisibility'],
+
+  setup(_, { emit }) {
     const mapFilter = ref<HTMLElement | null>(null);
-    const filterData = ref<Record<string, string> | null>(null);
+    const filterData = ref<Record<string, 1 | 0> | null>(null);
     const isFilterDropdownOpen = ref<boolean>(false);
-    const pointsFilterData = ref<Record<string, string> | null>(null);
-    const pointsFilterList = ref<Record<string, string>[]>([
+    const pointsFilterData = ref<TPointsFilterData | null>(null);
+    const pointsFilterList = ref<TPointsFilterList[]>([
       {
         title: "Сеть партнера",
         params: [
@@ -271,66 +258,99 @@ export default defineComponent({
     ]);
 
     const categoryStore = useCategoryStore();
+    const isCategoryListLoading = computed(() => categoryStore.isCategoryListLoading);
+
     const filterStore = useFilterStore();
-
-    const isCategoryListLoading = computed(
-      () => categoryStore.isCategoryListLoading
-    );
-    const currentLocation = computed(() => filterStore.currentLocation);
+    /**
+     * Список категорий фильтра
+     *
+     * @returns {TCategoryListData[]}
+    */
     const categoryList = computed(() => filterStore.categoryList);
+    /**
+     * Текущая категория фильтра
+     *
+     * @returns {TCategoryListData}
+    */
     const currentCategory = computed(() => filterStore.currentCategory);
+    /**
+     * Объект, содержащий массивы дочерних параметров категорий фильтра (для филиалов/банкоматов/терминалов)
+     *
+     * @returns {Record<TCategoryData['category'], Record<'name' | 'code', string>[]> | null}
+    */
     const categoryFilterData = computed(() => filterStore.categoryFilterData);
+    /**
+     * Текущие параметры фильтра
+     *
+     * @returns {TFilterData | null}
+    */
     const currentFilterData = computed(() => filterStore.currentFilterData);
+    /**
+     * Текущая геолокация
+     *
+     * @returns {TLocationData | null}
+    */
+    const currentLocation = computed(() => filterStore.currentLocation);
 
-    const isPointsListVisible = computed(
-      () => currentCategory.value && currentCategory?.value.type === POINT_KEY
-    );
+    const isPointsListVisible = computed(() => currentCategory.value && currentCategory?.value.type === POINT_KEY);
+    /**
+     * Категория и геолокация в фильтре по умолчанию
+    */
     const currentCategoryData = computed(() => ({
-      type: currentCategory.value
-        ? currentCategory.value.type
-        : categoryList.value[0].type,
-      [LOCATION_CODE_KEY]: currentLocation.value
-        ? currentLocation.value[LOCATION_CODE_KEY]
-        : DEFAULT_LOC_CODE,
+      type: currentCategory.value ? currentCategory.value.type : categoryList.value[0].type,
+      [LOCATION_CODE_KEY]: currentLocation.value ? currentLocation.value[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE,
     }));
-    const filterList = computed(() =>
-      categoryFilterData.value
-        ? categoryFilterData.value[currentCategoryData.value.type]
-        : []
+    /**
+     * Массив дочерних параметров категорий фильтра (для филиалов/банкоматов/терминалов)
+    */
+    const filterList: ComputedRef<Record<'name' | 'code', string>[]> = computed(
+      () => categoryFilterData.value ? categoryFilterData.value[currentCategoryData.value.type] : []
     );
+    /**
+     * Конфигурация параметров фильтра точек погашения по умолчанию
+    */
     const pointsFilterConfig = computed(() => ({
-      ...pointsFilterList[2].params[0],
+      ...pointsFilterList.value[2].params[0],
       target: {},
       checked: true,
     }));
 
-    const setFilterDropdownOpen = (value) => {
+    /**
+     * Показывает/скрывает меню дочерних параметров фильтра
+     * @property {boolean} value
+    */
+    const setFilterDropdownOpen = (value: boolean) => {
       isFilterDropdownOpen.value = value;
     };
 
-    const handleFilterData = ({ target }) => {
+    /**
+     * Устанавливает значения дочерних параметров фильтра филиалов/банкоматов/терминалов по клику на чекбоксы
+     * @property {HTMLInputElement} target - чекбокс в меню дочерних параметров фильтра филиалов/банкоматов/терминалов
+    */
+    const handleFilterData = ({ target }: { target: HTMLInputElement; }) => {
       const { id, checked } = target;
 
-      filterData.value = filterData.value
-        ? { ...filterData.value, [id]: Number(checked) }
-        : { [id]: Number(checked) };
+      filterData.value = filterData.value ? { ...filterData.value, [id]: Number(checked) as 0 | 1 } : { [id]: Number(checked) as 0 | 1 };
     };
 
-    const submitFilter = ({ data, type }) => {
+    /**
+     * Производит фильтрацию объектов по выбранным параметрам
+     * @property {TFilterData['data']} data - дочерние параметры фильтра
+     * @property {TFilterData['type']} type - тип объекта (филиал/банкомат/терминал/точка погашения)
+    */
+    const submitFilter = ({ data, type }: Pick<TFilterData, 'data' | 'type'>) => {
       if (!data) {
         return;
       }
 
-      const paramsData = Object.values(data).reduce(
-        (acc, item, index) =>
-          item ? { ...acc, [Object.keys(data)[index]]: item } : acc,
-        {}
+      const paramsData = Object.entries(data).reduce(
+        (acc, [key, value]: [string, 0 | 1]) => value ? { ...acc, [key]: value } : acc,
+        {} as Record<string, 1 | 0>
       );
 
-      const pointsParamsData = Object.values(data).reduce(
-        (acc, item, index) =>
-          item.checked ? { ...acc, [Object.keys(data)[index]]: item } : acc,
-        {}
+      const pointsParamsData = Object.entries(data).reduce(
+        (acc, [key, value]: [TPointsFilterKeys, TPointsFilterValues]) => value.checked ? { ...acc, [key]: value } : acc,
+        {} as TPointsFilterData
       );
 
       filterStore.setCurrentFilterData({
@@ -339,65 +359,57 @@ export default defineComponent({
       });
     };
 
-    const updatePointsFilterData = (boundedBy) => {
+    /**
+     * Обновляет параметры фильтра точек погашения при изменении координат границ карты
+     * @property {TPointsFilterValues['boundedBy']} boundedBy - координаты границ карты
+     * @returns {TPointsFilterData} параметры фильтра точек погашения
+    */
+    const updatePointsFilterData = (boundedBy: TPointsFilterValues['boundedBy']): TPointsFilterData => {
       if (!pointsFilterData) {
-        return {};
+        return {} as TPointsFilterData;
       }
 
-      return Object.values(pointsFilterData).reduce(
-        (acc, item, index) =>
-          item.checked
-            ? {
-                ...acc,
-                [Object.keys(pointsFilterData)[index]]: {
-                  ...item,
-                  boundedBy,
-                },
-              }
-            : acc,
-        {}
+      return Object.entries(pointsFilterData).reduce(
+        (acc, [key, value]: [TPointsFilterKeys, TPointsFilterValues]) => value.checked ? { ...acc, [key]: { ...value, boundedBy } } : acc,
+        {} as TPointsFilterData
       );
     };
 
-    const handlePointsFilterData = (data) => {
+    const handlePointsFilterData = (data: TPointsFilterValues) => {
       const { key, target } = data;
       const { boundedBy } = currentLocation.value;
 
       const pointsFilterValues = updatePointsFilterData(boundedBy);
 
       pointsFilterData.value = pointsFilterData.value
-        ? {
-            ...pointsFilterValues,
-            [key]: { ...data, checked: target.checked, boundedBy },
-          }
+        ? { ...pointsFilterValues, [key]: { ...data, checked: target.checked, boundedBy } }
         : { [key]: { ...data, checked: target.checked, boundedBy } };
     };
 
-    const updatePointsList = ({ boundedBy }) => {
-      if (!isPointsListVisible.value) {
-        return;
-      }
-
-      const pointsFilterData = updatePointsFilterData(boundedBy);
-
-      categoryStore.fetchPointsData(pointsFilterData);
-    };
+    /**
+     * Закрыть меню дочерних параметров фильтра по клику
+     * @property {MouseEvent} event
+    */
     const closeFilter = (event: MouseEvent) => {
       if (mapFilter.value && !mapFilter.value.contains(event.target as Node)) {
         setFilterDropdownOpen(false);
       }
     };
-    const resetFilter = (payload = null) => {
-      pointsFilterData.value =
-        payload && payload.type === POINT_KEY
-          ? { ...(payload && payload.data && { ...payload.data }) }
-          : null;
-      filterData.value =
-        payload && payload.type !== POINT_KEY
-          ? { ...(payload && payload.data && { ...payload.data }) }
-          : null;
+
+    /**
+     *
+     * @property {Partial<TFilterData> | null} payload - обновлённое значение параметров фильтра
+    */
+    const resetFilter = (payload: Partial<TFilterData> | null = null) => {
+      pointsFilterData.value = payload && payload.type === POINT_KEY ? { ...(payload && payload.data && { ...payload.data }) } : null;
+
+      filterData.value = payload && payload.type !== POINT_KEY ? { ...(payload && payload.data && { ...payload.data }) } : null;
     };
 
+    /**
+     *
+     * @property {TFilterData | null} updData - обновлённое значение параметров фильтра
+    */
     watch(
       () => currentFilterData.value,
       (updData) => {
@@ -440,9 +452,16 @@ export default defineComponent({
     );
 
     watch(
+      () => pointsFilterData.value,
+      (value) => {
+        console.log("pointsFilterData", value);
+      }
+    );
+
+    watch(
       () => isFilterDropdownOpen.value,
       (value) => {
-        //this.$emit("handleFilterVisibility", value);
+        emit('handleFilterVisibility', value);
       }
     );
 
@@ -455,9 +474,13 @@ export default defineComponent({
     });
 
     return {
+      filterList,
       isFilterDropdownOpen,
       isPointsListVisible,
+      handleFilterData,
+      handlePointsFilterData,
       setFilterDropdownOpen,
+      submitFilter
     };
   },
 });

@@ -60,6 +60,12 @@ export type TItemData = {
 
 export type TPointsFilterData = Partial<Record<TPointsFilterKeys, TPointsFilterValues>>;
 
+export type TPointsFilterList = {
+  title: string;
+  params: (Record<'caption' | 'request', string> & { key: Omit<TPointsFilterKeys, typeof LXNET_KEY | typeof RUPOST_KEY> })[];
+  desc: Record<'caption' | 'value', string>[];
+};
+
 export type TFilterData = Record<'params' | typeof LOCATION_KEY | typeof LOCATION_CODE_KEY, string> & {
   data: Record<string, 1 | 0> | TPointsFilterData | null;
   type: TCategoryData['category'] | typeof POINT_KEY;

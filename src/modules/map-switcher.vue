@@ -2,7 +2,7 @@
   <button
     class="map-switcher"
     type="button"
-    @click="this.$emit('handleMapVisibility')"
+    @click="handleMapVisibility"
   >
     <template v-if="isMapVisible">
       Список
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, defineEmits } from 'vue';
 import ListIcon from "../assets/icons/list-icon.vue";
 import MapIcon from "../assets/icons/map-icon.vue";
 
@@ -41,5 +41,17 @@ export default defineComponent({
       required: true,
     },
   },
+
+  emits: ['handleMapVisibility'],
+
+  setup(_, { emit }) {
+    const handleMapVisibility = () => {
+      emit('handleMapVisibility');
+    };
+
+    return {
+      handleMapVisibility
+    }
+  }
 });
 </script>
