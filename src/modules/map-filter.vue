@@ -73,7 +73,7 @@
           <button
             class="map-filter-btn"
             type="submit"
-            :disabled="!pointsFilterData"
+            :disabled="isPointsFilterBtnDisabled"
             @click="submitFilter({ data: pointsFilterData, type: currentCategory.type })"
           >
             Применить
@@ -99,7 +99,7 @@
           <button
             class="map-filter-btn"
             type="submit"
-            :disabled="!filterData"
+            :disabled="isFilterBtnDisabled"
             @click="submitFilter({ data: filterData })"
           >
             Применить
@@ -136,8 +136,13 @@ import CheckedIcon from "../assets/icons/checked-icon.vue";
 import CloseIcon from "../assets/icons/close-icon.vue";
 import FilterIcon from "../assets/icons/filter-icon.vue";
 
-
-// TODO: выполнить типизацию
+/**
+ * Меню дочерних параметров фильтра
+ *
+ * @component
+ * @example
+ * <MapFilter />
+ */
 export default defineComponent({
   name: "MapFilter",
 
@@ -257,6 +262,16 @@ export default defineComponent({
       },
     ]);
 
+    const isFilterBtnDisabled = computed(() =>
+      filterData.value
+        ? Object.values(filterData.value).length === 0 || Object.values(filterData.value).reduce((acc, value) => !value && acc, true)
+        : !filterData.value
+    );
+
+    const isPointsFilterBtnDisabled = computed(
+      () => pointsFilterData.value ? Object.values(pointsFilterData.value).reduce((acc, data) => !data.checked && acc, true) : !pointsFilterData.value
+    );
+
     const categoryStore = useCategoryStore();
     const isCategoryListLoading = computed(() => categoryStore.isCategoryListLoading);
 
@@ -365,16 +380,20 @@ export default defineComponent({
      * @returns {TPointsFilterData} параметры фильтра точек погашения
     */
     const updatePointsFilterData = (boundedBy: TPointsFilterValues['boundedBy']): TPointsFilterData => {
-      if (!pointsFilterData) {
+      if (!pointsFilterData.value) {
         return {} as TPointsFilterData;
       }
 
-      return Object.entries(pointsFilterData).reduce(
+      return Object.entries(pointsFilterData.value).reduce(
         (acc, [key, value]: [TPointsFilterKeys, TPointsFilterValues]) => value.checked ? { ...acc, [key]: { ...value, boundedBy } } : acc,
         {} as TPointsFilterData
       );
     };
 
+    /**
+     * Устанавливает значения дочерних параметров фильтра точек погашения по клику на чекбоксы
+     * @property {TPointsFilterValues} data - данные, соответствующие чекбоксу параметра точки погашения
+    */
     const handlePointsFilterData = (data: TPointsFilterValues) => {
       const { key, target } = data;
       const { boundedBy } = currentLocation.value;
@@ -397,17 +416,17 @@ export default defineComponent({
     };
 
     /**
-     *
+     * Обновить параметры фильтра
      * @property {Partial<TFilterData> | null} payload - обновлённое значение параметров фильтра
     */
     const resetFilter = (payload: Partial<TFilterData> | null = null) => {
       pointsFilterData.value = payload && payload.type === POINT_KEY ? { ...(payload && payload.data && { ...payload.data }) } : null;
 
-      filterData.value = payload && payload.type !== POINT_KEY ? { ...(payload && payload.data && { ...payload.data }) } : null;
+      filterData.value = payload && payload.type !== POINT_KEY ? { ...(payload && payload.data && { ...payload.data as Record<string, 0 | 1> }) } : null;
     };
 
     /**
-     *
+     * Обновить параметры фильтра при изменении его основных данных
      * @property {TFilterData | null} updData - обновлённое значение параметров фильтра
     */
     watch(
@@ -439,11 +458,19 @@ export default defineComponent({
       }
     );
 
+    /**
+     * Обновить параметры фильтра при изменении данных геолокации
+     * @property {TFilterData | null} updData - обновлённое значение параметров фильтра
+    */
     watch(
       () => currentLocation.value,
       () => resetFilter(currentFilterData.value)
     );
 
+    /**
+     * Скрыть меню дочерних параметров фильтра после обновления списка объектов
+     * @property {boolean} value - истинно, если обновления списка объектов в процессе
+    */
     watch(
       () => isCategoryListLoading.value,
       (value) => {
@@ -451,17 +478,20 @@ export default defineComponent({
       }
     );
 
-    watch(
-      () => pointsFilterData.value,
-      (value) => {
-        console.log("pointsFilterData", value);
-      }
-    );
-
+    /**
+     * Передать в родительский компонент значение отображения меню дочерних параметров фильтра
+     * @property {boolean} value - истинно, если меню дочерних параметров фильтра отображается
+    */
     watch(
       () => isFilterDropdownOpen.value,
       (value) => {
         emit('handleFilterVisibility', value);
+      }
+    );
+    watch(
+      () => filterData.value,
+      (value) => {
+        console.log('filterData', value);
       }
     );
 
@@ -474,9 +504,13 @@ export default defineComponent({
     });
 
     return {
+      mapFilter,
       filterList,
+      isFilterBtnDisabled,
       isFilterDropdownOpen,
+      isPointsFilterBtnDisabled,
       isPointsListVisible,
+      pointsFilterList,
       handleFilterData,
       handlePointsFilterData,
       setFilterDropdownOpen,

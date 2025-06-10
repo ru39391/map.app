@@ -26,7 +26,7 @@ export type TPointsFilterValues = {
   key: TPointsFilterKeys;
   caption: string;
   request: string;
-  target: Record<string, string>;
+  target: HTMLInputElement;
   checked: boolean;
   boundedBy: number[][];
 };
@@ -62,7 +62,7 @@ export type TPointsFilterData = Partial<Record<TPointsFilterKeys, TPointsFilterV
 
 export type TPointsFilterList = {
   title: string;
-  params: (Record<'caption' | 'request', string> & { key: Omit<TPointsFilterKeys, typeof LXNET_KEY | typeof RUPOST_KEY> })[];
+  params: (Record<'caption' | 'request', string> & { key: TPointsFilterKeys; })[];
   desc: Record<'caption' | 'value', string>[];
 };
 

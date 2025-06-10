@@ -92,7 +92,6 @@ export default defineComponent({
      * Закрывает меню фильтра по клику
      * @property {MouseEvent} event
     */
-    // TODO: скорректировать
     const closeDropdown = (event: MouseEvent) => {
       if (mapSelecter.value && !mapSelecter.value.contains(event.target as Node)) {
         setCategoryDropdownOpen(false);
@@ -108,6 +107,7 @@ export default defineComponent({
     });
 
     return {
+      mapSelecter,
       categoryList,
       currentCategory,
       isCategoryDropdownOpen,

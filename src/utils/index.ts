@@ -162,31 +162,6 @@ const removeStorageItem = (key: typeof LOCATION_KEY | typeof FILTER_KEY = LOCATI
   sessionStorage.removeItem(key);
 };
 
-const handleCurrentLocation = (arr) => {
-  const selectedLocation = document.querySelector(GEO_NAME_SEL);
-  const defaultLocationData = {
-    [LOCATION_KEY]: DEFAULT_LOC,
-    [LOCATION_CODE_KEY]: DEFAULT_LOC_CODE,
-    coords: DEFAULT_COORDS,
-    boundedBy: DEFAULT_BOUNDS,
-  };
-
-  if (
-    !selectedLocation ||
-    (selectedLocation && !selectedLocation.textContent)
-  ) {
-    return defaultLocationData;
-  }
-
-  const selectedLocationCaption = selectedLocation.textContent.toLowerCase();
-  const data = arr.find(
-    (item) =>
-      item[LOCATION_KEY].toLowerCase() === selectedLocationCaption.trim()
-  );
-
-  return data || defaultLocationData;
-};
-
 /**
  * Возвращает данные текущего местоположения после записи в локальное хранилище
  * @property {TLocationData} values - данные текущего местоположения
@@ -311,7 +286,6 @@ export {
   setFilterData,
   handleLocationData,
   handleLocationItem,
-  handleCurrentLocation,
   handlePointsData,
   stringifyFilterData,
   setSelectedItems,
