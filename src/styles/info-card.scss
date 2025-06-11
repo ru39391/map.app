@@ -116,11 +116,11 @@
   }
 
   &.info-card__item_color_primary {
-    color: $blue600;
+    color: $blue550;
   }
 
   &.info-card__item_color_danger {
-    color: #ff6f00;
+    color: $orange600;
   }
 }
 
@@ -193,10 +193,10 @@
   }
 
   &:hover {
-    color: $blue600;
+    color: $blue400;
 
     path {
-      fill: $blue600;
+      fill: $blue400;
     }
   }
 

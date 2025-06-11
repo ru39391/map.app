@@ -504,12 +504,14 @@ export default defineComponent({
     });
 
     return {
-      mapFilter,
+      currentCategory,
       filterList,
       isFilterBtnDisabled,
       isFilterDropdownOpen,
       isPointsFilterBtnDisabled,
       isPointsListVisible,
+      mapFilter,
+      pointsFilterData,
       pointsFilterList,
       handleFilterData,
       handlePointsFilterData,

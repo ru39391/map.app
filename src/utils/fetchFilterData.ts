@@ -1,5 +1,7 @@
-import type { TDeptsData } from './constants';
+import type { TDeptsData } from './types';
 
+// TODO: создать структуру БД для хранения данных
+// TODO: создать эндпойнты для получения данных
 const fetchFilterData = (): Promise<TDeptsData> =>
   new Promise((resolve) => {
     setTimeout(() => {

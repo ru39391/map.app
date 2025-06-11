@@ -186,7 +186,7 @@
 }
 
 .map-dropdown__highlight {
-  color: $blue600;
+  color: $blue400;
 }
 
 .map-dropdown__desc-value {
@@ -207,7 +207,7 @@
 
   &:hover,
   &.is-active {
-    background-color: $blue950;
+    background-color: $bnw950;//
   }
 }
 
@@ -224,7 +224,7 @@
   }
 
   &:hover {
-    color: $blue600;
+    color: $blue400;
     transition: all 0.3s ease;
   }
 }
