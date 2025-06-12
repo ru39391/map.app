@@ -411,7 +411,7 @@ export default defineComponent({
         Object.keys(values).filter((key) => [LOCATION_KEY, LOCATION_CODE_KEY, COORDS_KEY].includes(key)).length === 3;
 
       if (isParamsDataExcluded) {
-        yMapHandler.setUpdMapCenter(values);
+        yMapHandler.setUpdMapCenter(values[COORDS_KEY]);
       } else {
         categoryStore.fetchCategoryData(data, data.params || "");
       }

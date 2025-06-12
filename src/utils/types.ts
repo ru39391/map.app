@@ -85,3 +85,5 @@ export type TMapState = Partial<Record<'center' | typeof COORDS_KEY, TLocationDa
   zoom: number,
   controls: ymaps.Map['controls'];
 };
+
+export type TClusterData = Pick<TItemData, 'id' | 'key' | 'isPartner'> & Record<'lon' | 'lat', number> & { options: ymaps.IOptionManager };

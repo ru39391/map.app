@@ -13,10 +13,13 @@ import {
   COORDS_KEY,
 } from "./constants";
 import {
+  TClusterData,
+  TFilterData,
   THandledData,
+  TItemData,
   TLocationData
 } from "./types";
-import { IGeometry } from "yandex-maps";
+//import ymaps from "yandex-maps";
 
 type TMapData = { map: ymaps.Map; yMaps: typeof window.ymaps; };
 
@@ -30,6 +33,7 @@ class YMapHandler {
   zoomOutBtnSel = ".js-zoom-out";
   setLocBtnSel = ".js-location";
   mapItem: TMapData['map'] | null = null;
+  clusters: TClusterData[] = [];
   iconsData = null;
   pinConfig = null;
   mapWrapper: HTMLElement | null = null;
@@ -77,7 +81,7 @@ class YMapHandler {
     }
   }
 
-  hoverPlacemark({ id, key, isPartner, options }) {
+  hoverPlacemark({ id, key, isPartner, options }: TClusterData) {
     const isItemSelected = categoryStore.selectedItemsList.length === 1;
 
     if (
@@ -99,13 +103,10 @@ class YMapHandler {
     });
   }
 
-  leavePlacemark({ id, key, isPartner, options }) {
+  leavePlacemark({ id, key, isPartner, options }: TClusterData) {
     const isItemSelected = categoryStore.selectedItemsList.length === 1;
 
-    if (
-      isItemSelected &&
-      categoryStore.selectedItemsList.find((item) => item.id === id)
-    ) {
+    if (isItemSelected && categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
 
@@ -119,44 +120,26 @@ class YMapHandler {
           ...(isPartner && { ...this.iconsData[DEFAULT_KEY][PARTNER_KEY] }),
         };
 
+    Object.entries(config).forEach(([key, value]) => {
+      //console.log(key, options.get(key, { [key]: Array.isArray(value) ? [...value] : value }));
+    });
     Object.keys(config).forEach((item, index) => {
+      //console.log(options.get());
       options.set(item, Object.values(config)[index]);
     });
   }
 
-  getGeoObjects(map) {
-    if (!map) {
-      return [];
-    }
-
-    let geoObjects = [];
-
-    map.geoObjects.each((item) => {
-      geoObjects = [
-        ...Object.values(item._objects).map(({ geoObject }) => ({
-          id: geoObject.properties._data.id,
-          key: geoObject.properties._data.key,
-          lon: geoObject.properties._data.coords[0],
-          lat: geoObject.properties._data.coords[1],
-          isClosed: geoObject.properties._data.isClosed,
-          isPartner: geoObject.properties._data.isPartner,
-          options: geoObject.options,
-        })),
-      ];
-    });
-
-    return geoObjects;
-  }
-
-  resetPlacemarks(arr) {
+  /**
+   * Выполняет обновление объектов карты при изменении списка выбранных объектов в левом сайдбаре
+   * @property {TItemData[]} arr - список выбранных объектов
+  */
+  resetPlacemarks(arr: TItemData[]) {
     if (!this.mapItem) {
       return;
     }
 
     const idsArr = arr.map(({ id }) => id);
-    const placemarks = this.getGeoObjects(this.mapItem).filter(
-      ({ id }) => !idsArr.includes(id)
-    );
+    const placemarks = this.clusters.filter(({ id }) => !idsArr.includes(id));
 
     placemarks.forEach((data) => this.leavePlacemark(data));
   }
@@ -179,19 +162,19 @@ class YMapHandler {
   }
 
   async handleCardsList(arr) {
-    const setCardListeners = ({ id, card }, placemarks) => {
+    const setCardListeners = ({ id, card }) => {
       if (!card) {
         return;
       }
 
       card.addEventListener("mouseenter", () => {
-        const target = placemarks.find((item) => item.id === id);
+        const target = this.clusters.find((item) => item.id === id);
 
         this.hoverPlacemark(target);
       });
 
       card.addEventListener("mouseleave", () => {
-        const target = placemarks.find((item) => item.id === id);
+        const target = this.clusters.find((item) => item.id === id);
 
         this.leavePlacemark(target);
       });
@@ -202,7 +185,7 @@ class YMapHandler {
 
       if (isSucceed) {
         cards.forEach((item) =>
-          setCardListeners(item, this.getGeoObjects(this.mapItem))
+          setCardListeners(item)
         );
       }
     } catch (error) {
@@ -224,6 +207,7 @@ class YMapHandler {
     if (this.mapItem) {
       this.mapItem.destroy();
       this.mapItem = null;
+      this.clusters = [];
       this.iconsData = null;
       this.pinConfig = null;
     }
@@ -302,7 +286,36 @@ class YMapHandler {
   }
 
   /**
-   * По клику на кнопку перемещает центра карты к определяемому местоположению пользователя
+   * Преобразует данные геообъектов экземпляра clusterer в подходящие для обработки объекты
+   * @property {ymaps.IGeoObject[]} arr - массив геообъектов экземпляра clusterer
+  */
+  setClusterItems(arr: ymaps.IGeoObject[]) {
+    this.clusters = arr.map((item) => {
+      const data: Record<string, object> = {
+        id: item.properties.get('id', { id: undefined }),
+        key: item.properties.get('key', { key: undefined }),
+        isPartner: item.properties.get('isPartner', { isPartner: false })
+      };
+
+      return {
+        ...Object.entries(data).reduce(
+          (acc, [key, value]) => ({
+            ...acc,
+            [key]: typeof value === 'object'
+              ? key === 'isPartner' ? value[key] as boolean : value[key] as undefined
+              : key === 'isPartner' ? value as boolean : value as string
+          }),
+          {}
+        ),
+        lon: item.properties.get('coords', DEFAULT_COORDS)[0],
+        lat: item.properties.get('coords', DEFAULT_COORDS)[1],
+        options: item.options
+      } as TClusterData;
+    });
+  }
+
+  /**
+   * По клику на элемент управления перемещает центра карты к определяемому местоположению пользователя
    * @property {TMapData['yMaps']} ymaps - объект Я.Карт
    * @property {TMapData['map']} map - экземпляр карты
   */
@@ -321,30 +334,39 @@ class YMapHandler {
     }
   }
 
-  updateCustomItems({ bounds, pins }) {
+  /**
+   * Обновляет выборку объектов, отображаемых в пределах текущих границ карты
+   * @property {TLocationData['boundedBy']} bounds - текущие границы карты
+  */
+  updateCustomItems(bounds: TLocationData['boundedBy']) {
     const [leftBound, rightBound] = bounds;
-    const items = pins.filter(
-      (item) =>
-        leftBound[0] <= item.lon &&
-        item.lon <= rightBound[0] &&
-        leftBound[1] <= item.lat &&
-        item.lat <= rightBound[1]
+    const items = this.clusters.filter(
+      (item) => leftBound[0] <= item.lon && item.lon <= rightBound[0] && leftBound[1] <= item.lat && item.lat <= rightBound[1]
     );
 
-    categoryStore.setCustomItemsList(items.map(({ id }) => id));
+    categoryStore.setCustomItemsList(
+      items.reduce((acc: string[], { id }) => id === undefined ? acc : [...acc, id], [])
+    );
+  }
+
+  /**
+   * Сместить центр карты согласно новым координатам, если изменился параметр геолокации в фильтре
+   * @property {TFilterData[typeof COORDS_KEY] | undefined} coords - обновлённые координаты
+  */
+  setUpdMapCenter(coords: TFilterData[typeof COORDS_KEY] | undefined) {
+    if (!coords || !this.mapItem) {
+      return;
+    }
+
+    this.mapItem.panTo(coords);
   }
 
   async renderYMap(data) {
     const placemarks = [];
     const { arr, config, icons } = data;
 
-    const handleBounds = (event) => {
-      const map = event.get("target");
-
-      this.updateCustomItems({
-        bounds: event.get("newBounds"),
-        pins: this.getGeoObjects(map),
-      });
+    const handleBounds = (event: ymaps.IEvent) => {
+      this.updateCustomItems(event.get("newBounds"));
     };
 
     const handlePlacemarkData = (event) => {
@@ -477,7 +499,8 @@ class YMapHandler {
 
         map.controls.add(searchControl);
         map.geoObjects.add(clusterer);
-        //map.geoObjects.add(collection);
+
+        this.setClusterItems(clusterer.getGeoObjects());
 
         this.zoomInBtn.addEventListener("click", () => zoomMap(map));
         this.zoomOutBtn.addEventListener("click", () => zoomMap(map, false));
@@ -487,10 +510,7 @@ class YMapHandler {
 
         this.iconsData = icons;
         this.pinConfig = config;
-        this.updateCustomItems({
-          bounds: map.getBounds(),
-          pins: this.getGeoObjects(map),
-        });
+        this.updateCustomItems(map.getBounds());
       }
     } catch (error) {
       console.error(error);
