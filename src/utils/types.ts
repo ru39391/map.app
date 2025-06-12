@@ -79,3 +79,9 @@ export type TLocationData = Record<typeof LOCATION_ID_KEY, string> & Pick<TFilte
 export type TDeptsData = Record<TCategoryData['category'], Record<'name' | 'code', string>[]> & { cities: (Record<string, string> & Record<'UF_RANGE_LOW_LAT' | 'UF_RANGE_LOW_LNG' | 'UF_RANGE_UP_LAT' | 'UF_RANGE_UP_LNG' | 'UF_RADIUS' | 'UF_SORT', string | null>)[]; };
 
 export type TMarkerIcons = Record<typeof DEFAULT_KEY | typeof SELECTED_KEY, Record<typeof DEFAULT_KEY | typeof PARTNER_KEY | TPointsFilterKeys, Record<string, string>>>;
+
+export type TMapState = Partial<Record<'center' | typeof COORDS_KEY, TLocationData[typeof COORDS_KEY]>> & {
+  bounds?: TLocationData['boundedBy'];
+  zoom: number,
+  controls: ymaps.Map['controls'];
+};

@@ -9,26 +9,48 @@ import {
   MAP_PINS,
   MAP_ID,
   DEFAULT_KEY,
+  DEFAULT_COORDS,
   COORDS_KEY,
 } from "./constants";
+import {
+  THandledData,
+  TLocationData
+} from "./types";
+import { IGeometry } from "yandex-maps";
+
+type TMapData = { map: ymaps.Map; yMaps: typeof window.ymaps; };
 
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();
 // TODO: выполнить типизацию
 class YMapHandler {
+  mapId = MAP_ID;
+  zoomInBtnSel = ".js-zoom-in";
+  zoomOutBtnSel = ".js-zoom-out";
+  setLocBtnSel = ".js-location";
+  mapItem: TMapData['map'] | null = null;
+  iconsData = null;
+  pinConfig = null;
+  mapWrapper: HTMLElement | null = null;
+  zoomInBtn: HTMLElement | null = null;
+  zoomOutBtn: HTMLElement | null = null;
+  setLocBtn: HTMLElement | null = null;
+
   constructor() {
-    this.mapId = MAP_ID;
-    this.zoomInBtnSel = ".js-zoom-in";
-    this.zoomOutBtnSel = ".js-zoom-out";
-    this.setLocBtnSel = ".js-location";
-    this.mapItem = null;
-    this.iconsData = null;
-    this.pinConfig = null;
+    this.initControllers();
   }
 
+  /**
+   * Выполняет инициализацию карты
+  */
   initControllers() {
     this.mapWrapper = document.querySelector(`#${this.mapId}`);
+
+    if(!this.mapWrapper) {
+      return;
+    }
+
     this.zoomInBtn = this.mapWrapper.querySelector(this.zoomInBtnSel);
     this.zoomOutBtn = this.mapWrapper.querySelector(this.zoomOutBtnSel);
     this.setLocBtn = this.mapWrapper.querySelector(this.setLocBtnSel);
@@ -188,12 +210,18 @@ class YMapHandler {
     }
   }
 
-  isMapItemExist() {
+  /**
+   * Проверяет существование экземпляра карты
+  */
+  isMapItemExist(): boolean {
     return Boolean(this.mapItem);
   }
 
-  destroyYMap() {
-    if (this.isMapItemExist()) {
+  /**
+   * Удаляет ранее созданный объект карты перед отрисовкой нового экземпляра
+  */
+  destroyYMap(): Promise<Record<'isSucceed' | 'isMapItemExist', boolean> & { message: string; }> {
+    if (this.mapItem) {
       this.mapItem.destroy();
       this.mapItem = null;
       this.iconsData = null;
@@ -218,47 +246,53 @@ class YMapHandler {
     });
   }
 
-  async loadYMap() {
-    let data = { isSucceed: false };
+  /**
+   * Возвращает объект Я.Карт ymaps после успешной загрузки
+  */
+  async loadYMap(): Promise<THandledData<typeof window.ymaps>> {
+    let res: THandledData<typeof window.ymaps> = { isSucceed: false, data: null };
+    const { ymaps } = window;
 
     try {
-      const yMaps = await new Promise((resolve) => ymaps.ready(resolve));
+      const data: typeof ymaps = await new Promise((resolve) => ymaps.ready(resolve as () => any));
 
-      data = { isSucceed: Boolean(yMaps), yMaps };
+      res = { isSucceed: Boolean(data), data };
     } catch (error) {
       console.error(error);
     }
 
-    return data;
+    return res;
   }
 
-  async setMapItem({ coords, bounds }) {
-    let data = { isSucceed: false };
+  /**
+   * Выполняет проверку удаления ранее отрисованной карты и создание экземпляра новой,
+   * возвращает экземпляр новой карты
+   * @property {number[]} coords - координаты центра карты
+   * @property {number[][]} bounds - координаты крайних точек карты
+  */
+  async setMapItem(
+    {
+      coords,
+      bounds
+    }: Pick<TLocationData, typeof COORDS_KEY> & { bounds: TLocationData['boundedBy']; }
+  ) {
+    let data: THandledData<TMapData> = { isSucceed: false, data: null };
 
     try {
       const res = await Promise.all([this.loadYMap(), this.destroyYMap()]);
+      const { data: yMaps } = res[0];
 
-      if (res.reduce((acc, { isSucceed }) => acc && isSucceed, true)) {
-        const { yMaps } = res.reduce((acc, item) => {
-          const key = Object.keys(item).find((key) => key !== "isSucceed");
-
-          return { ...acc, [key]: item[key] };
-        }, {});
-
+      if (yMaps && res.reduce((acc, { isSucceed }) => acc && isSucceed, true)) {
         this.initControllers();
 
-        const isBounds =
-          bounds[0].filter(Boolean).length && bounds[1].filter(Boolean).length;
-        let mapState = null;
+        const isBounds = bounds[0].filter(Boolean).length && bounds[1].filter(Boolean).length;
 
-        if (isBounds) {
-          mapState = { coords, bounds, zoom: 12, controls: [] };
-        } else {
-          mapState = { center: coords, zoom: 12, controls: [] };
-        }
+        this.mapItem = new yMaps.Map(
+          this.mapId,
+          { center: coords, zoom: 12, controls: [], ...( isBounds && { bounds }) }
+        );
 
-        this.mapItem = new yMaps.Map(this.mapId, mapState);
-        data = { isSucceed: true, map: this.mapItem, yMaps };
+        data = { isSucceed: true, data: { map: this.mapItem, yMaps } };
       }
     } catch (error) {
       console.error(error);
@@ -267,19 +301,23 @@ class YMapHandler {
     return data;
   }
 
-  async setGeolocation({ ymaps, map }) {
+  /**
+   * По клику на кнопку перемещает центра карты к определяемому местоположению пользователя
+   * @property {TMapData['yMaps']} ymaps - объект Я.Карт
+   * @property {TMapData['map']} map - экземпляр карты
+  */
+  async setGeolocation({ ymaps, map }: { ymaps: TMapData['yMaps']; } & Pick<TMapData, 'map'>) {
     try {
       const result = await ymaps.geolocation.get();
 
       if (result && result.geoObjects.getLength() > 0) {
         const { geoObjects } = result;
-        map.geoObjects.add(geoObjects);
+        const coords = geoObjects.get(0).geometry?.getBounds();
 
-        const coords = geoObjects.get(0).geometry.getCoordinates();
-        map.panTo(coords);
+        map.panTo(Array.isArray(coords) ? coords[0] : DEFAULT_COORDS);
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 
@@ -294,14 +332,6 @@ class YMapHandler {
     );
 
     categoryStore.setCustomItemsList(items.map(({ id }) => id));
-  }
-
-  setUpdMapCenter(payload) {
-    if (!payload || !this.mapItem) {
-      return;
-    }
-
-    this.mapItem.panTo(payload[COORDS_KEY]);
   }
 
   async renderYMap(data) {
@@ -383,9 +413,10 @@ class YMapHandler {
     };
 
     try {
-      const { isSucceed, map, yMaps } = await this.setMapItem(data);
+      const { isSucceed, data: mapData } = await this.setMapItem(data);
 
-      if (isSucceed) {
+      if (isSucceed && mapData) {
+        const { map, yMaps } = mapData;
         const collection = new yMaps.GeoObjectCollection(null, {
           preset: "islands#blackDotIcon",
         });

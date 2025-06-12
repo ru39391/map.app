@@ -36,7 +36,6 @@ import axios from "axios";
 
 import { fetchFilterData } from "../../utils/fetchFilterData";
 
-// TODO: возможно, избыточный вызов
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();

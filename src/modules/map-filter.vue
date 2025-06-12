@@ -488,12 +488,6 @@ export default defineComponent({
         emit('handleFilterVisibility', value);
       }
     );
-    watch(
-      () => filterData.value,
-      (value) => {
-        console.log('filterData', value);
-      }
-    );
 
     onMounted(() => {
       document.addEventListener("mousedown", closeFilter);
@@ -505,6 +499,7 @@ export default defineComponent({
 
     return {
       currentCategory,
+      filterData,
       filterList,
       isFilterBtnDisabled,
       isFilterDropdownOpen,
