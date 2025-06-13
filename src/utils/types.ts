@@ -82,12 +82,9 @@ export type TMarkerIcons = Record<typeof DEFAULT_KEY | typeof SELECTED_KEY, Reco
 
 export type TMarkerOptions = { iconLayout: string; iconImageHref?: string; } & Record<'iconImageSize' | 'iconImageOffset', number[]>;
 
-export type TMapRendererData = Pick<TFilterData, typeof COORDS_KEY> & {
-  arr: Partial<TItemData>[];
-  bounds: TLocationData['boundedBy'];
-  config: TMarkerOptions;
-  icons: TMarkerIcons;
-};
+export type TMapData = { map: ymaps.Map; yMaps: typeof window.ymaps; };
+
+export type TMapClusterData = Pick<TItemData, 'id' | 'key' | 'isPartner'> & Record<'lon' | 'lat', number> & { options: ymaps.IOptionManager };
 
 export type TMapState = Partial<Record<'center' | typeof COORDS_KEY, TLocationData[typeof COORDS_KEY]>> & {
   bounds?: TLocationData['boundedBy'];
@@ -95,4 +92,9 @@ export type TMapState = Partial<Record<'center' | typeof COORDS_KEY, TLocationDa
   zoom: number;
 };
 
-export type TMapClusterData = Pick<TItemData, 'id' | 'key' | 'isPartner'> & Record<'lon' | 'lat', number> & { options: ymaps.IOptionManager };
+export type TMapRendererData = Pick<TFilterData, typeof COORDS_KEY> & {
+  arr: Partial<TItemData>[];
+  bounds: TLocationData['boundedBy'];
+  config: TMarkerOptions;
+  icons: TMarkerIcons;
+};

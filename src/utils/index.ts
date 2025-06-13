@@ -51,31 +51,40 @@ const stringifyFilterData = (data: TFilterData['data']): string => {
 */
 const handlePointsData = async ({ key, request, boundedBy }: Pick<TPointsFilterValues, 'key' | 'request' | 'boundedBy'>): Promise<THandledData<TItemData[]>> => {
   let data: THandledData<TItemData[]> = { isSucceed: false, data: null };
+  const { ymaps } = window;
 
   try {
-    // TODO: типизировать несколько элементов, связанных с Я.Картами
-    const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
-    const searchRes = await ymapsRes.search(request, {
-      results: 10000,
-      boundedBy,
-    });
-    const resultsArr = searchRes.geoObjects.properties.get("resultsArray");
+    const ymapsRes: typeof ymaps = await new Promise((resolve) => ymaps.ready(resolve as () => any));
+    //@ts-ignore
+    const searchRes = await ymapsRes.search(request, { results: 10000, boundedBy });
+    const resultsArr = searchRes.geoObjects.properties.get("resultsArray") as ymaps.IGeoObject[];
 
     data = {
       isSucceed: true,
-      data: resultsArr.map((item) => ({
-        key,
-        id: item.properties.get("id"),
-        name: item.properties.get("name"),
-        address: item.properties.get("address"),
-        phone: item.properties.get("phoneNumbers"),
-        workingStatus: item.properties.get("workingStatus"),
-        workMode: [item.properties.get("workingTime")],
-        coords: item.geometry.getCoordinates(),
-        individual: false,
-        isPartner: false,
-        workModeCom: []
-      } as TItemData)) as TItemData[],
+      data: resultsArr.map((item) => {
+        const coords = item.geometry?.getBounds();
+        const workingTime = item.properties.get('workingTime', []) as string | TItemData['workMode'];
+        const props = {
+          id: item.properties.get('id', { id: undefined }),
+          name: item.properties.get('name', { name: '' }),
+          address: item.properties.get('address', { address: '' }),
+        };
+
+        return {
+          ...Object.entries(props).reduce((acc, [key, value]) => ({
+            ...acc,
+            [key]: typeof value === 'string' ? value : value[key]
+          }), {} as Pick<TItemData, 'id' | 'name' | 'address'>),
+          key,
+          phone: item.properties.get('phoneNumbers', []) as TItemData['phone'],
+          workMode: Array.isArray(workingTime) ? workingTime : [workingTime],
+          workingStatus: item.properties.get('workingStatus', {}) as TItemData['workingStatus'],
+          [COORDS_KEY]: Array.isArray(coords) ? coords[0] : boundedBy[0],
+          individual: false,
+          isPartner: false,
+          workModeCom: [] as string[]
+        }
+      })
     };
   } catch (error) {
     console.error(error);

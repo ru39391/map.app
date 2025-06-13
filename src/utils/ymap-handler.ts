@@ -12,17 +12,16 @@ import {
   COORDS_KEY,
 } from "./constants";
 import {
-  TMapClusterData,
   TFilterData,
   THandledData,
   TItemData,
   TLocationData,
+  TMapClusterData,
+  TMapData,
   TMapRendererData,
   TMarkerIcons,
   TMarkerOptions
 } from "./types";
-
-type TMapData = { map: ymaps.Map; yMaps: typeof window.ymaps; };
 
 type TCardData = { id: string; card: HTMLElement | null; };
 
