@@ -16,7 +16,12 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from "vue";
-import type { TItemData, TLocationData, TMarkerIcons } from "../utils/types";
+import type {
+  TItemData,
+  TLocationData,
+  TMarkerIcons,
+  TMarkerOptions
+} from "../utils/types";
 import {
   DEFAULT_KEY,
   SELECTED_KEY,
@@ -212,7 +217,7 @@ export default defineComponent({
             arr,
             coords,
             bounds,
-            config: markerOptions.value,
+            config: markerOptions.value as TMarkerOptions,
             icons: markerIcons.value,
           });
         }

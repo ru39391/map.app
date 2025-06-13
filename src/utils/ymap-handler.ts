@@ -4,7 +4,6 @@ import { useCategoryStore } from "../store/modules/category";
 import {
   SELECTED_KEY,
   CLUSTER_KEY,
-  CLUSTER_CLOSED_KEY,
   PARTNER_KEY,
   MAP_PINS,
   MAP_ID,
@@ -13,33 +12,35 @@ import {
   COORDS_KEY,
 } from "./constants";
 import {
-  TClusterData,
+  TMapClusterData,
   TFilterData,
   THandledData,
   TItemData,
-  TLocationData
+  TLocationData,
+  TMapRendererData,
+  TMarkerIcons,
+  TMarkerOptions
 } from "./types";
-//import ymaps from "yandex-maps";
 
 type TMapData = { map: ymaps.Map; yMaps: typeof window.ymaps; };
 
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();
-// TODO: выполнить типизацию
+
 class YMapHandler {
   mapId = MAP_ID;
   zoomInBtnSel = ".js-zoom-in";
   zoomOutBtnSel = ".js-zoom-out";
   setLocBtnSel = ".js-location";
   mapItem: TMapData['map'] | null = null;
-  clusters: TClusterData[] = [];
-  iconsData = null;
-  pinConfig = null;
+  mapClusters: TMapClusterData[] = [];
+  iconsData: TMarkerIcons | null = null;
+  pinConfig: TMarkerOptions | null = null;
   mapWrapper: HTMLElement | null = null;
-  zoomInBtn: HTMLElement | null = null;
-  zoomOutBtn: HTMLElement | null = null;
-  setLocBtn: HTMLElement | null = null;
+  zoomInBtn: HTMLButtonElement | null = null;
+  zoomOutBtn: HTMLButtonElement | null = null;
+  setLocBtn: HTMLButtonElement | null = null;
 
   constructor() {
     this.initControllers();
@@ -60,34 +61,56 @@ class YMapHandler {
     this.setLocBtn = this.mapWrapper.querySelector(this.setLocBtnSel);
   }
 
-  handleSelectedItems(arr, isIconHandlerDisabled = false) {
-    const idsArr = arr ? arr.map(({ properties }) => properties._data.id) : [];
+  /**
+   * Обрабатывает клик по метке на карте
+   * @property {{ properties: ymaps.IDataManager; options: ymaps.IOptionManager; }[]} arr - массив данных меток
+   * @property {boolean} isIconHandlerDisabled - блокировать ли изменение иконок пинов, если метка относится к массиву точек погашения
+  */
+  handleSelectedItems(
+    arr: { properties: ymaps.IDataManager; options: ymaps.IOptionManager; }[],
+    isIconHandlerDisabled: boolean = false
+  ) {
     const config = {};
+    const idsArr = arr
+      ? arr.reduce((acc: string[], { properties }) => {
+          const id = properties.get('id', { id: undefined });
+
+          return typeof id === 'object' ? acc : [...acc, id as string];
+        }, [])
+      : [] as string[];
 
     categoryStore.setSelectedItemsList(idsArr);
 
     if (!isIconHandlerDisabled) {
       arr.forEach(({ properties, options }) => {
-        Object.keys(config).forEach((item, index) => {
-          options.set(item, Object.values(config)[index]);
+        const isPartnerData = properties.get('isPartner', { isPartner: false });
+        const isPartner = typeof isPartnerData === 'object' ? {...isPartnerData as Record<string, boolean>}.isPartner : isPartnerData as boolean;
+
+        Object.entries(config).forEach(([key, value]) => {
+          //@ts-ignore
+          options.set(key, value);
+          //@ts-ignore
           options.set(
-            "iconImageHref",
-            this.iconsData[SELECTED_KEY][
-              properties._data.isPartner ? PARTNER_KEY : DEFAULT_KEY
-            ]["iconImageHref"]
+            'iconImageHref',
+            {...this.iconsData as TMarkerIcons}[SELECTED_KEY][isPartner ? PARTNER_KEY : DEFAULT_KEY]['iconImageHref']
           );
         });
       });
     }
   }
 
-  hoverPlacemark({ id, key, isPartner, options }: TClusterData) {
+  /**
+   * Обрабатывает наведение на метку карты
+   * @property {TMapClusterData} data - данные объекта карты
+  */
+  hoverPlacemark({ id, key, isPartner, options }: TMapClusterData) {
+    if(!this.iconsData) {
+      return;
+    }
+
     const isItemSelected = categoryStore.selectedItemsList.length === 1;
 
-    if (
-      isItemSelected &&
-      categoryStore.selectedItemsList.find((item) => item.id === id)
-    ) {
+    if (isItemSelected && categoryStore.selectedItemsList.find((item) => item.id === id)) {
       return;
     }
 
@@ -98,12 +121,19 @@ class YMapHandler {
       iconImageOffset: [-43, -108],
     };
 
-    Object.keys(config).forEach((item, index) => {
-      options.set(item, Object.values(config)[index]);
-    });
+    //@ts-ignore
+    Object.entries(config).forEach(([key, value]) => options.set(key, value));
   }
 
-  leavePlacemark({ id, key, isPartner, options }: TClusterData) {
+  /**
+   * Обрабатывает прекращение наведения на метку карты
+   * @property {TMapClusterData} data - данные объекта карты
+  */
+  leavePlacemark({ id, key, isPartner, options }: TMapClusterData) {
+    if(!this.iconsData) {
+      return;
+    }
+
     const isItemSelected = categoryStore.selectedItemsList.length === 1;
 
     if (isItemSelected && categoryStore.selectedItemsList.find((item) => item.id === id)) {
@@ -120,13 +150,8 @@ class YMapHandler {
           ...(isPartner && { ...this.iconsData[DEFAULT_KEY][PARTNER_KEY] }),
         };
 
-    Object.entries(config).forEach(([key, value]) => {
-      //console.log(key, options.get(key, { [key]: Array.isArray(value) ? [...value] : value }));
-    });
-    Object.keys(config).forEach((item, index) => {
-      //console.log(options.get());
-      options.set(item, Object.values(config)[index]);
-    });
+    //@ts-ignore
+    Object.entries(config).forEach(([key, value]) => options.set(key, value));
   }
 
   /**
@@ -139,17 +164,19 @@ class YMapHandler {
     }
 
     const idsArr = arr.map(({ id }) => id);
-    const placemarks = this.clusters.filter(({ id }) => !idsArr.includes(id));
+    const placemarks = this.mapClusters.filter(({ id }) => !idsArr.includes(id));
 
     placemarks.forEach((data) => this.leavePlacemark(data));
   }
 
-  setCardElements(arr) {
-    const getCardElements = (array) =>
-      array.map(({ id }) => ({
-        id,
-        card: document.querySelector(`#card-${id}`),
-      }));
+  /***/
+  setCardElements(arr: TItemData[]) {
+    const getCardElements = (array: TItemData[]) => array.reduce(
+      (acc: { id: string; card: HTMLElement | undefined; }[], { id }: { id: TItemData['id']; }) => {
+        return id === undefined ? acc : [...acc, { id, card: document.querySelector(`#card-${id}`) }];
+      },
+      []
+    );
 
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -161,22 +188,23 @@ class YMapHandler {
     });
   }
 
-  async handleCardsList(arr) {
+  /***/
+  async handleCardsList(arr: TItemData[]) {
     const setCardListeners = ({ id, card }) => {
       if (!card) {
         return;
       }
 
       card.addEventListener("mouseenter", () => {
-        const target = this.clusters.find((item) => item.id === id);
+        const target = this.mapClusters.find((item) => item.id === id);
 
-        this.hoverPlacemark(target);
+        if(target) this.hoverPlacemark(target);
       });
 
       card.addEventListener("mouseleave", () => {
-        const target = this.clusters.find((item) => item.id === id);
+        const target = this.mapClusters.find((item) => item.id === id);
 
-        this.leavePlacemark(target);
+        if(target) this.leavePlacemark(target);
       });
     };
 
@@ -184,9 +212,7 @@ class YMapHandler {
       const { isSucceed, data: cards } = await this.setCardElements(arr);
 
       if (isSucceed) {
-        cards.forEach((item) =>
-          setCardListeners(item)
-        );
+        cards.forEach((item) => setCardListeners(item));
       }
     } catch (error) {
       console.error(error);
@@ -207,7 +233,7 @@ class YMapHandler {
     if (this.mapItem) {
       this.mapItem.destroy();
       this.mapItem = null;
-      this.clusters = [];
+      this.mapClusters = [];
       this.iconsData = null;
       this.pinConfig = null;
     }
@@ -286,32 +312,30 @@ class YMapHandler {
   }
 
   /**
-   * Преобразует данные геообъектов экземпляра clusterer в подходящие для обработки объекты
-   * @property {ymaps.IGeoObject[]} arr - массив геообъектов экземпляра clusterer
+   * Преобразует данные меток в подходящие для обработки объекты
+   * @property {ymaps.IGeoObject} item - геообъект метки на карте
   */
-  setClusterItems(arr: ymaps.IGeoObject[]) {
-    this.clusters = arr.map((item) => {
-      const data: Record<string, object> = {
-        id: item.properties.get('id', { id: undefined }),
-        key: item.properties.get('key', { key: undefined }),
-        isPartner: item.properties.get('isPartner', { isPartner: false })
-      };
+  handlePlacemarkItem(item: ymaps.IGeoObject): TMapClusterData {
+    const data: Record<string, object> = {
+      id: item.properties.get('id', { id: undefined }),
+      key: item.properties.get('key', { key: undefined }),
+      isPartner: item.properties.get('isPartner', { isPartner: false })
+    };
 
-      return {
-        ...Object.entries(data).reduce(
-          (acc, [key, value]) => ({
-            ...acc,
-            [key]: typeof value === 'object'
-              ? key === 'isPartner' ? value[key] as boolean : value[key] as undefined
-              : key === 'isPartner' ? value as boolean : value as string
+    return {
+      ...Object.entries(data).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: typeof value === 'object'
+            ? key === 'isPartner' ? value[key] as boolean : value[key] as undefined
+            : key === 'isPartner' ? value as boolean : value as string
           }),
-          {}
-        ),
-        lon: item.properties.get('coords', DEFAULT_COORDS)[0],
-        lat: item.properties.get('coords', DEFAULT_COORDS)[1],
-        options: item.options
-      } as TClusterData;
-    });
+        {}
+      ),
+      lon: item.properties.get('coords', DEFAULT_COORDS)[0],
+      lat: item.properties.get('coords', DEFAULT_COORDS)[1],
+      options: item.options
+    } as TMapClusterData;
   }
 
   /**
@@ -340,7 +364,7 @@ class YMapHandler {
   */
   updateCustomItems(bounds: TLocationData['boundedBy']) {
     const [leftBound, rightBound] = bounds;
-    const items = this.clusters.filter(
+    const items = this.mapClusters.filter(
       (item) => leftBound[0] <= item.lon && item.lon <= rightBound[0] && leftBound[1] <= item.lat && item.lat <= rightBound[1]
     );
 
@@ -361,70 +385,94 @@ class YMapHandler {
     this.mapItem.panTo(coords);
   }
 
-  async renderYMap(data) {
-    const placemarks = [];
+  /**
+   * Выполняет преобразование данных элемента карты в объект свойств
+   * @property {ymaps.IGeoObject} target - элемент карты
+  */
+  setGeoObjectProps(target: ymaps.IGeoObject): {
+    geoObjects: ymaps.IGeoObject[];
+    options: ymaps.IOptionManager;
+    properties: ymaps.IDataManager;
+    target: ymaps.IGeoObject;
+  } {
+    const { properties, options } = target;
+    const geoObjects = properties.get('geoObjects', []) as ymaps.IGeoObject[];
+
+    return {
+      geoObjects,
+      options,
+      properties,
+      target
+    }
+  }
+
+  /**
+   * Выполняет отрисовку карты
+   * @property {TMapRendererData} data - данные для отрисовки карты: список объектов, коррдинаты границ и центра, конфигурация иконок пинов
+  */
+  async renderYMap(data: TMapRendererData) {
+    const placemarks = [] as ymaps.Placemark[];
     const { arr, config, icons } = data;
 
+    /**
+     * Добавляет карте обработчик события изменения координат её границ
+     * @property {ymaps.IEvent} event
+    */
     const handleBounds = (event: ymaps.IEvent) => {
       this.updateCustomItems(event.get("newBounds"));
     };
 
-    const handlePlacemarkData = (event) => {
-      const { properties, options } = event.get("target");
-      const { key } = properties._data;
+    /**
+     * Добавляет карте обработчик клика по метке
+     * @property {ymaps.IEvent} event
+    */
+    const handleClick = (event: ymaps.IEvent) => {
+      const {
+        geoObjects,
+        options,
+        properties
+      } = this.setGeoObjectProps(event.get("target") as ymaps.IGeoObject);
+      const key = properties.get('key', { key: undefined });
 
-      if (properties.get("geoObjects")) {
-        this.handleSelectedItems(properties.get("geoObjects"));
+      if (geoObjects.length > 0) {
+        this.handleSelectedItems(geoObjects.map(({ properties, options }) => ({ properties, options })));
       } else {
-        this.handleSelectedItems([{ properties, options }], Boolean(key));
+        this.handleSelectedItems([{ properties, options }], Boolean(typeof key === 'string'));
       }
     };
 
-    const hoverPin = (event) => {
-      const { properties, options } = event.get("target");
-      const { id, key, isClosed, isPartner } = properties._data;
+    /**
+     * Добавляет карте обработчик наведения на метку
+     * @property {ymaps.IEvent} event
+    */
+    const hoverPin = (event: ymaps.IEvent) => {
+      const { geoObjects, target } = this.setGeoObjectProps(event.get("target") as ymaps.IGeoObject);
+      const data = this.handlePlacemarkItem(target);
 
-      if (!properties.get("geoObjects")) {
-        this.hoverPlacemark({ id, key, isClosed, isPartner, options });
+      if (geoObjects.length === 0) this.hoverPlacemark(data);
+    };
+
+    /**
+     * Добавляет карте обработчик прекращения наведения на метку
+     * @property {ymaps.IEvent} event
+    */
+    const leavePin = (event: ymaps.IEvent) => {
+      const { geoObjects, target } = this.setGeoObjectProps(event.get("target") as ymaps.IGeoObject);
+      const data = this.handlePlacemarkItem(target);
+
+      if (geoObjects.length === 0) this.leavePlacemark(data);
+    };
+
+    /**
+     * Добавляет обработчик контроллерам уменьшения/увеличения масштаба карты
+     * @property {TMapData['map']} map - экземпляр карты
+     * @property {boolean} isZoomIn - истинно, если масштаб увеличивается
+    */
+    const zoomMap = (map: TMapData['map'], isZoomIn: boolean = true) => {
+      if(!this.zoomInBtn || !this.zoomOutBtn) {
+        return;
       }
-    };
 
-    const leavePin = (event) => {
-      const { properties, options } = event.get("target");
-      const { id, key, isClosed, isPartner } = properties._data;
-
-      if (!properties.get("geoObjects")) {
-        this.leavePlacemark({ id, key, isClosed, isPartner, options });
-      }
-    };
-
-    const handleClusters = (event) => {
-      const currentMap = event.get("target");
-      const clusters = currentMap.getClusters();
-
-      clusters.forEach((item) => {
-        const { properties: clusterProps, options } = item;
-        const isClosed = clusterProps
-          .get("geoObjects")
-          .reduce(
-            (acc, { properties }) => acc || properties._data.isClosed,
-            false
-          );
-
-        //console.log(clusterProps.get('geoObjects').map(({ properties }) => properties._data));
-        if (isClosed) {
-          options.set("clusterIcons", [
-            {
-              href: MAP_PINS[CLUSTER_CLOSED_KEY],
-              size: [52, 52],
-              offset: [-26, -52],
-            },
-          ]);
-        }
-      });
-    };
-
-    const zoomMap = (map, isZoomIn = true) => {
       const currZoomValue = map.getZoom();
       const zoomValue = isZoomIn ? 1 : -1;
 
@@ -439,22 +487,15 @@ class YMapHandler {
 
       if (isSucceed && mapData) {
         const { map, yMaps } = mapData;
-        const collection = new yMaps.GeoObjectCollection(null, {
-          preset: "islands#blackDotIcon",
-        });
         const searchControl = new yMaps.control.SearchControl({
-          options: {
-            float: "right",
-            floatIndex: 100,
-            noPlacemark: true,
-          },
+          options: { float: "right", floatIndex: 100, noPlacemark: true },
         });
-        const clusterIconContentLayout =
-          yMaps.templateLayoutFactory.createClass(
-            `<div class="map-cluster {% for item in properties.geoObjects %} {{ item.properties._data.clusterMod}}{% endfor %}">{{ properties.geoObjects.length }}</div>`
-          );
+
+        const clusterIconContentLayout = yMaps.templateLayoutFactory.createClass(`<div class="map-cluster {% for item in properties.geoObjects %} {{ item.properties._data.clusterMod}}{% endfor %}">{{ properties.geoObjects.length }}</div>`);
+
         const clusterer = new yMaps.Clusterer({
           preset: "islands#blueClusterIcons",
+          //@ts-ignore
           clusterIconContentLayout,
           clusterIcons: [
             {
@@ -468,15 +509,14 @@ class YMapHandler {
           clusterOpenBalloonOnClick: false,
         });
 
-        arr.forEach(({ id, coords, key, isWork, isPartner }, index) => {
+        arr.forEach(({ id, coords, key, isPartner }, index) => {
           const placemark = new yMaps.Placemark(
-            coords,
+            coords || DEFAULT_COORDS,
             {
               id,
               idx: index,
               key,
               coords,
-              isClosed: !key && !isWork && !isPartner,
               isPartner,
               clusterMod: key ? "map-cluster_type_point" : "",
             },
@@ -487,30 +527,35 @@ class YMapHandler {
             }
           );
           clusterer.add(placemark);
-          //collection.add(placemark);
           placemarks.push(placemark);
         });
 
-        map.events.add("boundschange", handleBounds);
-        map.geoObjects.events.add("mouseenter", hoverPin);
-        map.geoObjects.events.add("mouseleave", leavePin);
-        map.geoObjects.events.add("click", handlePlacemarkData);
-        clusterer.events.add("mapchange", handleClusters);
-
         map.controls.add(searchControl);
+        //@ts-ignore
         map.geoObjects.add(clusterer);
 
-        this.setClusterItems(clusterer.getGeoObjects());
-
-        this.zoomInBtn.addEventListener("click", () => zoomMap(map));
-        this.zoomOutBtn.addEventListener("click", () => zoomMap(map, false));
-        this.setLocBtn.addEventListener("click", () =>
-          this.setGeolocation({ ymaps: yMaps, map })
-        );
+        map.events.add("boundschange", handleBounds);
+        map.geoObjects.events.add("click", handleClick);
+        map.geoObjects.events.add("mouseenter", hoverPin);
+        map.geoObjects.events.add("mouseleave", leavePin);
 
         this.iconsData = icons;
         this.pinConfig = config;
+        this.mapClusters = clusterer.getGeoObjects().map(item => this.handlePlacemarkItem(item));
         this.updateCustomItems(map.getBounds());
+
+        [{
+          item: this.zoomInBtn,
+          handleClick: () => zoomMap(map)
+        }, {
+          item: this.zoomOutBtn,
+          handleClick: () => zoomMap(map, false)
+        }, {
+          item: this.setLocBtn,
+          handleClick: () => this.setGeolocation({ ymaps: yMaps, map })
+        }].forEach(({ item, handleClick }) => {
+          if(item) item.addEventListener("click", handleClick);
+        });
       }
     } catch (error) {
       console.error(error);

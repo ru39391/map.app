@@ -80,10 +80,19 @@ export type TDeptsData = Record<TCategoryData['category'], Record<'name' | 'code
 
 export type TMarkerIcons = Record<typeof DEFAULT_KEY | typeof SELECTED_KEY, Record<typeof DEFAULT_KEY | typeof PARTNER_KEY | TPointsFilterKeys, Record<string, string>>>;
 
-export type TMapState = Partial<Record<'center' | typeof COORDS_KEY, TLocationData[typeof COORDS_KEY]>> & {
-  bounds?: TLocationData['boundedBy'];
-  zoom: number,
-  controls: ymaps.Map['controls'];
+export type TMarkerOptions = { iconLayout: string; iconImageHref?: string; } & Record<'iconImageSize' | 'iconImageOffset', number[]>;
+
+export type TMapRendererData = Pick<TFilterData, typeof COORDS_KEY> & {
+  arr: Partial<TItemData>[];
+  bounds: TLocationData['boundedBy'];
+  config: TMarkerOptions;
+  icons: TMarkerIcons;
 };
 
-export type TClusterData = Pick<TItemData, 'id' | 'key' | 'isPartner'> & Record<'lon' | 'lat', number> & { options: ymaps.IOptionManager };
+export type TMapState = Partial<Record<'center' | typeof COORDS_KEY, TLocationData[typeof COORDS_KEY]>> & {
+  bounds?: TLocationData['boundedBy'];
+  controls: ymaps.Map['controls'];
+  zoom: number;
+};
+
+export type TMapClusterData = Pick<TItemData, 'id' | 'key' | 'isPartner'> & Record<'lon' | 'lat', number> & { options: ymaps.IOptionManager };
