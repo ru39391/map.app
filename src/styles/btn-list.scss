@@ -3,7 +3,7 @@
   @extend %d-flex-ai-center;
   gap: 12px;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     gap: 8px;
   }
 }
@@ -12,16 +12,16 @@
   @extend %btn-default;
   padding: 12px 20px;
   border-radius: 100px;
-  background-color: #fff;
+  background-color: $bnw1000;
   transition: all 0.3s ease;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     @include fs-lh(18px, 22px);
     padding: 8px 12px;
   }
 
   &:hover,
   &.is-active {
-    background-color: #e3f2fc;
+    background-color: $bnw950;//
   }
 }

@@ -1,13 +1,13 @@
 .map-wrapper {
-    @include fs-lh(20px,24px);
-    font-family: "Golos Text", sans-serif;
-    color: #242424;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    flex-direction: row-reverse;
+  @include fs-lh(20px, 24px);
+  font-family: "Golos", sans-serif;
+  color: $bnw150;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: row-reverse;
 
-    @media (max-width:991px) {
-      flex-direction: column;
-    }
+  @media (max-width: 1023px) {
+    flex-direction: column;
+  }
 }

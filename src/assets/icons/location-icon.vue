@@ -18,8 +18,10 @@
   </svg>
 </template>
 
-<script>
-  export default {
-    name: 'location-icon',
-  };
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "LocationIcon",
+});
 </script>

@@ -13,8 +13,10 @@
   </svg>
 </template>
 
-<script>
-  export default {
-    name: 'map-icon',
-  };
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: "MapIcon",
+});
 </script>

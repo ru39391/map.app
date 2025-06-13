@@ -11,15 +11,20 @@
 .map-cluster {
   @extend %d-flex-column;
   @extend %d-flex-centered;
-  @include wh(50px);
-  @include fs-lh(20px,24px);
-  font-weight: 400;
+  @include wh(52px);
+  @include fs-lh(20px, 24px);
+  font-family: "Golos", sans-serif;
+  font-weight: 500;
   cursor: pointer;
   border-radius: 50%;
-  border: 4px solid #FF6F00;
-  background-color: #fff;
+  box-sizing: border-box;
+  border: 2px solid $bnw1000;
+  background-color: $pin;
+  color: $bnw1000;
 
-  &.map-cluster__open {
-    border-color: #46A7EC;
+  &.map-cluster_type_point {
+    border-color: $bnw150;
+    background-color: $bnw1000;
+    color: $bnw150;
   }
 }

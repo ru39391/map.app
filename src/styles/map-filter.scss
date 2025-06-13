@@ -4,14 +4,14 @@
   gap: 0 12px;
   margin: 0 0 12px;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     gap: 0 8px;
     margin: 0 0 8px;
     border-radius: 12px;
   }
 
   &.is-active {
-    @media (min-width: 992px) {
+    @media (min-width: 1024px) {
       flex-grow: 1;
     }
   }
@@ -22,7 +22,7 @@
   @include wh(68px);
   @extend %d-flex-column;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     @include fw(54px);
     @include wh(54px);
   }
@@ -34,9 +34,9 @@
   @extend %d-flex-column;
   flex-grow: 1;
   border-radius: 16px;
-  background-color: #fff;
+  background-color: $bnw1000;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     border-radius: 12px;
   }
 }
@@ -50,23 +50,44 @@
   @extend %link-default;
   @extend %d-flex-centered;
   @extend %d-flex-column;
+  @include zi(3);
   @include fs-lh(24px, 20px);
   font-weight: 500;
-  font-family: "Golos Text", sans-serif;
+  font-family: "Golos", sans-serif;
   width: 100%;
   padding: 20px;
   letter-spacing: -0.5px;
   text-transform: uppercase;
   border-radius: 100px;
-  background-color: #c1ff05;
+  background-color: $green500;
+  transition: all 0.3s ease;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     @include fs-lh(20px, 16px);
     padding: 16px;
   }
 
+  &:hover {
+    color: $bnw1000;
+    background-color: $green450;
+  }
+
+  &:focus {
+    color: $bnw1000;
+    background-color: $green400;
+  }
+
   &:disabled {
-    opacity: 0.75;
     cursor: default;
+    color: $bnw1000;
+    background-color: $bnw850;
+  }
+
+  &.is-mobile-only {
+    @include mobileOnly;
+  }
+
+  &--mt-16 {
+    margin-top: 16px;
   }
 }

@@ -2,44 +2,39 @@
   @extend %d-flex-column;
   gap: 36px 0;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     gap: 20px 0;
   }
 
   &.is-hidden {
-    @media (min-width: 992px) {
+    @media (min-width: 1024px) {
       display: none;
     }
   }
 }
 
 .map-search-holder__desc {
-  @include fs-lh(24px,28px);
-  font-weight: 500;
+  @include text-lg;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     line-height: 26px;
     letter-spacing: -0.5px;
   }
 }
 
 .map-search {
-  @extend %d-flex-ai-center;
   @include zi(1);
-  gap: 0 12px;
-  padding: 0 0 0 24px;
   border-radius: 16px;
-  border: 2px solid #dedede;
-  background-color: #fff;
+  border: 2px solid $bnw850;
+  background-color: $bnw1000;
   transition: all 0.3s ease;
 
-  @media (max-width: 991px) {
-    padding: 0 0 0 16px;
+  @media (max-width: 1023px) {
     border-radius: 12px;
   }
 
   &.is-active {
-    border-color: #0d0d0d;
+    border-color: $bnw50;
   }
 }
 
@@ -47,22 +42,26 @@
   border: 0;
   outline: none;
   flex-grow: 1;
-  padding: 20px 24px 20px 0;
-  color: #0d0d0d;
+  padding: 20px 24px 20px 58px;
+  color: $bnw50;
   background-color: rgba(0, 0, 0, 0);
 
-  @media (max-width: 991px) {
-    @include fs-lh(18px,22px);
-    padding: 16px 16px 16px 0;
+  @media (max-width: 1023px) {
+    @include fs-lh(18px, 22px);
+    padding: 16px 16px 16px 50px;
   }
 }
 
 .map-search__btn {
   @extend %btn-default;
   @extend %d-flex-column;
+  @extend %d-flex-centered;
+  @include pos(0, 0);
+  @include wh(58px, 100%);
+  cursor: default;
+  pointer-events: none;
 
-  &.map-search__btn_pe_none {
-    cursor: default;
-    pointer-events: none;
+  @media (max-width: 1023px) {
+    width: 50px;
   }
 }

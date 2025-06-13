@@ -2,7 +2,7 @@
   <button
     class="map-switcher"
     type="button"
-    @click="this.$emit('handleMapVisibility')"
+    @click="handleMapVisibility"
   >
     <template v-if="isMapVisible">
       Список
@@ -15,23 +15,43 @@
   </button>
 </template>
 
-<script>
-  import ListIcon from '../assets/icons/list-icon.vue';
-  import MapIcon from '../assets/icons/map-icon.vue';
+<script lang="ts">
+import { defineComponent, defineEmits } from 'vue';
+import ListIcon from "../assets/icons/list-icon.vue";
+import MapIcon from "../assets/icons/map-icon.vue";
 
-  export default {
-    name: 'map-switcher',
+/**
+ * Переключает отображение (карта или список) филиалов/банкоматов/терминалов на мобильных устройствах
+ *
+ * @component
+ * @example
+ * <MapSwitcher />
+ */
+export default defineComponent({
+  name: "MapSwitcher",
 
-    components: {
-      ListIcon,
-      MapIcon,
+  components: {
+    ListIcon,
+    MapIcon,
+  },
+
+  props: {
+    isMapVisible: {
+      type: Boolean,
+      required: true,
     },
+  },
 
-    props: {
-      isMapVisible: {
-        type: Boolean,
-        required: true
-      }
-    },
-  };
+  emits: ['handleMapVisibility'],
+
+  setup(_, { emit }) {
+    const handleMapVisibility = () => {
+      emit('handleMapVisibility');
+    };
+
+    return {
+      handleMapVisibility
+    }
+  }
+});
 </script>

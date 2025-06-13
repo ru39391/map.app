@@ -1,14 +1,13 @@
 .map-controllers {
   @extend %d-flex-column;
   @extend %d-flex-centered;
-  gap: 4px 0;
+  gap: 8px 0;
   position: absolute;
   right: 54px;
-  bottom: 94px;
+  bottom: 144px;
   z-index: 1;
 
-  @media (max-width: 991px) {
-    gap: 8px 0;
+  @media (max-width: 1023px) {
     top: 50%;
     bottom: auto;
     right: 20px;
@@ -24,15 +23,24 @@
   @include fw(48px);
   border-radius: 50%;
   transition: all 0.3s ease;
-  background-color: #fff;
+  background-color: $bnw1000;
   box-shadow: -4px 4px 16px 0 rgba(0, 0, 0, 0.1);
 
-  @media (max-width: 991px) {
+  @media (max-width: 1023px) {
     @include wh(36px);
     @include fw(36px);
   }
 
   &:disabled {
-    opacity: .45;
+    opacity: 0.45;
+  }
+}
+
+.map-controllers__icon {
+  object-fit: cover;
+
+  @media (max-width: 1023px) {
+    @include wh(16px);
+    @include fw(16px);
   }
 }

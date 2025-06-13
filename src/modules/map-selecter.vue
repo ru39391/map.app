@@ -3,7 +3,7 @@
     <button
       :class="[
         'map-selecter__placeholder',
-        { 'is-active': isCategoryDropdownOpen }
+        { 'is-active': isCategoryDropdownOpen },
       ]"
       type="button"
       @click="setCategoryDropdownOpen(!isCategoryDropdownOpen)"
@@ -12,11 +12,19 @@
       <ExpendMoreIcon class="map-selecter__arrow" />
     </button>
     <div class="map-dropdown" v-if="isCategoryDropdownOpen">
-      <div :class="['map-dropdown__wrapper', { 'is-active': isCategoryDropdownOpen }]">
+      <div
+        :class="[
+          'map-dropdown__wrapper',
+          { 'is-active': isCategoryDropdownOpen },
+        ]"
+      >
         <button
           v-for="categoryItem in categoryList"
           :key="categoryItem.type"
-          :class="['map-dropdown__toggler', { 'is-active': categoryItem.type === currentCategory.type }]"
+          :class="[
+            'map-dropdown__toggler',
+            { 'is-active': categoryItem.type === currentCategory.type },
+          ]"
           type="button"
           @click="handleCurrentCategory(categoryItem)"
         >
@@ -27,87 +35,86 @@
   </div>
 </template>
 
-<script>
-  import { mapActions, mapState } from 'pinia';
-  import { LOCATION_CODE_KEY, DEFAULT_LOC_CODE } from '../utils/constants';
-  import { useCategoryStore } from '../store/modules/category';
-  import { useLocationStore } from '../store/modules/location';
-  import ExpendMoreIcon from '../assets/icons/expend-more-icon.vue';
+<script lang="ts">
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue';
+import type { TFilterData } from "../utils/types";
+import { useFilterStore } from "../store/modules/filter";
+import ExpendMoreIcon from "../assets/icons/expend-more-icon.vue";
 
-  export default {
-    name: 'map-selecter',
+/**
+ * Выпадающее меню с параметрами фильтра
+ *
+ * @component
+ * @example
+ * <MapSelecter />
+ */
+export default defineComponent({
+  name: "MapSelecter",
 
-    components: {
-      ExpendMoreIcon
-    },
+  components: {
+    ExpendMoreIcon,
+  },
 
-    data() {
-      return {
-        isCategoryDropdownOpen: false
+  setup() {
+    const mapSelecter = ref<HTMLElement | null>(null);
+    const isCategoryDropdownOpen = ref<boolean>(false);
+
+    const filterStore = useFilterStore();
+    const categoryList = computed(() => filterStore.categoryList);
+    const currentCategory = computed(() => filterStore.currentCategory);
+    const currentFilterData = computed(() => filterStore.currentFilterData);
+
+    const selecterCaption = computed(() => currentCategory.value ? currentCategory.value.caption : '');
+
+    /**
+     * Изменяет видимость выпадающего меню с категориями фильтра
+     * @property {boolean} value - истинное, если отображаем выпадающее меню
+    */
+    const setCategoryDropdownOpen = (value: boolean) => {
+      isCategoryDropdownOpen.value = value;
+    };
+
+    /**
+     * Устанавливает категорию фильтра (отделения/банкоматы/терминалы/точки погашения)
+     * @property {TFilterData['type']} type - категория фильтра
+    */
+    const handleCurrentCategory = ({ type }: { type: TFilterData['type']; }) => {
+      setCategoryDropdownOpen(false);
+
+      if (currentCategory.value && type === currentCategory.value.type) {
+        return;
       }
-    },
 
-    computed: {
-      ...mapState(
-        useCategoryStore,
-        [
-          'categoryList',
-          'currentCategory'
-        ]
-      ),
+      filterStore.setCurrentFilterData({ ...currentFilterData.value, type, data: null });
+    };
 
-      ...mapState(useLocationStore, ['currentLocation']),
-
-      selecterCaption() {
-        return this.currentCategory ? this.currentCategory.caption : '';
-      },
-
-      currentLocationData() {
-        return { [LOCATION_CODE_KEY]: this.currentLocation ? this.currentLocation[LOCATION_CODE_KEY] : DEFAULT_LOC_CODE };
+    /**
+     * Закрывает меню фильтра по клику
+     * @property {MouseEvent} event
+    */
+    const closeDropdown = (event: MouseEvent) => {
+      if (mapSelecter.value && !mapSelecter.value.contains(event.target as Node)) {
+        setCategoryDropdownOpen(false);
       }
-    },
+    };
 
-    methods: {
-      ...mapActions(
-        useCategoryStore,
-        [
-          'fetchCategoryData',
-          'setCurrentCategory'
-        ]
-      ),
+    onMounted(() => {
+      document.addEventListener("mousedown", closeDropdown);
+    });
 
-      setCategoryDropdownOpen(value) {
-        this.isCategoryDropdownOpen = value;
-      },
+    onBeforeUnmount(() => {
+      document.removeEventListener("mousedown", closeDropdown);
+    });
 
-      handleCurrentCategory({type, caption, category}) {
-        this.setCategoryDropdownOpen(false);
-
-        if(this.currentCategory && type === this.currentCategory.type) {
-          return;
-        }
-
-        this.setCurrentCategory({type, caption, category});
-
-        this.fetchCategoryData({
-          type,
-          ...this.currentLocationData
-        });
-      },
-
-      closeDropdown({ target }) {
-        if(!this.$refs.mapSelecter.contains(target)) {
-          this.setCategoryDropdownOpen(false);
-        }
-      }
-    },
-
-    mounted() {
-      document.addEventListener('mousedown', this.closeDropdown);
-    },
-
-    beforeUnmount() {
-      document.removeEventListener('mousedown', this.closeDropdown);
-    }
-  };
+    return {
+      mapSelecter,
+      categoryList,
+      currentCategory,
+      isCategoryDropdownOpen,
+      selecterCaption,
+      handleCurrentCategory,
+      setCategoryDropdownOpen
+    };
+  },
+});
 </script>
