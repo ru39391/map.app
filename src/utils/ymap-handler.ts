@@ -24,6 +24,8 @@ import {
 
 type TMapData = { map: ymaps.Map; yMaps: typeof window.ymaps; };
 
+type TCardData = { id: string; card: HTMLElement | null; };
+
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();
@@ -43,11 +45,10 @@ class YMapHandler {
   setLocBtn: HTMLButtonElement | null = null;
 
   constructor() {
-    this.initControllers();
   }
 
   /**
-   * Выполняет инициализацию карты
+   * Присваивает значение секции карты и основных её контроллеров
   */
   initControllers() {
     this.mapWrapper = document.querySelector(`#${this.mapId}`);
@@ -169,11 +170,22 @@ class YMapHandler {
     placemarks.forEach((data) => this.leavePlacemark(data));
   }
 
-  /***/
-  setCardElements(arr: TItemData[]) {
+  /**
+   * Возвращает массив обновлённых после изменения границ карты элементов левого сайдбара
+   * @property {TItemData[]} arr - список объектов, соответствующий элементам в текущих границах карты
+  */
+  setCardElements(arr: TItemData[]): Promise<{ isSucceed: boolean; data: TCardData[]; }> {
+    /**
+     * Выполняет преобразование данных в объекты, содержащие информацию об элементах левого сайдбара
+     * @property {TItemData[]} arr - список объектов, соответствующий элементам в текущих границах карты
+    */
     const getCardElements = (array: TItemData[]) => array.reduce(
-      (acc: { id: string; card: HTMLElement | undefined; }[], { id }: { id: TItemData['id']; }) => {
-        return id === undefined ? acc : [...acc, { id, card: document.querySelector(`#card-${id}`) }];
+      (acc: TCardData[], { id }) => {
+        const card = id !== undefined
+          ? document.querySelector(`#card-${id}`) as HTMLElement | null
+          : null;
+
+        return id === undefined ? acc : [...acc, { id, card }];
       },
       []
     );
@@ -188,9 +200,18 @@ class YMapHandler {
     });
   }
 
-  /***/
-  async handleCardsList(arr: TItemData[]) {
-    const setCardListeners = ({ id, card }) => {
+  /**
+   * Устанавливает слушатели меток при наведении на соответствующие карточки в левом сайдбаре
+   * после изменения объектов в пределах границ карты
+   * @property {TItemData[]} arr - список объектов, соответствующий элементам в текущих границах карты
+  */
+  async handleCardListeners(arr: TItemData[]) {
+    /**
+     * Производит выборку объектов по id и устанавливает слушатели соответствующим им меткам
+     * @property {TCardData['id']} id - идентификатор объекта
+     * @property {TCardData['card']} card - html-элемент карточки в левом сайдбаре
+    */
+    const setCardListeners = ({ id, card }: TCardData) => {
       if (!card) {
         return;
       }

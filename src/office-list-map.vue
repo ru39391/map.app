@@ -464,7 +464,7 @@ export default defineComponent({
     );
 
     /**
-     * Изменяет список карточек в левом сайдбаре
+     * Изменяет обработчики карточек в левом сайдбаре
      * при изменении данных объектов в пределах границ карты
      * @property {TItemData[]} arr - список объектов, соответствующий элементам в текущих границах карты
     */
@@ -472,7 +472,7 @@ export default defineComponent({
       () => customItemsList.value,
       (arr) => {
         setCardsList(arr);
-        yMapHandler.handleCardsList(arr);
+        yMapHandler.handleCardListeners(arr);
         //console.log({ customItemsList: arr.length });
       }
     );
