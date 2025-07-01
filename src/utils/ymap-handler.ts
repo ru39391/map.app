@@ -257,7 +257,7 @@ class YMapHandler {
       this.iconsData = null;
       this.pinConfig = null;
     }
-    console.log({ mapItem: this.mapItem });
+    //console.log({ mapItem: this.mapItem });
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -374,7 +374,7 @@ class YMapHandler {
         map.panTo(Array.isArray(coords) ? coords[0] : DEFAULT_COORDS);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 

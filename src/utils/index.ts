@@ -1,16 +1,12 @@
 import {
+  API_URL,
   FILTER_KEY,
   LOCATION_KEY,
   LOCATION_ID_KEY,
   LOCATION_CODE_KEY,
   COORDS_KEY,
-  DEFAULT_LOC,
   DEFAULT_LOC_ID,
-  DEFAULT_LOC_CODE,
-  DEFAULT_COORDS,
-  DEFAULT_BOUNDS,
-  GEO_NAME_SEL,
-  GEO_SWITCHER_URL,
+  PLACEMARKS_KEY,
 } from "./constants";
 import type {
   TDeptsData,
@@ -21,9 +17,21 @@ import type {
   TPointsFilterValues
 } from "./types";
 
-import axios from "axios";
+/**
+ * Устанавливает значение текущего доменного имени
+ * @returns {string} значение доменного имени
+*/
+const setBaseUrl = (): string => {
+  const baseItem = document.querySelector('base');
 
-import { fetchFilterData } from "./fetchFilterData";
+  if(!baseItem) {
+    return '';
+  }
+
+  const { href } = baseItem;
+
+  return href.slice(0, -1);
+}
 
 /**
  * Конвертирует в строку данные фильтра,
@@ -90,8 +98,6 @@ const handlePointsData = async ({ key, request, boundedBy }: Pick<TPointsFilterV
     console.error(error);
   }
 
-  console.log("handlePointsData: ", data);
-
   return data;
 };
 
@@ -107,7 +113,9 @@ const handleLocationData = async (
   let data: THandledData<Omit<TLocationData, typeof LOCATION_ID_KEY | 'isPopular'>> = { isSucceed: false, data: null };
 
   try {
+    //@ts-ignore
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
+    //@ts-ignore
     const geocodeRes = await ymapsRes.geocode(value, { results: 1 });
     const geoObject = geocodeRes.geoObjects.get(0);
 
@@ -124,42 +132,40 @@ const handleLocationData = async (
     console.error(error);
   }
 
-  console.log("handleLocationData: ", data);
-
   return data;
 };
 
 /**
  * Преобразует входящие данные геолокации в удобный для обработки объект данных местоположения
- * @property {TDeptsData['cities'][number]} data - объект данных одного из населённых пунктов, где представлен банк
+ * @property {TDeptsData['placemarks'][number]} data - объект данных одного из населённых пунктов, где представлен банк
  * @returns {TLocationData} данные местоположения
 */
-const handleLocationItem = (data: TDeptsData['cities'][number]): TLocationData => {
+const handleLocationItem = (data: TDeptsData['placemarks'][number]): TLocationData => {
   const {
-    ID,
-    UF_NAME,
-    UF_XML_ID,
-    UF_LATITUDE,
-    UF_LONGITUDE,
-    UF_RANGE_LOW_LAT,
-    UF_RANGE_LOW_LNG,
-    UF_RANGE_UP_LAT,
-    UF_RANGE_UP_LNG,
-    UF_TOP,
+    item_id,
+    name,
+    xml_id,
+    lat,
+    lon,
+    range_low_lat,
+    range_low_lng,
+    range_up_lat,
+    range_up_lng,
+    top,
   } = data;
   const [coords, leftBottom, rightTop] = [
-    [UF_LATITUDE, UF_LONGITUDE],
-    [UF_RANGE_LOW_LAT, UF_RANGE_LOW_LNG],
-    [UF_RANGE_UP_LAT, UF_RANGE_UP_LNG],
+    [lat, lon],
+    [range_low_lat, range_low_lng],
+    [range_up_lat, range_up_lng],
   ].map((item) => [Number(item[0]), Number(item[1])]);
 
   return {
-    [LOCATION_ID_KEY]: ID,
-    [LOCATION_KEY]: UF_NAME,
-    [LOCATION_CODE_KEY]: UF_XML_ID,
+    [LOCATION_ID_KEY]: item_id,
+    [LOCATION_KEY]: name,
+    [LOCATION_CODE_KEY]: xml_id,
     coords,
     boundedBy: [leftBottom, rightTop],
-    isPopular: UF_TOP === null ? Boolean(UF_TOP) : Boolean(Number(UF_TOP)),
+    isPopular: top === null ? Boolean(top) : Boolean(Number(top)),
   };
 };
 
@@ -263,14 +269,19 @@ const changeLocation = async (id: string): Promise<{ data: TLocationData | null;
   const location_id = id || DEFAULT_LOC_ID;
 
   try {
-    /*
-    // TODO: создать эндпойнт для получения данных геолокации по id
-    const { data: selectedLocationData } = await axios.post(
-      `${GEO_SWITCHER_URL}?id=${location_id}`
-    );
-    */
-    const res = await fetchFilterData();
-    const selectedLocationData = [...res.cities as TDeptsData['cities']].find((item) => item.ID === id);
+    const res = await fetch(`${API_URL}${PLACEMARKS_KEY}`);
+
+    if(!res.ok) {
+      return data;
+    }
+
+    const { success, data: placemarksData }: { success: boolean; data: TDeptsData['placemarks']; } = await res.json();
+
+    if(!success) {
+      return data;
+    }
+
+    const selectedLocationData = placemarksData.find(({ item_id }) => item_id === Number(id));
 
     if (selectedLocationData) {
       const payload = handleLocationItem(selectedLocationData);
@@ -279,7 +290,7 @@ const changeLocation = async (id: string): Promise<{ data: TLocationData | null;
       data = { data: locationData };
     } else {
       console.error(
-        `Путь ${GEO_SWITCHER_URL}?id=${location_id} возвращает некорректное значение`
+        `ID ${location_id} возвращает некорректное значение`
       );
     }
   } catch (error) {
@@ -291,6 +302,7 @@ const changeLocation = async (id: string): Promise<{ data: TLocationData | null;
 
 export {
   removeStorageItem,
+  setBaseUrl,
   setLocation,
   setFilterData,
   handleLocationData,
