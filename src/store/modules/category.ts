@@ -3,10 +3,7 @@ import { ref } from "vue";
 import {
   PARTNER_NAME,
   POINT_KEY,
-  API_URL,
-  ATM_KEY,
-  FILIAL_KEY,
-  TERMINAL_KEY,
+  API_URL
 } from "../../utils/constants";
 
 import { setSelectedItems, handlePointsData } from "../../utils";
@@ -17,18 +14,6 @@ import type {
   TItemData,
   TPointsFilterData
 } from "../../utils/types";
-
-import axios from "axios";
-
-import { fetchAtmData } from "../../utils/fetchAtmData";
-import { fetchFilialData } from "../../utils/fetchFilialData";
-import { fetchTerminalData } from "../../utils/fetchTerminalData";
-
-const types = {
-  [ATM_KEY]: fetchAtmData(),
-  [FILIAL_KEY]: fetchFilialData(),
-  [TERMINAL_KEY]: fetchTerminalData(),
-};
 
 const useCategoryStore = defineStore("category", () => {
   const isCategoryListLoading = ref<boolean>(false);
@@ -50,20 +35,23 @@ const useCategoryStore = defineStore("category", () => {
       return;
     }
 
-    const requestUrl = `${API_URL}${data.type}/${params}`;
+    const requestUrl = `${API_URL}${data.type}${params}`;
     console.log({ requestUrl });
 
     try {
-      //const { data: itemsData } = await axios.get(requestUrl);
-      const itemsData: { success: boolean; data: TCategoryData[]; } = await types[data.type];
-      //console.log({ itemsData });
+      const res = await fetch(`${API_URL}${data.type}`);
 
-      if (itemsData.success) {
-        const items: TItemData[] = itemsData.data.map((data: TCategoryData) => {
+      if(!res.ok) {
+        return;
+      }
+
+      const { success, data: itemsData }: { success: boolean; data: TCategoryData[]; } = await res.json();
+
+      if (success) {
+        const items: TItemData[] = itemsData.map((data: TCategoryData) => {
           const {
             name,
             address,
-            category,
             individual,
             lon,
             lat,
@@ -73,7 +61,6 @@ const useCategoryStore = defineStore("category", () => {
           } = {
             name: data.name,
             address: data.address,
-            category: data.category,
             individual: data.individual,
             lon: data.lon,
             lat: data.lat,
@@ -97,8 +84,7 @@ const useCategoryStore = defineStore("category", () => {
             workModeCom: workModeComArr
               .map((item) => item.replace(/<[^>]*>/g, ""))
               .filter((item) => item),
-            ...(lon &&
-              lat && { coords: [lon, lat].map((value) => Number(value)) }),
+            ...(lon && lat && { coords: [lon, lat].map((value) => Number(value)) }),
             ...(workTime && {
               workingStatus: {
                 isWork: workTime.color === "blue",

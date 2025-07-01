@@ -245,7 +245,7 @@ export default defineComponent({
       () => mapMarkersList.value,
       (arr) => {
         handleYMap(arr);
-        console.log("Список объектов карты обновлён", arr);
+        //console.log("Список объектов карты обновлён", arr);
       }
     );
 

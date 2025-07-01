@@ -100,7 +100,7 @@ export default defineComponent({
       () => selectedItemsList.value,
       (arr) => {
         if (!arr.length) setModalHeightMax(Boolean(arr.length));
-        console.log("Подробные данные обновлены", arr);
+        //console.log("Подробные данные обновлены", arr);
       }
     );
 

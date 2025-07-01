@@ -33,10 +33,6 @@ import type {
   TLocationData
 } from "../../utils/types";
 
-import axios from "axios";
-
-import { fetchFilterData } from "../../utils/fetchFilterData";
-
 setActivePinia(piniaStore);
 
 const categoryStore = useCategoryStore();

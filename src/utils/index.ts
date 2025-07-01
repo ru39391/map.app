@@ -5,11 +5,7 @@ import {
   LOCATION_ID_KEY,
   LOCATION_CODE_KEY,
   COORDS_KEY,
-  DEFAULT_LOC,
   DEFAULT_LOC_ID,
-  DEFAULT_LOC_CODE,
-  DEFAULT_COORDS,
-  DEFAULT_BOUNDS,
   PLACEMARKS_KEY,
 } from "./constants";
 import type {
@@ -20,10 +16,6 @@ import type {
   TLocationData,
   TPointsFilterValues
 } from "./types";
-
-import axios from "axios";
-
-import { fetchFilterData } from "./fetchFilterData";
 
 /**
  * Устанавливает значение текущего доменного имени
@@ -106,8 +98,6 @@ const handlePointsData = async ({ key, request, boundedBy }: Pick<TPointsFilterV
     console.error(error);
   }
 
-  console.log("handlePointsData: ", data);
-
   return data;
 };
 
@@ -123,7 +113,9 @@ const handleLocationData = async (
   let data: THandledData<Omit<TLocationData, typeof LOCATION_ID_KEY | 'isPopular'>> = { isSucceed: false, data: null };
 
   try {
+    //@ts-ignore
     const ymapsRes = await new Promise((resolve) => ymaps.ready(resolve));
+    //@ts-ignore
     const geocodeRes = await ymapsRes.geocode(value, { results: 1 });
     const geoObject = geocodeRes.geoObjects.get(0);
 
@@ -139,8 +131,6 @@ const handleLocationData = async (
   } catch (error) {
     console.error(error);
   }
-
-  console.log("handleLocationData: ", data);
 
   return data;
 };

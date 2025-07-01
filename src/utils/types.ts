@@ -39,6 +39,7 @@ export type TWorkingStatus = {
 export type TCategoryData = Record<string, string> & {
   category: typeof ATM_KEY | typeof FILIAL_KEY | typeof TERMINAL_KEY;
   individual: 1 | 0;
+  item_id: number;
   work_time: Record<string, string>;
 };
 
@@ -74,7 +75,7 @@ export type TFilterData = Record<'params' | typeof LOCATION_KEY | typeof LOCATIO
 
 export type TCategoryListData = Record<'caption' | 'category', string> & Pick<TFilterData, 'type'>;
 
-export type TLocationData = Record<typeof LOCATION_ID_KEY, string> & Pick<TFilterData, typeof LOCATION_KEY | typeof LOCATION_CODE_KEY | typeof COORDS_KEY> & Pick<TPointsFilterValues, 'boundedBy'> & { isPopular: boolean; };
+export type TLocationData = Record<typeof LOCATION_ID_KEY, number> & Pick<TFilterData, typeof LOCATION_KEY | typeof LOCATION_CODE_KEY | typeof COORDS_KEY> & Pick<TPointsFilterValues, 'boundedBy'> & { isPopular: boolean; };
 
 export type TDeptsData = Record<TCategoryData['category'], Record<'name' | 'code', string>[]> & { placemarks: (Record<string, string> & { top: 1 | 0; item_id: number; })[]; };
 
