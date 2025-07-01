@@ -1,8 +1,11 @@
+import { setBaseUrl } from './';
+
 const FILIAL_KEY = "filial";
 const ATM_KEY = "atm";
 const POINT_KEY = "point";
 const TERMINAL_KEY = "terminal";
 const FILTER_KEY = "filter";
+const PLACEMARKS_KEY = "placemarks";
 
 const ADDRESS_KEY = "address";
 const LOCATION_KEY = "location";
@@ -48,14 +51,11 @@ const DEFAULT_LOCATION_DATA = {
   isPopular: true
 };
 
+const SITE_URL = setBaseUrl() || import.meta.env.VITE_SITE_URL;
 const MAP_ID = "map";
-const API_URL = "/api/branches/";
-const LOC_API_URL = "/api/cities/";
+const API_URL = `${SITE_URL}/api/`;
 const ASSETS_URL = "/static";
 const ICONS_URL = `${ASSETS_URL}/icons`;
-const GEO_SWITCHER_URL = "/local/geolocation/switch-region-ajax.php";
-
-const GEO_NAME_SEL = ".js-p-choose-city-open span";
 
 const PARTNER_NAME = "Газпромбанк";
 
@@ -87,6 +87,7 @@ export {
   POINT_KEY,
   TERMINAL_KEY,
   FILTER_KEY,
+  PLACEMARKS_KEY,
   ADDRESS_KEY,
   LOCATION_KEY,
   LOCATION_ID_KEY,
@@ -101,9 +102,7 @@ export {
   MAP_PINS,
   MAP_ID,
   API_URL,
-  LOC_API_URL,
   ASSETS_URL,
-  GEO_SWITCHER_URL,
   DEFAULT_KEY,
   SELECTED_KEY,
   PARTNER_KEY,
@@ -124,6 +123,5 @@ export {
   CLUSTER_CLOSED_KEY,
   CLOSED_KEY,
   SELECTED_CLOSED_KEY,
-  GEO_NAME_SEL,
   CARDS_LIST_LENGTH,
 };

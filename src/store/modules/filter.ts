@@ -18,6 +18,7 @@ import {
   LOCATION_CODE_KEY,
   COORDS_KEY,
   FILTER_KEY,
+  PLACEMARKS_KEY,
   DEFAULT_LOC,
   DEFAULT_LOC_CODE,
   DEFAULT_LOCATION_DATA,
@@ -50,7 +51,7 @@ const useFilterStore = defineStore("filter", () => {
     { type: POINT_KEY, caption: "Точки погашения", category: "Точка погашения" },
   ]);
   const currentCategory = ref<TCategoryListData | null>(null);
-  const categoryFilterData = ref<Omit<TDeptsData, 'cities'> | null>(null);
+  const categoryFilterData = ref<Omit<TDeptsData, 'placemarks'> | null>(null);
   const currentFilterData = ref<TFilterData | null>(null);
 
   /**
@@ -147,15 +148,31 @@ const useFilterStore = defineStore("filter", () => {
     categoryStore.isCategoryListLoading = true;
 
     try {
-      //const { data } = axios.get(`${API_URL}${FILTER_KEY}/`);
-      const data = await fetchFilterData();
+      const [filterRes, placemarksRes] = await Promise.all([FILTER_KEY, PLACEMARKS_KEY].map((key) => fetch(`${API_URL}${key}`)));
 
-      if (data) {
-        categoryFilterData.value = [...categoryList.value].reduce(
-          (acc, { type }) => (data[type] ? { ...acc, [type]: data[type] } : acc),
-          {} as Omit<TDeptsData, 'cities'>
+      if(!(filterRes.ok && placemarksRes.ok)) {
+        return;
+      }
+
+      const [
+        filterData,
+        placemarksData
+      ]: [
+        { success: boolean; data: { name: typeof ATM_KEY | typeof FILIAL_KEY | typeof TERMINAL_KEY; props: Record<'name' | 'code', string>[]; }[]; },
+        { success: boolean; data: TDeptsData['placemarks']; }
+      ] = await Promise.all([filterRes.json(), placemarksRes.json()]);
+
+      if(filterData.success && placemarksData.success) {
+        const filterItems = filterData.data.reduce(
+          (acc, { name, props }) => ({ ...acc, [name]: props }),
+          {} as Omit<TDeptsData, 'placemarks'>
         );
-        locationList.value = {...data as TDeptsData}.cities.map((item) => handleLocationItem(item));
+
+        categoryFilterData.value = [...categoryList.value].reduce(
+          (acc, { type }) => (filterItems[type] ? { ...acc, [type]: filterItems[type] } : acc),
+          {} as Omit<TDeptsData, 'placemarks'>
+        );
+        locationList.value = placemarksData.data.map((item) => handleLocationItem(item));
       }
     } catch (error) {
       console.error(error);
